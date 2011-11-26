@@ -1,0 +1,3 @@
+[submodule "app/vendor/php-uikit"]
+	path = app/vendor/php-uikit
+	url = git://github.com/chobie/php-uikit.git
