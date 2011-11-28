@@ -1,6 +1,6 @@
 [submodule "app/vendor/php-uikit"]
 	path = app/vendor/php-uikit
-	url = git://github.com/chobie/php-uikit.git
+	url = git@github.com:chobie/php-uikit.git
 [submodule "app/vendor/twig"]
 	path = app/vendor/twig
 	url = https://github.com/fabpot/Twig.git
