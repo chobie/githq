@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>GitHQ - Social Coding</title>
+  </head>
+  <body>
+  
+  <h1><a href="/">GitHQ</a></h1>
+  
+  <form action="/repositories/" method="POST">
+  <div>Project Name<input type="text" value="" name="project_name" /></div>
+  <div>Description(optional)<input type="text" value="" name="description" /></div>
+  <div>Homepage Url(optional)<input type="text" value="" name="homepage_url" /></div>
+
+  <p>Who has access to this repository? (You can change this later)</p>
+  <div>
+    <label><input type="radio" value="1" name="visibility" checked="checked" />Anyone</label>
+    <label><input type="radio" value="0" name="visibility" />Only the people I specify</label>
+  </div>
+  <div>
+    <input type="submit" value="Create repository" />
+  </div>
+  </form>
+
+  </body>
+</html>
