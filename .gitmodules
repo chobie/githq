@@ -4,3 +4,6 @@
 [submodule "app/vendor/twig"]
 	path = app/vendor/twig
 	url = https://github.com/fabpot/Twig.git
+[submodule "app/vendor/Albino"]
+	path = app/vendor/Albino
+	url = git@github.com:chobie/Albino.git
