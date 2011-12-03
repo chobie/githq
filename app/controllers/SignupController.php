@@ -1,5 +1,5 @@
 <?php
-class SignupController extends UIkit\Framework\UIAppController
+class SignupController extends GitHQController
 {
 	public function onFree()
 	{

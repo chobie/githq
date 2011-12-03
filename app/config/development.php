@@ -2,8 +2,6 @@
 use UIKit\Framework\UIStoredConfig;
 use UIKit\Framework\UIStoredUnderlying;
 
-UIKit\Framework\UIAutoLoader::register();
-
 $config = UIStoredConfig::getInstance();
 $config->set("user", array(
      "strategy"     => "UIKit\\Framework\\UIStoredRedisStrategy",

@@ -7,6 +7,15 @@
   </head>
   <body>
   
+  {% if user %}
+  <div style="text-align:right">
+  {{user.getNickname()}} |
+  <a href="/account">Account Settings</a> |
+  <a href="/logout">logout</a> |
+  </div>
+
+  {% endif %}
+  
   <h1>GitHQ</h1>
   
   {% if not user %}
@@ -21,19 +30,19 @@
   </div>
   
   {% else %}
+  
   <div>Your Repositories</div>
   
   {% if user.hasRepositories() %}
   
   {% for repository in user.getRepositories() %}
-  <div><a href="/{{user.getKey()}}/{{repository.getName()}}">{{user.getKey()}}/{{repository.getName()}}</a></div>
+  <div><a href="/{{user.getNickname()}}/{{repository.getName()}}">{{user.getNickname()}}/{{repository.getName()}}</a></div>
   
   {% endfor %}
   
   {% endif %}
   <a href="/repositories/new">create repository</a>
   
-  <a href="/logout">logout</a>
   {% endif %}
 
   </body>

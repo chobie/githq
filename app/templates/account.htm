@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>GitHQ - Social Coding</title>
+  </head>
+  <body>
+  
+  <h1><a href="/">GitHQ</a></h1>
+  <form action="/account" method="POST">
+  <div>Name<input type="text" value="{{profile.getName()}}" name="name"/></div>
+  <div>Email<input type="text" value="{{profile.getEmail()}}" name="email" /></div>
+  <div>Website Blog<input type="text" value="{{profile.getHomepage()}}" name="homepage" /></div>
+  <div>Company<input type="text" value="{{profile.getCompany()}}" name="company" /></div>
+  <div>Location<input type="text" value="{{profile.getLocation()}}" name="location" /></div>
+ 
+  <input type="submit" value="Update account information" />
+  </form>
+  </body>
+</html>

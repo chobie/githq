@@ -2,3 +2,9 @@ RewriteEngine On
 
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteRule ^(.*)$ index.php [QSA,L]
+
+AuthUserFile /home/chobie/githq.org/app/config/.htpasswd
+AuthGroupFile /dev/null
+AuthName "GitHQ - Yet Another Social coding"
+AuthType Basic
+require valid-user

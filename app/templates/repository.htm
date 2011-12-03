@@ -4,26 +4,94 @@
     <meta charset='utf-8'>
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
     <title>GitHQ - Social Coding</title>
+    <link rel="stylesheet" href="/assets/pygments.css" />
   </head>
   <body>
   
   <h1><a href="/">GitHQ</a></h1>
-  <h2>{{user.getKey()}}/{{repository.getName()}}</h2>
+  {% if owner %}
+  <h2>{{owner.getNickname()}}/{{repository.getName()}}</h2>
+  {% if repository.hasOrigin() %}
+    <div>forked from <a href="/{{repository.getOrigin()}}/{{repository.getName()}}">{{repository.getOrigin()}}/{{repository.getName()}}</a></div>
+  {% endif %}
+  {% endif %}
   
+  {% if user != owner %}
+  
+  {% if user.getRepository(repository.getName()) == false %}
+  <div>
+  <form method="POST" action="/{{user.getNickname()}}/{{repository.getName()}}">
+    <input type="hidden" name="action" value="fork" />
+    <input type="hidden" name="user" value="{{owner.getNickname()}}" />
+    <input type="hidden" name="repository" value="{{repository.getName()}}" />
+    <input type="submit" value="fork this repository" />
+  </form>
+  </div>
+  {% endif %}
+  {% endif %}
+ 
+  <div>
+  Files | <a href="/{{owner.getNickname()}}/{{repository.getName()}}/commits/master">Commits</a> | Branches | Tags | Downloads
+  
+  <div>
+  
+  {% if user %}
+  <input type="text" value="git@githq.org:{{owner.getNickname()}}/{{repository.getName()}}.git" style="width:20em;"/>
+  {% endif %}
+  </div>
+  </div>
   
   <div>
   
   {% if commit %}
   
-  {% for entry in commit.getTree() %}
+  <div>
+    <div>{{commit.getMessage()}}</div>
+    <div>{{commit.getAuthor().name}}</div>
+    <div>{{commit.getAuthor().time.format('Y-m-d H:i:s')}}</div>
+  </div>
+
+  <div style="margin-left:2em;">
+    <div>name age message</div>
+  {% for entry in tree %}
     {% if entry.isBlob() %}
-    <div>{{entry.name}}</div>
+    <div><img src="/assets/txt.png" /><a href="/{{owner.getNickname()}}/{{repository.getName()}}/blob/master/{{current_path}}{{entry.name}}">{{entry.name}}</a></div>
     {% else %}
-    <div><a href="/{{user.getKey()}}/{{repository.getName()}}/tree/master/{{entry.name}}">{{entry.name}}</a></div>
+    <div><img src="/assets/dir.png" /><a href="/{{owner.getNickname()}}/{{repository.getName()}}/tree/master/{{current_path}}{{entry.name}}">{{entry.name}}</a></div>
     {% endif %}
   {% endfor %}
   
+  {% if data %}
+  <h2>{{path}}</h2>
+  <div class="highlight">{{data|raw}}</div>
   {% endif %}
+  
+  {% else %}
+  
+<h3>Global setup:Set up git</h3>
+<pre>
+  git config --global user.name "{{user.getNickname()}}"
+  git config --global user.email {{user.getEmail()}}
+</pre>      
+<h3>Next steps:</h3>
+<pre>
+  mkdir {{repository.getName()}}
+  cd {{repository.getName()}}
+  git init
+  touch README
+  git add README
+  git commit -m 'first commit'
+  git remote add origin git@githq.org:{{user.getNickname()}}/{{repository.getName()}}.git
+  git push -u origin master
+</pre>
+      
+<h3>Existing Git Repo?  cd existing_git_repo</h3>
+<pre>
+  git remote add origin git@githq.org:{{user.getNickname()}}/{{repository.getName()}}.git
+  git push -u origin master
+</pre>
+  {% endif %}
+  </div>
   </div>
 
   </body>
