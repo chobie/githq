@@ -40,6 +40,7 @@ class RootController extends GitHQController
 			$this->render("repository.htm",array(
 				'user' => $user,
 				'owner'=> $owner,
+				'issue_count'  => IssueReferences::getOpenedIssueCount($owner->getKey(),$owner->getRepository($params['action.orig'])->getName()),	
 				'repository'=> $owner->getRepository($params['action.orig']),
 				'commit' => $commit,
 				'tree' => $tree,
@@ -115,6 +116,7 @@ class RootController extends GitHQController
 			'tree'         => $tree,
 			'blob'         => $blob,
 			'data'         => $data,
+			'issue_count'  => IssueReferences::getOpenedIssueCount($owner->getKey(), $owner->getRepository($params['repository'])->getName()),
 			'current_path' => dirname($params['path']) . '/',
 			'path'         => $params['path']
 		));
@@ -144,6 +146,7 @@ class RootController extends GitHQController
 			'repository'   => $owner->getRepository($params['repository']),
 			'commit'       => $commit,
 			'tree'         => $tree,
+			'issue_count'  => IssueReferences::getOpenedIssueCount($owner->getKey(), $owner->getRepository($params['repository'])->getName()),
 			'current_path' => $current_path
 		));
 	}
@@ -205,5 +208,30 @@ class RootController extends GitHQController
 			'repository'=> $user->getRepository($params['repository']),
 			"commits" => $commits
 		));
+	}
+	
+	public function onIssue()
+	{
+		if ($this->getRequest()->isPost()) {
+			$user = $this->getUser();
+			$id = IssueReferences::getNextId();
+			$issue = new Issue($id);
+			$issue->setAuthor($user->getKey());
+			$issue->setTitle($_REQUEST['title']);
+			$issue->setBody($_REQUEST['contents']);
+			var_dump($issue->create());
+		} else {
+			$list = IssueReferences::getList();
+
+			foreach ($list as $id) {
+				$issues[] = Issue::get($id,'issue');
+			}
+			
+			foreach($issues as $issue) {
+				echo "<div>issueId: " . $issue->getId() . "</div>";
+				echo "<div>title: " . $issue->getTitle() . "</div>";
+				echo "<div>content: " . $issue->getBody() . "</div>";
+			}
+		}
 	}
 }

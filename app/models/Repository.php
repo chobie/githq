@@ -25,6 +25,11 @@ class Repository
 		return $this->origin_user;
 	}
 	
+	public function getOriginUser()
+	{
+		return User::get($this->origin_user, 'user');
+	}
+	
 	/**
 	 * create repository object
 	 * 
@@ -99,11 +104,11 @@ class Repository
 		$repository->setHomepageUrl($this->getHomepageUrl());
 		
 		$repo_name = $repository->getName();
-		$from_user = $owner->getKey();
-		$to_user = $forker->getKey();
+		$from_user = $owner->getNickname();
+		$to_user = $forker->getNickname();
 
 		if (!is_dir("/home/git/repositories/{$to_user}/{$repo_name}.git")) {
-			$repository->setOrigin($from_user);
+			$repository->setOrigin($owner->getKey());
 			system("mkdir -p /home/git/repositories/{$to_user}/{$repo_name}.git");
 			if(system("git clone file:///home/git/repositories/{$from_user}/{$repo_name}.git --bare --shared /home/git/repositories/{$to_user}/{$repo_name}.git")){
 				return $repository;

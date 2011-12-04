@@ -6,13 +6,22 @@
     <title>GitHQ - Social Coding</title>
     <link rel="stylesheet" href="/assets/pygments.css" />
   </head>
-  <body>
+  <body style="margin-left:4em;">
+
+  {% if user %}
+  <div style="text-align:right">
+  {{user.getNickname()}} |
+  <a href="/account">Account Settings</a> |
+  <a href="/logout">logout</a> |
+  </div>
+  {% endif %}
   
+
   <h1><a href="/">GitHQ</a></h1>
   {% if owner %}
   <h2>{{owner.getNickname()}}/{{repository.getName()}}</h2>
   {% if repository.hasOrigin() %}
-    <div>forked from <a href="/{{repository.getOrigin()}}/{{repository.getName()}}">{{repository.getOrigin()}}/{{repository.getName()}}</a></div>
+    <div>forked from <a href="/{{repository.getOriginUser().getNickname()}}/{{repository.getName()}}">{{repository.getOriginUser().getNickname()}}/{{repository.getName()}}</a></div>
   {% endif %}
   {% endif %}
   
@@ -31,7 +40,7 @@
   {% endif %}
  
   <div>
-  Files | <a href="/{{owner.getNickname()}}/{{repository.getName()}}/commits/master">Commits</a> | Branches | Tags | Downloads
+  Files | <a href="/{{owner.getNickname()}}/{{repository.getName()}}/commits/master">Commits</a> | Branches | Tags | Downloads | <a href="/{{owner.getNickname()}}/{{repository.getName()}}/issues">Issues ({{issue_count}})</a>
   
   <div>
   
@@ -51,7 +60,7 @@
     <div>{{commit.getAuthor().time.format('Y-m-d H:i:s')}}</div>
   </div>
 
-  <div style="margin-left:2em;">
+  <div>
     <div>name age message</div>
   {% for entry in tree %}
     {% if entry.isBlob() %}
@@ -94,5 +103,10 @@
   </div>
   </div>
 
+  <hr />
+  <div>
+    <div>GitHQ - Yet Another Social Coding for you - </div>
+    <div>&copy;2011 Shuhei Tanuma all rights reserved.</div>
+  </div>
   </body>
 </html>

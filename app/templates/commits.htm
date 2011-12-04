@@ -5,11 +5,11 @@
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
     <title>GitHQ - Social Coding</title>
   </head>
-  <body>
+  <body style="margin-left:4em;">
   
   {% if user %}
   <div style="text-align:right">
-  {{user.getKey}} |
+  {{user.getNickname()}} |
   <a href="/account">Account Settings</a> |
   <a href="/logout">logout</a> |
   </div>
@@ -17,7 +17,7 @@
   {% endif %}
   
   <h1><a href="/">GitHQ</a></h1>
-  <h2>{{user.getKey()}}/{{repository.getName()}}</h2>
+  <h2>{{user.getNickname()}}/{{repository.getName()}}</h2>
 
   {% if commits %}
   
