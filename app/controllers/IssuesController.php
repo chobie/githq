@@ -7,7 +7,6 @@ class IssuesController extends GitHQController
 		$owner = User::get(UserPointer::getIdByNickname($params['user']),'user');
 		$repository = $owner->getRepository($params['repository']);
 		$list = IssueReferences::getList($owner->getKey(),$repository->getName(),Issue::OPENED);
-		
 		$issues = array();
 		foreach ($list as $id) {
 			$issues[] = Issue::get($id,'issue');
@@ -67,6 +66,12 @@ class IssuesController extends GitHQController
 		$repository = $owner->getRepository($params['repository']);
 		$issue = Issue::fetchLocked($_REQUEST['issue'],'issue');
 		$issue->addComment($user->getKey(), $_REQUEST['comment']);
+		if (isset($_REQUEST['close'])) {
+			$issue->closeIssue();
+		}
+		if (isset($_REQUEST['label']) && !empty($_REQUEST['label'])) {
+			$issue->addLabel($_REQUEST['label']);
+		}
 		$issue->save();
 		header("Location: /{$user->getNickname()}/{$repository->getName()}/issues/{$issue->getId()}");
 	}

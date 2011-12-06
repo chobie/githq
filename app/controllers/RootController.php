@@ -32,7 +32,13 @@ class RootController extends GitHQController
 				$ref = $repo->lookupRef("refs/heads/master");
 				$commit = $repo->getCommit($ref->getId());
 				$tree = $commit->getTree();
-			
+				$blob = $this->resolve_filename($tree,"README.md");
+				$data = null;
+				if ($blob) {
+					$sd = new \Sundown($blob->data);
+					$data = $sd->to_html();
+				}
+				
 			}catch(\InvalidArgumentException $e) {
 				$commit = null;
 				$tree = null;
@@ -44,6 +50,7 @@ class RootController extends GitHQController
 				'repository'=> $owner->getRepository($params['action.orig']),
 				'commit' => $commit,
 				'tree' => $tree,
+				'data' => $data,
 			));
 		} else {
 			$this->render("index.htm",array('user'=>$user));
@@ -103,7 +110,16 @@ class RootController extends GitHQController
 			$tree = $this->resolve_filename($tree,dirname($params['path']));
 		}
 		
-		$data = Albino::colorize($blob->data,pathinfo($params['path'],\PATHINFO_EXTENSION));
+		$ext = pathinfo($params['path'],\PATHINFO_EXTENSION);
+		switch ($ext) {
+			case 'mardkwon':
+			case 'md':
+				$sd = new \Sundown($blob->data);
+				$data = $sd->to_html();
+				break;
+			default:
+				$data = Albino::colorize($blob->data,$ext);
+		}
 		if (!$data) {
 			$data = "<pre>" . htmlspecialchars($blob->data) . "</pre>";
 		}

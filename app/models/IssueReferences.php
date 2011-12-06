@@ -28,7 +28,6 @@ class IssueReferences
 	public static function addSubmitedList($owner,$repository,$issue_id,$status,$registered_at)
 	{
 		$redis = GitHQController::getRedisClient();
-		error_log("issue_list.{$owner}.{$repository}.{$status}");
 		return $redis->zAdd("issue_list.{$owner}.{$repository}.{$status}",$registered_at,$issue_id);
 		
 	}

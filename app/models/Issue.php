@@ -16,6 +16,8 @@ class Issue extends \UIKit\Framework\UIStoredObject
 	protected $repository;
 	protected $registered_at;
 	protected $comments = array();
+	protected $labels = array();
+	
 	
 	public function __construct($key)
 	{
@@ -23,9 +25,34 @@ class Issue extends \UIKit\Framework\UIStoredObject
 		$this->registered_at = $_SERVER['REQUEST_TIME'];
 	}
 	
+	public function hasLabel()
+	{
+		return (bool)(count($this->labels));
+	}
+	
+	public function addLabel($label)
+	{
+		$this->labels[] = $label;
+	}
+	
+	public function getLabels()
+	{
+		return $this->labels;
+	}
+	
 	public function setOwner($owner)
 	{
 		$this->owner = $owner;
+	}
+	
+	public function getOwner()
+	{
+		return $this->owner;
+	}
+	
+	public function getStatus()
+	{
+		return $this->status;
 	}
 	
 	public function isClosed()
@@ -41,6 +68,11 @@ class Issue extends \UIKit\Framework\UIStoredObject
 	public function setRepository($repository)
 	{
 		$this->repository = $repository;
+	}
+	
+	public function getRepository()
+	{
+		return $this->repository;
 	}
 	
 	public function getId()
@@ -78,6 +110,12 @@ class Issue extends \UIKit\Framework\UIStoredObject
 		return $this->body;
 	}
 	
+	public function getBodyAsMd()
+	{
+		$sd = new \Sundown($this->body);
+		return $sd->to_html();
+	}
+	
 	public function setStatus($status)
 	{
 		$this->status = $status;
@@ -91,16 +129,30 @@ class Issue extends \UIKit\Framework\UIStoredObject
 	public function create()
 	{
 		$retVal = false;
-		if ($retVal = parent::create()) {
-			IssueReferences::addSubmitedList($this->owner,$this->repository,$this->key,$this->status,$this->registered_at);
-			$retVal = true;
-		}
+		$retVal = parent::create(function($stmt,$issue){
+			$stmt->zAdd("issue_list.{$issue->getOwner()}.{$issue->getRepository()}.{$issue->getStatus()}",$issue->getRegisteredAtAsTimestamp(),$issue->getId());
+			if ($issue->hasLabel()) {
+				foreach ($issue->getLabels() as $offset => $label){
+					$stmt->zAdd("issue_labels.{$issue->getOwner()}.{$issue->getRepository()}." . sha1($label) ,$issue->getRegisteredAtAsTimestamp(),$issue->getId());	
+				}
+			}
+		});
 		return $retVal;
+	}
+	
+	public function closeIssue()
+	{
+		$this->status = self::CLOSED;
 	}
 	
 	public function getRegisteredAt($format = 'Y-m-d H:i:s')
 	{
 		return date("Y-m-d H:i:s",$this->registered_at);
+	}
+	
+	public function getRegisteredAtAsTimestamp()
+	{
+		return $this->registered_at;
 	}
 	
 	public function getComments()
@@ -111,5 +163,25 @@ class Issue extends \UIKit\Framework\UIStoredObject
 	public function addComment($user_id, $comment)
 	{
 		$this->comments[] = new IssueComment($user_id,$comment);
+	}
+	
+	public function save()
+	{
+		return parent::save(function ($stmt,$issue, $old){
+			if ($old->getStatus() != $issue->getStatus()) {
+				$stmt->zAdd("issue_list.{$issue->getOwner()}.{$issue->getRepository()}.{$issue->getStatus()}",$issue->getRegisteredAtAsTimestamp(),$issue->getId());
+				$stmt->zRem("issue_list.{$issue->getOwner()}.{$issue->getRepository()}.{$old->getStatus()}",$issue->getId());
+				$current_labels = $issue->getLabels();
+				$old_labels = $old->getLabels();
+				/*
+				 * @todo array_diffだと両方の配列で含まれない物なので、追加されたか削除されたかが分からない
+				if ($diff = array_diff($current_labels, $old_labels)) {
+					foreach ($diff as $label) {
+						$stmt->zAdd("issue_labels.{$issue->getOwner()}.{$issue->getRepository()}." . sha1($label) ,$issue->getRegisteredAtAsTimestamp(),$issue->getId());
+					}
+				}
+				*/
+			}
+		});		
 	}
 }

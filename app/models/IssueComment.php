@@ -22,6 +22,12 @@ class IssueComment
 		return $this->comment;
 	}
 	
+	public function getCommentAsMd()
+	{
+		$sd = new \Sundown($this->comment);
+		return $sd->to_html();
+	}
+	
 	public function getRegisteredAt($format = 'Y-m-d H:i:s')
 	{
 		return date($format,$this->registered_at);
