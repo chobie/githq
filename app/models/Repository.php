@@ -81,6 +81,7 @@ class Repository
 		if (!is_dir("/home/git/repositories/{$name}/{$this->name}.git")) {
 			system("mkdir -p /home/git/repositories/{$name}/{$this->name}.git");
 			system("cd /home/git/repositories/{$name}/{$this->name}.git; git init --bare --shared");
+			system("chmod 777 -R /home/git/repositories/{$name}/{$this->name}.git");
 			return true;
 		} else {
 			return false;

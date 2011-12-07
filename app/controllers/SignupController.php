@@ -3,6 +3,11 @@ class SignupController extends GitHQController
 {
 	public function onFree()
 	{
-		$this->render("free.htm",array());
+		if(!$this->snapi->getUser()) {
+			header("Location: /connect");
+			exit;
+		}
+		
+		$this->render("free.htm",array('user'=>$user));
 	}
 }

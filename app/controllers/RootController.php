@@ -207,6 +207,7 @@ class RootController extends GitHQController
 	
 	public function onCommits($params)
 	{
+		$owner = User::get(UserPointer::getIdByNickname($params['user']),"user");
 		$user = $_SESSION['user'];
 		$repo = new \Git\Repository("/home/git/repositories/{$params['user']}/{$params['repository']}.git");
 		$ref = $repo->lookupRef("refs/heads/master");
@@ -221,7 +222,8 @@ class RootController extends GitHQController
 		}
 		$this->render("commits.htm",array(
 			'user'=> $user,
-			'repository'=> $user->getRepository($params['repository']),
+			'owner' => $owner,
+			'repository'=> $owner->getRepository($params['repository']),
 			"commits" => $commits
 		));
 	}
@@ -248,6 +250,21 @@ class RootController extends GitHQController
 				echo "<div>title: " . $issue->getTitle() . "</div>";
 				echo "<div>content: " . $issue->getBody() . "</div>";
 			}
+		}
+	}
+	
+	public function onConnect()
+	{
+		$user_id = $this->snapi->getUser();
+		if ($user_id) {
+			if ($user = User::get($user_id,'user')) {
+				$_SESSION['user'] = $user;
+				header("Location: http://githq.org/");
+			} else {
+				header("Location: http://githq.org/signup/free");
+			}
+		} else {
+			header("Location: " . $this->snapi->getLoginUrl());
 		}
 	}
 }

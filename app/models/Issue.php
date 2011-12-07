@@ -7,6 +7,7 @@ class Issue extends \UIKit\Framework\UIStoredObject
 	const TYPE_ISSUE = 0;
 	const TYPE_PULL = 1;
 	
+	protected $sequence;
 	protected $author_id;
 	protected $title;
 	protected $type = self::TYPE_ISSUE;
@@ -18,6 +19,11 @@ class Issue extends \UIKit\Framework\UIStoredObject
 	protected $comments = array();
 	protected $labels = array();
 	
+	
+	public function getKey()
+	{
+		return $this->key;
+	}
 	
 	public function __construct($key)
 	{
@@ -77,7 +83,12 @@ class Issue extends \UIKit\Framework\UIStoredObject
 	
 	public function getId()
 	{
-		return $this->key;
+		return $this->sequence;
+	}
+	
+	public function setId($seq)
+	{
+		$this->sequence = $seq;
 	}
 	
 	public function setAuthor($author_id)
@@ -174,7 +185,7 @@ class Issue extends \UIKit\Framework\UIStoredObject
 				$current_labels = $issue->getLabels();
 				$old_labels = $old->getLabels();
 				/*
-				 * @todo array_diffだと両方の配列で含まれない物なので、追加されたか削除されたかが分からない
+				 * @todo array_diffだと両方の配列で含まれない物なので、追加されたか削除されたかがわからない
 				if ($diff = array_diff($current_labels, $old_labels)) {
 					foreach ($diff as $label) {
 						$stmt->zAdd("issue_labels.{$issue->getOwner()}.{$issue->getRepository()}." . sha1($label) ,$issue->getRegisteredAtAsTimestamp(),$issue->getId());

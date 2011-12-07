@@ -7,3 +7,6 @@
 [submodule "app/vendor/Albino"]
 	path = app/vendor/Albino
 	url = git@github.com:chobie/Albino.git
+[submodule "app/vendor/php-sdk"]
+	path = app/vendor/php-sdk
+	url = https://github.com/facebook/php-sdk.git

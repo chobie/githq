@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>GitHQ - Social Coding</title>
+    <link rel="stylesheet" href="/assets/pygments.css" />
+    <link rel="stylesheet" href="/assets/style.css" />
+  </head>
+  <body style="margin-left:4em;">
+
+  {% if user %}
+  <div style="text-align:right">
+  <img src="{{user.getImageUrl()}}?type=small" />
+  {{user.getNickname()}} |
+  <a href="/account">Account Settings</a> |
+  <a href="/logout">logout</a> |
+  </div>
+  {% endif %}
+  
+
+  <h1><a href="/">GitHQ</a></h1>
+
+  {% if owner %}
+  <h2>{{owner.getNickname()}}/<a href="/{{owner.getNickname()}}/{{repository.getName()}}">{{repository.getName()}}</a></h2>
+  {% if repository.hasOrigin() %}
+    <div>forked from <a href="/{{repository.getOriginUser().getNickname()}}/{{repository.getName()}}">{{repository.getOriginUser().getNickname()}}/{{repository.getName()}}</a></div>
+  {% endif %}
+  {% endif %}
+
+
+  {% block contents %}{% endblock %}
+  <hr />
+  <div>
+    <div>GitHQ - Yet Another Social Coding for you - </div>
+    <div>&copy;2011 Shuhei Tanuma all rights reserved.</div>
+  </div>
+  </body>
+</html>

@@ -2,6 +2,15 @@
 abstract class GitHQController extends UIkit\Framework\UIAppController
 {
 	protected static $redis;
+	protected $snapi;
+	
+	public function __construct()
+	{
+		parent::__construct();
+		$this->snapi = new \Facebook(array(
+			'appId' => '308497302504262',
+			'secret'=> '3de91e2141352b58c08fb1c24b452a73'));
+	}
 
 	protected function getUser()
 	{

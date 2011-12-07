@@ -2,6 +2,7 @@
 require_once __DIR__ . "/../vendor/php-uikit/UIKit/Framework/UIAutoLoader.php";
 require_once __DIR__ . '/../vendor/twig/lib/Twig/Autoloader.php';
 require_once __DIR__ . '/../vendor/Albino/src/Albino.php';
+require_once __DIR__ . '/../vendor/php-sdk/src/facebook.php';
 
 UIKit\Framework\UIAutoLoader::add_include_path(dirname(__DIR__) . '/libs');
 UIKit\Framework\UIAutoLoader::add_include_path(dirname(__DIR__) . '/controllers');

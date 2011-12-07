@@ -9,7 +9,7 @@ class IssuesController extends GitHQController
 		$list = IssueReferences::getList($owner->getKey(),$repository->getName(),Issue::OPENED);
 		$issues = array();
 		foreach ($list as $id) {
-			$issues[] = Issue::get($id,'issue');
+			$issues[] = Issue::get(join(':',array($owner->getKey(),$repository->getName(),$id)),'issue');
 		}
 		
 		$this->render("index.htm",array(
@@ -27,7 +27,8 @@ class IssuesController extends GitHQController
 		$repository = $owner->getRepository($params['repository']);
 		if($this->getRequest()->isPost()) {
 			$id = IssueReferences::getNextId($owner->getKey(),$repository->getName());
-			$issue = new Issue($id);
+			$issue = new Issue(join(':',array($owner->getKey(),$repository->getName(),$id)));
+			$issue->setId($id);
 			$issue->setOwner($owner->getKey());
 			$issue->setRepository($repository->getName());
 			$issue->setAuthor($user->getKey());
@@ -49,7 +50,7 @@ class IssuesController extends GitHQController
 		$user = $this->getUser();
 		$owner = User::get(UserPointer::getIdByNickname($params['user']),'user');
 		$repository = $owner->getRepository($params['repository']);
-		$issue = Issue::get($params['id'],'issue');
+		$issue = Issue::get(join(':',array($owner->getKey(),$repository->getName(),$params['id'])),'issue');
 
 		$this->render("issue.htm",array(
 			"user" => $user,
@@ -64,7 +65,7 @@ class IssuesController extends GitHQController
 		$user = $this->getUser();
 		$owner = User::get(UserPointer::getIdByNickname($params['user']),'user');
 		$repository = $owner->getRepository($params['repository']);
-		$issue = Issue::fetchLocked($_REQUEST['issue'],'issue');
+		$issue = Issue::fetchLocked(join(':',array($owner->getKey(),$repository->getName(),$_REQUEST['issue'])),'issue');
 		$issue->addComment($user->getKey(), $_REQUEST['comment']);
 		if (isset($_REQUEST['close'])) {
 			$issue->closeIssue();

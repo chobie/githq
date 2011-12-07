@@ -10,6 +10,11 @@ class User extends UIKit\Framework\UIStoredObject
 	protected $salt;
 	protected $repositories = array();	
 	
+	public function getImageUrl()
+	{
+		return sprintf('http://graph.facebook.com/%s/picture',$this->getKey());
+	}
+	
 	/**
 	 * return current blob key.
 	 * 

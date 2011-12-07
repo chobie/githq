@@ -1,29 +1,10 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset='utf-8'>
-    <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <title>GitHQ - Social Coding</title>
-  </head>
-  <body style="margin-left:4em;">
-  
-  {% if user %}
-  <div style="text-align:right">
-  {{user.getNickname()}} |
-  <a href="/account">Account Settings</a> |
-  <a href="/logout">logout</a> |
-  </div>
-
-  {% endif %}
-  
-  <h1><a href="/">GitHQ</a></h1>
-  <h2>{{user.getNickname()}}/{{repository.getName()}}</h2>
-
+{% extends "template.htm" %}
+{% block contents %}
   {% if commits %}
   
   {% for commit in commits %}
-  <p>{{commit.getId()}}: {{commit.getMessage()}}</p>
+  <p style="border:1px solid #C5D5DD">{{commit.getMessage()}}
+  </p>
   {% endfor %}
   {% endif %}
-  </body>
-</html>
+{% endblock %}

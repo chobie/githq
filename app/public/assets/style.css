@@ -1,0 +1,9 @@
+@CHARSET "UTF-8";
+
+
+.issue_container {
+	border: 1px solid #C5D5DD;
+	padding: 0.5em;
+	width: 800px;
+	vertical-align: top;
+}
