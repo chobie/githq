@@ -3,7 +3,8 @@
   {% if commits %}
   
   {% for commit in commits %}
-  <p style="border:1px solid #C5D5DD">{{commit.getMessage()}}
+  <p style="border:1px solid #C5D5DD">
+  	<a href="/{{owner.getNickName()}}/{{repository.getName()}}/commit/{{commit.getId()}}">{{commit.getMessage()}}</a>
   </p>
   {% endfor %}
   {% endif %}

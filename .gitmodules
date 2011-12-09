@@ -10,3 +10,6 @@
 [submodule "app/vendor/php-sdk"]
 	path = app/vendor/php-sdk
 	url = https://github.com/facebook/php-sdk.git
+[submodule "app/vendor/Text_Diff"]
+	path = app/vendor/Text_Diff
+	url = git@github.com:chobie/Text_Diff.git

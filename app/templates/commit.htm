@@ -1,0 +1,35 @@
+{% extends "template.htm" %}
+{% block contents %}
+
+	<div>
+		<pre>{{commit.getMessage()}}</pre>
+	</div>
+
+	{% if diff %}
+	{% for file in diff.getFiles() %}
+	
+	<table border='1' style="max-width:1024px;min-width:1024px;">
+		<tr>
+		<th style="text-align:left;">{{file.getName()}}</th>
+		</tr>
+		{% for hunk in file.getHunks() %}
+		<tr>
+		<td>
+		<div>{{hunk.getSummary()}}</div>
+		<div style="width:1024px;overflow:auto;">
+			{%for line in hunk.getLines()%}
+			{%if line.isRemoved() %}
+			<div style="background-color:#FFDDDD">{{line.getLine()}}</div>
+			{% elseif line.isAdded() %}
+			<div style="background-color:#DDFFDD">{{line.getLine()}}</div>
+			{% else %}
+			<div>{{line.getLine()}}</div>
+			{% endif %}
+			{% endfor %}
+		</div>
+		</td></tr>		
+		{% endfor %}
+	</table>
+	{% endfor %}
+	{% endif %}
+{% endblock %}

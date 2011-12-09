@@ -205,6 +205,26 @@ class RootController extends GitHQController
 		));
 	}
 	
+	public function onCommit($params)
+	{
+		$owner = User::get(UserPointer::getIdByNickname($params['user']),"user");
+		$user = $this->getUser();
+		$repo = new \Git\Repository("/home/git/repositories/{$params['user']}/{$params['repository']}.git");
+		$stat = `GIT_DIR=/home/git/repositories/{$params['user']}/{$params['repository']}.git git log -p {$params['commit']} -n1`;
+		$struct = Text\Diff\Parser::parse($stat);
+		
+		$ref = $repo->lookupRef("refs/heads/master");
+		$commit = $repo->getCommit($params['commit']);
+		
+		$this->render("commit.htm",array(
+					'user'=> $user,
+					'owner' => $owner,
+					'repository'=> $owner->getRepository($params['repository']),
+					"commit" => $commit,
+					"diff" => $struct,
+		));
+	}
+	
 	public function onCommits($params)
 	{
 		$owner = User::get(UserPointer::getIdByNickname($params['user']),"user");
