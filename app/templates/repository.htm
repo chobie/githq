@@ -37,6 +37,9 @@
 
   <div>
     <div>name age message</div>
+  {% if parent_dir %}
+  <div><img src="/assets/dir.png" /><a href="/{{owner.getNickname()}}/{{repository.getName()}}/tree/master/{{parent_dir}}">..</a></div>
+  {% endif %}
   {% for entry in tree %}
     {% if entry.isBlob() %}
     <div><img src="/assets/txt.png" /><a href="/{{owner.getNickname()}}/{{repository.getName()}}/blob/master/{{current_path}}{{entry.name}}">{{entry.name}}</a></div>

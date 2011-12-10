@@ -6,7 +6,10 @@
 		<div>{{commit.getAuthor().name}} {{commit.getAuthor().time.format('Y-m-d H:i:s')}}</div>
 	</div>
 	
-	parent <a href="/{{owner.getNickname()}}/{{repository.getName()}}/commit/{{commit.getParent().getId()}}">{{commit.getParent().getId()}}</a>
+	{% set parent = commit.getParent() %}
+	{% if parent %}
+	parent <a href="/{{owner.getNickname()}}/{{repository.getName()}}/commit/{{parent.getId()}}">{{parent.getId()}}</a>
+	{% endif %}
 
 	{% if diff %}
 	{% for file in diff.getFiles() %}

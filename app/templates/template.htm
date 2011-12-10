@@ -21,7 +21,7 @@
   <h1><a href="/"><img src="/assets/logo.png" /></a></h1>
 
   {% if owner %}
-  <h2><a href="/{{owner.getNickname()}}/">{{owner.getNickname()}}</a>/<a href="/{{owner.getNickname()}}/{{repository.getName()}}">{{repository.getName()}}</a></h2>
+  <h2><a href="/{{owner.getNickname()}}">{{owner.getNickname()}}</a>/<a href="/{{owner.getNickname()}}/{{repository.getName()}}">{{repository.getName()}}</a></h2>
   {% if repository.hasOrigin() %}
     <div>forked from <a href="/{{repository.getOriginUser().getNickname()}}/{{repository.getName()}}">{{repository.getOriginUser().getNickname()}}/{{repository.getName()}}</a></div>
   {% endif %}

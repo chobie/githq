@@ -67,6 +67,12 @@ class GitHQApplicationDelegate extends UIKit\Framework\UIWebApplicationDelegate
 						'controller' => 'RootController',
 						'action' => 'default',
 		));
+		/*
+		$router->add('/{user,vars}/',array(
+								'controller' => 'RootController',
+								'action' => 'onUser',
+		));
+		*/
 		$router->add('/{controller,vars,camel,append(Controller)}/{action,vars,camel,prepend(on),optional}',array(
 						'controller' => 'RootController',
 						'action' => 'default',

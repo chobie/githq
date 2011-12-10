@@ -1,0 +1,17 @@
+{% extends "template.htm" %}
+{% block contents %}
+
+
+<h2>Repositories</h2>
+{% for repository in owner.getRepositories() %}
+
+<div style="border:#DDDDDD 1px solid;">
+<div><a href="/{{owner.getNickname()}}/{{repository.getName()}}">{{repository.getName()}}</a></div>
+<div>
+	{{repository.getDescription()}}
+
+</div>
+</div>
+{% endfor %}
+
+{% endblock %}

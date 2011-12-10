@@ -156,6 +156,8 @@ class RootController extends GitHQController
 			$tree = $commit->getTree();
 			$tree = $this->resolve_filename($tree,$params['path']);
 		}
+		$parent_dir = dirname($current_path);
+		
 		$this->render("repository.htm",array(
 			'user'         => $user,
 			'owner'        => $owner,
@@ -163,7 +165,8 @@ class RootController extends GitHQController
 			'commit'       => $commit,
 			'tree'         => $tree,
 			'issue_count'  => IssueReferences::getOpenedIssueCount($owner->getKey(), $owner->getRepository($params['repository'])->getName()),
-			'current_path' => $current_path
+			'current_path' => $current_path,
+			'parent_dir'   => $parent_dir,
 		));
 	}
 
@@ -286,5 +289,15 @@ class RootController extends GitHQController
 		} else {
 			header("Location: " . $this->snapi->getLoginUrl());
 		}
+	}
+	
+	public function onUser($params)
+	{
+		$owner = User::get(UserPointer::getIdByNickname($params['user']),"user");
+		$user = $this->getUser();
+		$this->render("user.htm",array(
+			'owner' => $owner,
+			'user' => $user,
+		));
 	}
 }
