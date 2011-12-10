@@ -1,14 +1,5 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset='utf-8'>
-    <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <title>GitHQ - Social Coding</title>
-  </head>
-  <body>
-  
-  <h1><a href="/">GitHQ</a></h1>
-  
+{% extends "template.htm" %}
+ {% block contents %}
   <form action="/repositories/" method="POST">
   <div>Project Name<input type="text" value="" name="project_name" /></div>
   <div>Description(optional)<input type="text" value="" name="description" /></div>
@@ -23,6 +14,4 @@
     <input type="submit" value="Create repository" />
   </div>
   </form>
-
-  </body>
-</html>
+{% endblock %}

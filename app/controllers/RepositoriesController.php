@@ -26,7 +26,11 @@ class RepositoriesController extends GitHQController
 
 	public function onNew()
 	{
-		$this->render("new.htm",array());
+		$user = $this->getUser();
+		
+		$this->render("new.htm",array(
+			'user' => $user,
+		));
 	}
 	
 }

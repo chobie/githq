@@ -3,9 +3,10 @@
   {% if commits %}
   
   {% for commit in commits %}
-  <p style="border:1px solid #C5D5DD">
+  <div style="border:1px solid #C5D5DD">
   	<a href="/{{owner.getNickName()}}/{{repository.getName()}}/commit/{{commit.getId()}}">{{commit.getMessage()}}</a>
-  </p>
+  	<div>{{commit.getAuthor().time.format('Y-m-d h:i:s')}}</div>
+  </div>
   {% endfor %}
   {% endif %}
 {% endblock %}
