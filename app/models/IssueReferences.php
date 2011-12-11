@@ -13,6 +13,12 @@ class IssueReferences
 		return $redis->lpush("issue_list.{$owner}.{$repository}",$id);		
 	}
 	
+	public static function getListWithLabel($label,$owner,$repository,$status,$start="+inf",$end="-inf")
+	{
+		$redis = GitHQController::getRedisClient();
+		return $redis->zRevRangeByScore("issue_labels.{$owner}.{$repository}.{$status}",$start,$end);
+	}
+	
 	public static function getList($owner,$repository,$status,$start="+inf",$end="-inf")
 	{
 		$redis = GitHQController::getRedisClient();

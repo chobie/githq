@@ -71,6 +71,9 @@ class IssuesController extends GitHQController
 		if (isset($_REQUEST['close'])) {
 			$issue->closeIssue();
 		}
+		if (isset($_REQUEST['open'])) {
+			$issue->openIssue();
+		}
 		if (isset($_REQUEST['label']) && !empty($_REQUEST['label'])) {
 			if($repository->getLabel($_REQUEST['label']) === false) {
 				$owner = User::fetchLocked(UserPointer::getIdByNickname($params['user']),'user');
