@@ -13,3 +13,6 @@
 [submodule "app/vendor/Text_Diff"]
 	path = app/vendor/Text_Diff
 	url = git@github.com:chobie/Text_Diff.git
+[submodule "app/vendor/Git_Util"]
+	path = app/vendor/Git_Util
+	url = git@github.com:chobie/Git_Util.git

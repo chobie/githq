@@ -1,9 +1,9 @@
 {% extends "template.htm" %}
 {% block contents %}
 
-	<div style="background-color:#E6F1F6;width:1024px;">
+	<div style="background-color:#E6F1F6;width:1024px;-moz-border-radius:5px;-webkit-border-radius:5px;border:1px solid #C5D5DD;">
 		<div><h2>{{commit.getMessage()}}</h2></div>
-		<div>{{commit.getAuthor().name}} {{commit.getAuthor().time.format('Y-m-d H:i:s')}}</div>
+		<div style="background-color:#FFFFFF;">{{commit.getAuthor().name}} {{commit.getAuthor().time.format('Y-m-d H:i:s')}}</div>
 	</div>
 	
 	{% set parent = commit.getParent() %}
@@ -14,45 +14,56 @@
 	{% if diff %}
 	{% for file in diff.getFiles() %}
 	
-	<table border='1' style="max-width:1024px;min-width:1024px;">
+	<table style="max-width:1024px;min-width:1024px;" class="diff">
 		<tr>
-		<th style="text-align:left;">{{file.getName()}}</th>
+		<th style="text-align:left" colspan="3">{{file.getName()}}</th>
 		</tr>
 		{% for hunk in file.getHunks() %}
 		<tr>
+		<td>...</td>
+		<td>...</td>
 		<td>
-		<div>{{hunk.getSummary()}}</div>
-		<div style="width:1024px;overflow:auto;white-space:nowrap;font-family:'Bitstream Vera Sans Mono','Courier',monospace;">
+		<div style="background:#CCC;text-align:left;">{{hunk.getSummary()}}</div>
+		</td>
+		</tr>
+
+		{% set lines = hunk.getLines() %}
+		{%for line in lines %}
+		<tr>
+		<td>{{line.getOldNumber()}}</td>
+		<td>{{line.getNewNumber()}}</td>
+		<td class="code" style="{% if line.isRemoved()%}background-color:#FFDDDD{% elseif line.isAdded()%}background-color:#D7FFDF{% endif %}">
+		<div style="white-space:pre;font-family:'Bitstream Vera Sans Mono','Courier',monospace;">{% spaceless %}
 		
-			{% set lines = hunk.getLines() %}
-			{%for line in lines %}
 			{%if line.isRemoved() %}
 			  {% if lines.hasNext() %}
 			  	{% set next = lines.getNext() %}
 			  	{% if next.isAdded() %}
 			  		{% set diff = line.diff(next) %}
-					<div style="background-color:#FFDDDD;">{{diff.prefix}}<span style="background-color:#FFA9AA">{{diff.unique}}</span>{{diff.suffix}}</div>
+					<span>{{diff.prefix}}<span style="background-color:#FFA9AA">{{diff.unique}}</span>{{diff.suffix}}</span>
 				{% else %}
-					<div style="background-color:#FFDDDD">{{line.getLine()}}</div>
+					<span>{{line.getLine()}}</span>
 			  	{% endif %}
 			  {% else %}
-					<div style="background-color:#FFDDDD">{{line.getLine()}}</div>
+					<span>{{line.getLine()}}</span>
 			  {% endif %}
 			{% elseif line.isAdded() %}
 			  {% if lines.hasPrevious() %}
 			  	{% set previous = lines.getPrevious() %}
 			  	{% if previous.isRemoved() %}
 			  		{% set diff = line.diff(previous) %}
-					<div style="background-color:#D7FFDF">{{diff.prefix}}<span style="background-color:#97FFB1">{{diff.unique}}</span>{{diff.suffix}}</div>
+					<span>{{diff.prefix}}<span style="background-color:#97FFB1">{{diff.unique}}</span>{{diff.suffix}}</span>
 				{% else %}
-					<div style="background-color:#D7FFDF">{{line.getLine()}}</div>
+					<span>{{line.getLine()}}</span>
 			  	{% endif %}
 			  {% else %}
-					<div style="background-color:#D7FFDF">{{line.getLine()}}</div>
+					</span>{{line.getLine()}}</span>
 			  {% endif %}
 			{% else %}
-			<div>{{line.getLine()}}</div>
+			<span>{{line.getLine()}}</span>
 			{% endif %}
+			
+			{% endspaceless %}
 			{% endfor %}
 		</div>
 		</td></tr>
@@ -61,4 +72,6 @@
 	</table>
 	{% endfor %}
 	{% endif %}
+	
+	<div>0 notes on Commit {{commit.getId()}}</div>
 {% endblock %}

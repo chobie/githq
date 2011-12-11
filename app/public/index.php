@@ -1,24 +1,5 @@
 <?php
-require_once __DIR__ . "/../vendor/php-uikit/UIKit/Framework/UIAutoLoader.php";
-require_once __DIR__ . '/../vendor/twig/lib/Twig/Autoloader.php';
-require_once __DIR__ . '/../vendor/Albino/src/Albino.php';
-require_once __DIR__ . '/../vendor/php-sdk/src/facebook.php';
-require_once __DIR__ . '/../vendor/Text_Diff/src/Text/Diff/Line.php';
-require_once __DIR__ . '/../vendor/Text_Diff/src/Text/Diff/Lines.php';
-require_once __DIR__ . '/../vendor/Text_Diff/src/Text/Diff/Parser.php';
-require_once __DIR__ . '/../vendor/Text_Diff/src/Text/Diff/Struct.php';
-require_once __DIR__ . '/../vendor/Text_Diff/src/Text/Diff/File.php';
-require_once __DIR__ . '/../vendor/Text_Diff/src/Text/Diff/Hunk.php';
-
-UIKit\Framework\UIAutoLoader::add_include_path(dirname(__DIR__) . '/libs');
-UIKit\Framework\UIAutoLoader::add_include_path(dirname(__DIR__) . '/controllers');
-UIKit\Framework\UIAutoLoader::add_include_path(dirname(__DIR__) . '/models');
-UIKit\Framework\UIAutoLoader::register();
-Twig_Autoloader::register();
-
-date_default_timezone_set('Asia/Tokyo');
-
-require __DIR__ . "/../config/development.php";
+require __DIR__ . '/../config/env.php';
 
 class GitHQApplicationDelegate extends UIKit\Framework\UIWebApplicationDelegate
 {
@@ -50,6 +31,11 @@ class GitHQApplicationDelegate extends UIKit\Framework\UIWebApplicationDelegate
 									'controller' => 'RootController',
 									'action' => 'onCommit',
 		));
+
+		$router->add('/{user}/{repository}/blame/{refs}/{path,greed}',array(
+								'controller' => 'RootController',
+								'action' => 'onBlame',
+		));
 		
 		$router->add('/{user}/{repository}/blob/{refs}/{path,greed}',array(
 						'controller' => 'RootController',
@@ -62,6 +48,10 @@ class GitHQApplicationDelegate extends UIKit\Framework\UIWebApplicationDelegate
 		$router->add('/{user}/{repository}.git/{path,greed}',array(
 						'controller' => 'RootController',
 						'action' => 'onDefault',
+		));
+		$router->add('/about',array(
+					'controller' => 'RootController',
+					'action' => 'onAbout'
 		));
 		$router->add('/{action,alpha,camel,prepend(on)}',array(
 						'controller' => 'RootController',
@@ -95,7 +85,6 @@ class GitHQApplicationDelegate extends UIKit\Framework\UIWebApplicationDelegate
 		}
 	}	
 }
-
 
 session_start();
 UIKit\Framework\UIWebApplicationMain(null,null,'UIKit\Framework\UIWebApplication','GitHQApplicationDelegate');

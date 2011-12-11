@@ -194,11 +194,42 @@ class RootController extends GitHQController
 	{
 		$user = $this->getUser();
 		$profile = $user->getProfile();
+		
 		if ($this->getRequest()->isPost()) {
 			$user = User::fetchLocked($user->getKey(),'user');
-			$profile = $user->getProfile();
-			$profile->setName($_REQUEST['name']);
-			$profile->setEmail($_REQUEST['email']);
+			if (isset($_REQUEST['public_key'])) {
+				if (is_array($_REQUEST['key'])) {
+					foreach ($_REQUEST['key'] as $key) {
+						$pub = new PublicKey($key);
+						if ($pub->verify()) {
+							$pub->setTitle($_REQUEST['title']);
+							$user->addPublicKey($pub);
+						}
+					}
+				} else {
+					$pub = new PublicKey($_REQUEST['key']);
+					if ($pub->verify()) {
+						$pub->setTitle($_REQUEST['title']);
+						$user->addPublicKey($pub);
+					}else {
+						throw new Exception("could not verify");
+					}
+					
+				}
+			} else if (isset($_REQUEST['del_public_key'])) {
+				$user->removePublicKey($_REQUEST['offset']);				
+			} else if (isset($_REQUEST['account'])) {
+				$user->setEmail($_REQUEST['email']);
+			} else {
+				$profile = $user->getProfile();
+				$profile->setName($_REQUEST['name']);
+				$profile->setEmail($_REQUEST['email']);
+				$profile->setLocation($_REQUEST['location']);
+				$profile->setCompany($_REQUEST['company']);
+				$profile->setHomepage($_REQUEST['homepage']);
+			}
+
+			
 			$user->save();
 			$_SESSION['user'] = $user;
 		}
@@ -231,7 +262,7 @@ class RootController extends GitHQController
 	public function onCommits($params)
 	{
 		$owner = User::get(UserPointer::getIdByNickname($params['user']),"user");
-		$user = $_SESSION['user'];
+		$user = $this->getUser();
 		$repo = new \Git\Repository("/home/git/repositories/{$params['user']}/{$params['repository']}.git");
 		$ref = $repo->lookupRef("refs/heads/master");
 		$commit = $repo->getCommit($ref->getId());
@@ -249,31 +280,6 @@ class RootController extends GitHQController
 			'repository'=> $owner->getRepository($params['repository']),
 			"commits" => $commits
 		));
-	}
-	
-	public function onIssue()
-	{
-		if ($this->getRequest()->isPost()) {
-			$user = $this->getUser();
-			$id = IssueReferences::getNextId();
-			$issue = new Issue($id);
-			$issue->setAuthor($user->getKey());
-			$issue->setTitle($_REQUEST['title']);
-			$issue->setBody($_REQUEST['contents']);
-			var_dump($issue->create());
-		} else {
-			$list = IssueReferences::getList();
-
-			foreach ($list as $id) {
-				$issues[] = Issue::get($id,'issue');
-			}
-			
-			foreach($issues as $issue) {
-				echo "<div>issueId: " . $issue->getId() . "</div>";
-				echo "<div>title: " . $issue->getTitle() . "</div>";
-				echo "<div>content: " . $issue->getBody() . "</div>";
-			}
-		}
 	}
 	
 	public function onConnect()
@@ -298,6 +304,54 @@ class RootController extends GitHQController
 		$this->render("user.htm",array(
 			'owner' => $owner,
 			'user' => $user,
+		));
+	}
+	
+	public function onBlame($params)
+	{
+		$user = $this->getUser();
+		
+		$owner = User::get(UserPointer::getIdByNickname($params['user']),'user');
+		$repo = new \Git\Repository("/home/git/repositories/{$params['user']}/{$params['repository']}.git");
+		$refm = new \Git\Reference\Manager($repo);
+		$branches = $refm->getList();
+		
+		$ref = $repo->lookupRef("refs/heads/master");
+		$commit = $repo->getCommit($ref->getId());
+		$current_path = '';
+		if ($params['path']) {
+			$paths = explode('/',$params['path']);
+			if(count($paths)> 1) {
+				$current_path = join('/',$paths) . '/';
+			} else{
+				$current_path = $params['path'] . '/';
+			}
+			$tree = $commit->getTree();
+			$tree = $this->resolve_filename($tree,dirname($params['path']));
+		}
+		
+
+		$stat = `GIT_DIR=/home/git/repositories/{$params['user']}/{$params['repository']}.git git blame -p master -- {$params['path']}`;
+		$blame = Git\Util\Blame\Parser::parse($stat);
+		
+		$this->render("blame.htm",array(
+					'user'         => $user,
+					'owner'        => $owner,
+					'repository'   => $owner->getRepository($params['repository']),
+					'commit'       => $commit,
+					'tree'         => $tree,
+					'blame'         => $blame,
+					'issue_count'  => IssueReferences::getOpenedIssueCount($owner->getKey(), $owner->getRepository($params['repository'])->getName()),
+					'current_path' => dirname($params['path']) . '/',
+					'path'         => $params['path']
+		));
+	}
+	
+	public function onAbout()
+	{
+		$user = $this->getUser();
+		$this->render('about.htm',array(
+			'user'=>$user
 		));
 	}
 }

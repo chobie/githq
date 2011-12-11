@@ -1,0 +1,53 @@
+{% extends "template.htm" %}
+{% block contents %}  
+  {% if user != owner %}
+  
+  {% if user.getRepository(repository.getName()) == false %}
+  <div>
+  <form method="POST" action="/{{user.getNickname()}}/{{repository.getName()}}">
+    <input type="hidden" name="action" value="fork" />
+    <input type="hidden" name="user" value="{{owner.getNickname()}}" />
+    <input type="hidden" name="repository" value="{{repository.getName()}}" />
+    <input type="submit" value="fork this repository" />
+  </form>
+  </div>
+  {% endif %}
+  {% endif %}
+ 
+  <div>
+  Files | <a href="/{{owner.getNickname()}}/{{repository.getName()}}/commits/master">Commits</a> | Branches | Tags | Downloads | <a href="/{{owner.getNickname()}}/{{repository.getName()}}/issues">Issues ({{issue_count}})</a>
+  
+  <div>
+  
+  {% if user %}
+  <input type="text" value="git@githq.org:{{owner.getNickname()}}/{{repository.getName()}}.git" style="width:20em;"/>
+  {% endif %}
+  </div>
+  </div>
+  
+  <div>
+  <table>
+  {% for group in blame.getGroups() %}
+  {% set hasShown = 0 %}
+  {% set commit = blame.getCommit(group.getCommitId()) %}
+  {% for line in group.getLines() %}
+  <tr>
+  <td style="font-size:10px;background-color:#F8F8F8">
+  {% if hasShown == 0 %}
+  <div><a href="/{{owner.getNickname()}}/{{repository.getName}}/commit/{{group.getCommitId()}}">{{group.getCommitId()}}</a></div>
+  <div>{{ commit.get('summary') }}</div>
+  <div>{{ commit.get('author') }}</div>
+  {% set hasShown = 1%}
+  {% endif %}
+  </td>
+  <td>{{line.getLineNumber()}}</td>
+  <td>
+  <div style="white-space:pre;">{{line}}</div>
+  </td>
+  </tr>
+  {% endfor %}
+  {% endfor %}
+  </table>
+  </div>
+
+ {% endblock %}

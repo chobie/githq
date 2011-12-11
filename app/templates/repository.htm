@@ -50,6 +50,7 @@
   
   {% if data %}
   <h2>{{path}}</h2>
+  <div style="text-align:right"><a href="/{{owner.getNickname()}}/{{repository.getName()}}/blame/master/{{path}}">blame</a></div>
   <div class="highlight" style="white-space:nowrap;font-family:'Bitstream Vera Sans Mono','Courier',monospace;">{{data|raw}}</div>
   {% endif %}
   

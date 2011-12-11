@@ -2,6 +2,13 @@
 {% block contents %}
   <a href="/{{owner.getNickname()}}/{{repository.getName()}}/issues/new">create new issue</a>
  
+  <div style="border:1px solid black;">
+  <h3>Labels</h3>
+  {% for lab in repository.getLabels() %}
+  {{lab}}
+  {% endfor %}
+  </div>
+ 
   {% for issue in issues %}
   <div>
     <div><a href="/{{owner.getNickname()}}/{{repository.getName()}}/issues/{{issue.getId()}}">#{{issue.getId()}} {{issue.getTitle()}}</a>

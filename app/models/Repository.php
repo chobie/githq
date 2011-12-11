@@ -5,6 +5,29 @@ class Repository
 	protected $description;
 	protected $homepage_url;
 	protected $origin_user;
+	protected $labels = array();
+	
+	public function addLabel($label)
+	{
+		if (!in_array($label,$this->labels)) {
+			$this->labels[] = $label;
+		}
+	}
+	
+	public function getLabel($label)
+	{
+		$key = array_search($label,$this->labels);
+		if ($key !== false) {
+			return $this->labels[$key];
+		} else {
+			return false;
+		}
+	}
+	
+	public function getLabels()
+	{
+		return $this->labels;
+	}
 	
 	public function setOrigin($origin_user)
 	{

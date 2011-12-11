@@ -1,0 +1,312 @@
+6d5030f5aaf2c9ee29f5ac55823766b1d6ca0faa 1 1 1
+author Shuhei Tanuma
+author-mail <shuhei.tanuma@gmail.com>
+author-time 1322270965
+author-tz -0800
+committer Shuhei Tanuma
+committer-mail <shuhei.tanuma@gmail.com>
+committer-time 1322270965
+committer-tz -0800
+summary initial import
+boundary
+filename app/public/index.php
+	<?php
+31e67f65ee3ccda76f6295a331172d2765b2bafb 2 2 1
+author Shuhei Tanuma
+author-mail <shuhei.tanuma@gmail.com>
+author-time 1322916867
+author-tz +0900
+committer Shuhei Tanuma
+committer-mail <shuhei.tanuma@gmail.com>
+committer-time 1322916867
+committer-tz +0900
+summary 2011/12/3 snapshot
+previous 5b1fc7b003f19cb3396b1c0398b30df59aade254 app/public/index.php
+filename app/public/index.php
+	require_once __DIR__ . "/../vendor/php-uikit/UIKit/Framework/UIAutoLoader.php";
+b5cecf839ddf810d29720f775394a9f7b6c620a6 3 3 1
+author Shuhei Tanuma
+author-mail <shuhei.tanuma@gmail.com>
+author-time 1322486238
+author-tz +0900
+committer Shuhei Tanuma
+committer-mail <shuhei.tanuma@gmail.com>
+committer-time 1322486238
+committer-tz +0900
+summary twig testing
+previous d9234f0200225f0f7159e24877f81b952f20cc76 app/public/index.php
+filename app/public/index.php
+	require_once __DIR__ . '/../vendor/twig/lib/Twig/Autoloader.php';
+31e67f65ee3ccda76f6295a331172d2765b2bafb 4 4 1
+	require_once __DIR__ . '/../vendor/Albino/src/Albino.php';
+75620a073d6d218929145d2fbc6e8d184a121733 5 5 1
+author Shuhei Tanuma
+author-mail <shuhei.tanuma@gmail.com>
+author-time 1323274948
+author-tz +0900
+committer Shuhei Tanuma
+committer-mail <shuhei.tanuma@gmail.com>
+committer-time 1323274948
+committer-tz +0900
+summary 2011/12/8 snapshot. for now, we can change authenticate method via facebook connect
+previous 6cbcd430cea58aa62f3b91d34a8ed2ca9169f333 app/public/index.php
+filename app/public/index.php
+	require_once __DIR__ . '/../vendor/php-sdk/src/facebook.php';
+3eea263e5e99f9509b27338450dc8246bb26b0f9 6 6 1
+author Shuhei Tanuma
+author-mail <shuhei.tanuma@gmail.com>
+author-time 1323445581
+author-tz +0900
+committer Shuhei Tanuma
+committer-mail <shuhei.tanuma@gmail.com>
+committer-time 1323445581
+committer-tz +0900
+summary 12/10 snapshot. added commit diff page
+previous a08d227aaf9474fdcf8ca5578d530e0ad92a53df app/public/index.php
+filename app/public/index.php
+	require_once __DIR__ . '/../vendor/Text_Diff/src/Text/Diff/Line.php';
+5eb1f55835d3019c7d8d0844571eceb9557a9f55 7 7 1
+author Shuhei Tanuma
+author-mail <shuhei.tanuma@gmail.com>
+author-time 1323496497
+author-tz +0900
+committer Shuhei Tanuma
+committer-mail <shuhei.tanuma@gmail.com>
+committer-time 1323496497
+committer-tz +0900
+summary 2011/12/10 snapshot. now displaing each diff
+previous 82e044684cec6f68a4e78c4735ee0ab9fc3e3bb0 app/public/index.php
+filename app/public/index.php
+	require_once __DIR__ . '/../vendor/Text_Diff/src/Text/Diff/Lines.php';
+3eea263e5e99f9509b27338450dc8246bb26b0f9 7 8 4
+	require_once __DIR__ . '/../vendor/Text_Diff/src/Text/Diff/Parser.php';
+3eea263e5e99f9509b27338450dc8246bb26b0f9 8 9
+	require_once __DIR__ . '/../vendor/Text_Diff/src/Text/Diff/Struct.php';
+3eea263e5e99f9509b27338450dc8246bb26b0f9 9 10
+	require_once __DIR__ . '/../vendor/Text_Diff/src/Text/Diff/File.php';
+3eea263e5e99f9509b27338450dc8246bb26b0f9 10 11
+	require_once __DIR__ . '/../vendor/Text_Diff/src/Text/Diff/Hunk.php';
+6d5030f5aaf2c9ee29f5ac55823766b1d6ca0faa 3 12 1
+	
+6d5030f5aaf2c9ee29f5ac55823766b1d6ca0faa 5 13 2
+	UIKit\Framework\UIAutoLoader::add_include_path(dirname(__DIR__) . '/libs');
+6d5030f5aaf2c9ee29f5ac55823766b1d6ca0faa 6 14
+	UIKit\Framework\UIAutoLoader::add_include_path(dirname(__DIR__) . '/controllers');
+177fc30a4307d591970511a7c284bb50b1963b7a 8 15 1
+author Shuhei Tanuma
+author-mail <shuhei.tanuma@gmail.com>
+author-time 1322521086
+author-tz +0900
+committer Shuhei Tanuma
+committer-mail <shuhei.tanuma@gmail.com>
+committer-time 1322521086
+committer-tz +0900
+summary 1129 snapshot
+previous 17db873cbb5b6f4847bc3a36058209731d3c4563 app/public/index.php
+filename app/public/index.php
+	UIKit\Framework\UIAutoLoader::add_include_path(dirname(__DIR__) . '/models');
+31e67f65ee3ccda76f6295a331172d2765b2bafb 9 16 1
+	UIKit\Framework\UIAutoLoader::register();
+b5cecf839ddf810d29720f775394a9f7b6c620a6 9 17 2
+	Twig_Autoloader::register();
+b5cecf839ddf810d29720f775394a9f7b6c620a6 10 18
+	
+b91de9ad79a897a5d5e711a42c7499017118c625 12 19 2
+author Shuhei Tanuma
+author-mail <shuhei.tanuma@gmail.com>
+author-time 1323215951
+author-tz +0900
+committer Shuhei Tanuma
+committer-mail <shuhei.tanuma@gmail.com>
+committer-time 1323215951
+committer-tz +0900
+summary 2011/12/7 snapshot.
+previous 9dc7e7daddeb316820fefcf90e5c613c597160b1 app/public/index.php
+filename app/public/index.php
+	date_default_timezone_set('Asia/Tokyo');
+b91de9ad79a897a5d5e711a42c7499017118c625 13 20
+	
+b5cecf839ddf810d29720f775394a9f7b6c620a6 11 21 1
+	require __DIR__ . "/../config/development.php";
+8e27567051c486778d1a55b3abd210a4d663409b 13 22 1
+author Shuhei Tanuma
+author-mail <shuhei.tanuma@gmail.com>
+author-time 1322744574
+author-tz +0900
+committer Shuhei Tanuma
+committer-mail <shuhei.tanuma@gmail.com>
+committer-time 1322744574
+committer-tz +0900
+summary 2011/12/01 snapshot
+previous eae128904fe36d1b5360fad80134375dff5968c9 app/public/index.php
+filename app/public/index.php
+	
+31e67f65ee3ccda76f6295a331172d2765b2bafb 14 23 2
+	class GitHQApplicationDelegate extends UIKit\Framework\UIWebApplicationDelegate
+31e67f65ee3ccda76f6295a331172d2765b2bafb 15 24
+	{
+3eea263e5e99f9509b27338450dc8246bb26b0f9 24 25 45
+		protected function getRouting()
+3eea263e5e99f9509b27338450dc8246bb26b0f9 25 26
+		{
+3eea263e5e99f9509b27338450dc8246bb26b0f9 26 27
+			$router = new UIKit\Framework\UIRouter();
+3eea263e5e99f9509b27338450dc8246bb26b0f9 27 28
+			$router->add('/{user}/{repository}/issue_comments',array(
+3eea263e5e99f9509b27338450dc8246bb26b0f9 28 29
+													'controller' => 'IssuesController',
+3eea263e5e99f9509b27338450dc8246bb26b0f9 29 30
+													'action' => 'onIssueComments',
+3eea263e5e99f9509b27338450dc8246bb26b0f9 30 31
+			));
+3eea263e5e99f9509b27338450dc8246bb26b0f9 31 32
+			$router->add('/{user}/{repository}/issues',array(
+3eea263e5e99f9509b27338450dc8246bb26b0f9 32 33
+										'controller' => 'IssuesController',
+3eea263e5e99f9509b27338450dc8246bb26b0f9 33 34
+										'action' => 'onDefault',
+3eea263e5e99f9509b27338450dc8246bb26b0f9 34 35
+			));
+3eea263e5e99f9509b27338450dc8246bb26b0f9 35 36
+			$router->add('/{user}/{repository}/issues/new',array(
+3eea263e5e99f9509b27338450dc8246bb26b0f9 36 37
+										'controller' => 'IssuesController',
+3eea263e5e99f9509b27338450dc8246bb26b0f9 37 38
+										'action' => 'onNew',
+3eea263e5e99f9509b27338450dc8246bb26b0f9 38 39
+			));
+3eea263e5e99f9509b27338450dc8246bb26b0f9 39 40
+			$router->add('/{user}/{repository}/issues/{id,digit}',array(
+3eea263e5e99f9509b27338450dc8246bb26b0f9 40 41
+													'controller' => 'IssuesController',
+3eea263e5e99f9509b27338450dc8246bb26b0f9 41 42
+													'action' => 'onIssue',
+3eea263e5e99f9509b27338450dc8246bb26b0f9 42 43
+			));
+3eea263e5e99f9509b27338450dc8246bb26b0f9 43 44
+			
+3eea263e5e99f9509b27338450dc8246bb26b0f9 44 45
+			$router->add('/{user}/{repository}/commits/{refs}',array(
+3eea263e5e99f9509b27338450dc8246bb26b0f9 45 46
+							'controller' => 'RootController',
+3eea263e5e99f9509b27338450dc8246bb26b0f9 46 47
+							'action' => 'onCommits',
+3eea263e5e99f9509b27338450dc8246bb26b0f9 47 48
+			));
+3eea263e5e99f9509b27338450dc8246bb26b0f9 48 49
+			$router->add('/{user}/{repository}/commit/{commit}',array(
+3eea263e5e99f9509b27338450dc8246bb26b0f9 49 50
+										'controller' => 'RootController',
+3eea263e5e99f9509b27338450dc8246bb26b0f9 50 51
+										'action' => 'onCommit',
+3eea263e5e99f9509b27338450dc8246bb26b0f9 51 52
+			));
+3eea263e5e99f9509b27338450dc8246bb26b0f9 52 53
+			
+3eea263e5e99f9509b27338450dc8246bb26b0f9 53 54
+			$router->add('/{user}/{repository}/blob/{refs}/{path,greed}',array(
+3eea263e5e99f9509b27338450dc8246bb26b0f9 54 55
+							'controller' => 'RootController',
+3eea263e5e99f9509b27338450dc8246bb26b0f9 55 56
+							'action' => 'onBlob',
+3eea263e5e99f9509b27338450dc8246bb26b0f9 56 57
+			));
+3eea263e5e99f9509b27338450dc8246bb26b0f9 57 58
+			$router->add('/{user}/{repository}/tree/{refs}/{path,greed}',array(
+3eea263e5e99f9509b27338450dc8246bb26b0f9 58 59
+							'controller' => 'RootController',
+3eea263e5e99f9509b27338450dc8246bb26b0f9 59 60
+							'action' => 'onTree',
+3eea263e5e99f9509b27338450dc8246bb26b0f9 60 61
+			));
+3eea263e5e99f9509b27338450dc8246bb26b0f9 61 62
+			$router->add('/{user}/{repository}.git/{path,greed}',array(
+3eea263e5e99f9509b27338450dc8246bb26b0f9 62 63
+							'controller' => 'RootController',
+3eea263e5e99f9509b27338450dc8246bb26b0f9 63 64
+							'action' => 'onDefault',
+3eea263e5e99f9509b27338450dc8246bb26b0f9 64 65
+			));
+3eea263e5e99f9509b27338450dc8246bb26b0f9 65 66
+			$router->add('/{action,alpha,camel,prepend(on)}',array(
+3eea263e5e99f9509b27338450dc8246bb26b0f9 66 67
+							'controller' => 'RootController',
+3eea263e5e99f9509b27338450dc8246bb26b0f9 67 68
+							'action' => 'default',
+3eea263e5e99f9509b27338450dc8246bb26b0f9 68 69
+			));
+b08754c4f2a77b22454b613b7a901327f358b579 70 70 6
+author Shuhei Tanuma
+author-mail <shuhei.tanuma@gmail.com>
+author-time 1323525400
+author-tz +0900
+committer Shuhei Tanuma
+committer-mail <shuhei.tanuma@gmail.com>
+committer-time 1323525400
+committer-tz +0900
+summary 2011/12/10 snapshot
+previous d3b2ec3928f6cdd085258944f3a5f6856a7251dd app/public/index.php
+filename app/public/index.php
+			/*
+b08754c4f2a77b22454b613b7a901327f358b579 71 71
+			$router->add('/{user,vars}/',array(
+b08754c4f2a77b22454b613b7a901327f358b579 72 72
+									'controller' => 'RootController',
+b08754c4f2a77b22454b613b7a901327f358b579 73 73
+									'action' => 'onUser',
+b08754c4f2a77b22454b613b7a901327f358b579 74 74
+			));
+b08754c4f2a77b22454b613b7a901327f358b579 75 75
+			*/
+3eea263e5e99f9509b27338450dc8246bb26b0f9 69 76 21
+			$router->add('/{controller,vars,camel,append(Controller)}/{action,vars,camel,prepend(on),optional}',array(
+3eea263e5e99f9509b27338450dc8246bb26b0f9 70 77
+							'controller' => 'RootController',
+3eea263e5e99f9509b27338450dc8246bb26b0f9 71 78
+							'action' => 'default',
+3eea263e5e99f9509b27338450dc8246bb26b0f9 72 79
+			));
+3eea263e5e99f9509b27338450dc8246bb26b0f9 73 80
+			return $router;
+3eea263e5e99f9509b27338450dc8246bb26b0f9 74 81
+		}
+3eea263e5e99f9509b27338450dc8246bb26b0f9 75 82
+		
+3eea263e5e99f9509b27338450dc8246bb26b0f9 76 83
+		public function didFinishLaunchingWithOptions($app, $options = array())
+3eea263e5e99f9509b27338450dc8246bb26b0f9 77 84
+		{
+3eea263e5e99f9509b27338450dc8246bb26b0f9 78 85
+			$dispatcher = new UIKit\Framework\UIUrlDispatcher($this->getRouting());
+3eea263e5e99f9509b27338450dc8246bb26b0f9 79 86
+			$result = $dispatcher->dispatch();
+3eea263e5e99f9509b27338450dc8246bb26b0f9 80 87
+			$this->controller = $result['controller'];
+3eea263e5e99f9509b27338450dc8246bb26b0f9 81 88
+			$this->action = $result['action'];
+3eea263e5e99f9509b27338450dc8246bb26b0f9 82 89
+			$this->parameters = $result['parameters'];
+3eea263e5e99f9509b27338450dc8246bb26b0f9 83 90
+		
+3eea263e5e99f9509b27338450dc8246bb26b0f9 84 91
+			if(class_exists($this->controller)){
+3eea263e5e99f9509b27338450dc8246bb26b0f9 85 92
+				return true;
+3eea263e5e99f9509b27338450dc8246bb26b0f9 86 93
+			} else {
+3eea263e5e99f9509b27338450dc8246bb26b0f9 87 94
+				return false;
+3eea263e5e99f9509b27338450dc8246bb26b0f9 88 95
+			}
+3eea263e5e99f9509b27338450dc8246bb26b0f9 89 96
+		}	
+31e67f65ee3ccda76f6295a331172d2765b2bafb 16 97 3
+	}
+31e67f65ee3ccda76f6295a331172d2765b2bafb 17 98
+	
+31e67f65ee3ccda76f6295a331172d2765b2bafb 18 99
+	
+8e27567051c486778d1a55b3abd210a4d663409b 14 100 1
+	session_start();
+31e67f65ee3ccda76f6295a331172d2765b2bafb 20 101 1
+	UIKit\Framework\UIWebApplicationMain(null,null,'UIKit\Framework\UIWebApplication','GitHQApplicationDelegate');

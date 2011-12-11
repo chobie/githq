@@ -16,7 +16,7 @@ class IssuesController extends GitHQController
 			'user' => $user,
 			'owner' => $owner,
 			'issues' => $issues,
-			'repository' => $user->getRepository($params['repository'])
+			'repository' => $owner->getRepository($params['repository'])
 		));
 	}
 
@@ -50,6 +50,7 @@ class IssuesController extends GitHQController
 		$user = $this->getUser();
 		$owner = User::get(UserPointer::getIdByNickname($params['user']),'user');
 		$repository = $owner->getRepository($params['repository']);
+		
 		$issue = Issue::get(join(':',array($owner->getKey(),$repository->getName(),$params['id'])),'issue');
 
 		$this->render("issue.htm",array(
@@ -71,8 +72,14 @@ class IssuesController extends GitHQController
 			$issue->closeIssue();
 		}
 		if (isset($_REQUEST['label']) && !empty($_REQUEST['label'])) {
+			if($repository->getLabel($_REQUEST['label']) === false) {
+				$owner = User::fetchLocked(UserPointer::getIdByNickname($params['user']),'user');
+				$repository = $owner->getRepository($params['repository']);
+				$repository->addLabel($_REQUEST['label']);
+			}
 			$issue->addLabel($_REQUEST['label']);
 		}
+
 		$issue->save();
 		header("Location: /{$user->getNickname()}/{$repository->getName()}/issues/{$issue->getId()}");
 	}

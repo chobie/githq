@@ -7,3 +7,32 @@
 	width: 800px;
 	vertical-align: top;
 }
+
+.diff {
+	/*
+	border-collapse: separate;
+	border-spacing: 2px;
+	*/
+	border-collapse: separate;
+	border-spacing: 0px;
+
+}
+
+
+.diff td {
+	background: #ECECEC;
+	text-align:center;
+	color:#AAA;
+}
+
+.diff .code{
+	background: #FFF;
+	text-align:left;
+	color:#000;
+	width:1024px;
+	overflow:auto
+}
+
+.diff div{
+	white-space:pre;
+}

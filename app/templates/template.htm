@@ -10,7 +10,8 @@
   <body style="margin-left:4em;">
 
   {% if user %}
-  <div style="text-align:right">
+  <div style="text-align:right;width:1280px;">
+  <img src="{{user.getImageUrl()}}?s=20" />
   {{user.getNickname()}} |
   <a href="/account">Account Settings</a> |
   <a href="/logout">logout</a> |
@@ -30,6 +31,9 @@
 
   {% block contents %}{% endblock %}
   <hr />
+  <div>
+  <a href="/about">about</a>|
+  </div>
   <div>
     <div>GitHQ - Yet Another Social Coding for you - </div>
     <div>&copy;2011 Shuhei Tanuma all rights reserved.</div>

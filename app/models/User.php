@@ -8,11 +8,35 @@ class User extends UIKit\Framework\UIStoredObject
 	protected $email;
 	protected $password;
 	protected $salt;
-	protected $repositories = array();	
+	protected $repositories = array();
+	protected $public_keys = array();
+	
+	public function getEmail()
+	{
+		return $this->email;
+	}
+	
+	public function getPublicKeys()
+	{
+		return $this->public_keys;
+	}
+	
+	public function removePublicKey($offset)
+	{
+		if (isset($this->public_keys[$offset]))
+			unset($this->public_keys[$offset]);
+	}
+	
+	public function addPublicKey(PublicKey $key)
+	{
+		if(!in_array($key,$this->public_keys)){
+			$this->public_keys[] = $key;
+		}
+	}
 	
 	public function getImageUrl()
 	{
-		return sprintf('http://graph.facebook.com/%s/picture',$this->getKey());
+		return sprintf('http://www.gravatar.com/avatar/%s',md5($this->getEmail()));
 	}
 	
 	/**
@@ -161,5 +185,27 @@ class User extends UIKit\Framework\UIStoredObject
 			UserPointer::setIdWithNickname($this->key, $this->nickname);
 		}
 		return $retVal;
+	}
+	
+	public function save()
+	{
+		$retVal = parent::save(function($stmt,$user,$old){
+			$keys = $user->getPublicKeys();
+			$old_keys = $old->getPublicKeys();
+			if($diff = hash_diff($old_keys,$keys)) {
+				if (isset($diff['-'])) {
+					foreach($diff['-'] as $value) {
+						$stmt->hdel("public_keys",$user->getKey() . "." . sha1($value->__toString()));
+					}
+				}
+				
+				if (isset($diff['+'])) {
+					foreach($diff['+'] as $value) {
+						$stmt->hset("public_keys",$user->getKey() . "." . sha1($value->__toString()), $value->__toString());
+					}
+				}
+				$stmt->lpush("queue.public_keys",$user->getKey());
+			}
+		});
 	}
 }

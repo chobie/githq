@@ -182,17 +182,25 @@ class Issue extends \UIKit\Framework\UIStoredObject
 			if ($old->getStatus() != $issue->getStatus()) {
 				$stmt->zAdd("issue_list.{$issue->getOwner()}.{$issue->getRepository()}.{$issue->getStatus()}",$issue->getRegisteredAtAsTimestamp(),$issue->getId());
 				$stmt->zRem("issue_list.{$issue->getOwner()}.{$issue->getRepository()}.{$old->getStatus()}",$issue->getId());
-				$current_labels = $issue->getLabels();
-				$old_labels = $old->getLabels();
-				/*
-				 * @todo array_diffだと両方の配列で含まれない物なので、追加されたか削除されたかがわからない
-				if ($diff = array_diff($current_labels, $old_labels)) {
-					foreach ($diff as $label) {
+			}
+
+			$current_labels = $issue->getLabels();
+			$old_labels = $old->getLabels();
+			if ($diff = hash_diff($current_labels, $old_labels)) {
+				if (isset($diff['-'])){
+					foreach ($diff['-'] as $label) {
+						$stmt->zDelete("issue_labels.{$issue->getOwner()}.{$issue->getRepository()}." . sha1($label),$issue->getId());
+					}
+				}
+
+				if (isset($diff['+'])){
+					foreach ($diff['+'] as $label) {
+						error_log(2);
 						$stmt->zAdd("issue_labels.{$issue->getOwner()}.{$issue->getRepository()}." . sha1($label) ,$issue->getRegisteredAtAsTimestamp(),$issue->getId());
 					}
 				}
-				*/
 			}
+
 		});		
 	}
 }

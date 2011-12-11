@@ -1,12 +1,74 @@
 {% extends "template.htm" %}
 {% block contents %}
+
+  <h3>Account Information</h3>
   <form action="/account" method="POST">
-  <div>Name<input type="text" value="{{profile.getName()}}" name="name"/></div>
-  <div>Email<input type="text" value="{{profile.getEmail()}}" name="email" /></div>
-  <div>Website Blog<input type="text" value="{{profile.getHomepage()}}" name="homepage" /></div>
-  <div>Company<input type="text" value="{{profile.getCompany()}}" name="company" /></div>
-  <div>Location<input type="text" value="{{profile.getLocation()}}" name="location" /></div>
- 
-  <input type="submit" value="Update account information" />
+  <table>
+  	<tr>
+  		<td>Account Email</td><td><input type="text" name="email" value="{{user.getEmail()}}" /></td>
+  	</tr>
+  </table>
+  <input type="submit" value="Update account information" name="account" />
   </form>
+  
+  <h3>Public Profile</h3>
+  <form action="/account" method="POST">
+  <table>
+  <tr>
+  <td>Name</td>
+  <td><input type="text" value="{{profile.getName()}}" name="name"/></td>
+  </tr>
+  <tr>
+  <td>Public Email</td><td><input type="text" value="{{profile.getEmail()}}" name="email" /></td>
+  </tr>
+  <tr>
+  <td>Website / Blog</td>
+  <td>
+  <input type="text" value="{{profile.getHomepage()}}" name="homepage" />
+  </td>
+  </tr>
+  <tr>
+	<td>Company</td>
+	<td><input type="text" value="{{profile.getCompany()}}" name="company" /></td>
+  </tr>
+  <tr>
+  	<td>Location</td>
+  	<td><input type="text" value="{{profile.getLocation()}}" name="location" /></td>
+  </tr>
+  </table>
+ 
+  <input type="submit" value="Update profile information" />
+  </form>
+  
+  <h3>SSH Public Key</h3>
+  {% if user.getPublicKeys() %}
+	  {% for item in user.getPublicKeys() %}
+	  <form method="POST" action="/account">
+	  <input type="hidden" name="offset" value="{{loop.index0}}" />
+	  <table>
+	  <tr>
+	  <td>Title</td><td><div><input type="text" name="title" value="{{item.getTitle()}}" /></div></td>
+	  </tr>
+	  <tr>
+	  <td>Key</td><td><textarea name="key" style="width:1024px;">{{item}}</textarea></td>
+	  </tr>
+	  </table>
+	  <div><input type="submit" value="Update ssh public key" name="public_key" /></div>
+	  <div><input type="submit" value="delete this public key" name="del_public_key" /></div>
+	  </form>
+	  {% endfor %}
+  {% else %}
+	  <form method="POST" action="/account">
+	  <table>
+	  <tr>
+	  <td>Title</td><td><div><input type="text" name="title" value="" /></div></td>
+	  </tr>
+	  <tr>
+	  <td>Key</td><td><textarea name="key" style="width:1024px;"></textarea></td>
+	  </tr>
+	  </table>
+	  <div><input type="submit" value="Update ssh public key" name="public_key" /></div>
+	  <div><input type="submit" value="delete this public key" name="del_public_key" /></div>
+	  </form>   
+  {% endif %}
 {% endblock %}
