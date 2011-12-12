@@ -4,6 +4,7 @@ class RootController extends GitHQController
 	
 	public function onDefault($params =  array())
 	{
+		$data = null;
 		$user = $this->getUser();
 		
 		if ($this->getRequest()->isPost()) {
@@ -27,6 +28,12 @@ class RootController extends GitHQController
 		
 		if (isset($params['controller'])) {
 			$owner = User::get(UserPointer::getIdByNickname($params['controller.orig']),"user");
+			$repository = $owner->getRepository($params['action.orig']);
+			if (!$repository->hasPermission($owner, $user)) {
+				echo "<h1>403 Forbidden</h1>";
+				return;
+			}
+			
 			try{
 				$repo = new \Git\Repository("/home/git/repositories/{$params['controller.orig']}/{$params['action.orig']}.git");
 				$ref = $repo->lookupRef("refs/heads/master");

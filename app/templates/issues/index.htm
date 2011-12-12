@@ -1,6 +1,9 @@
 {% extends "template.htm" %}
 {% block contents %}
+
+  {% if user %}
   <a href="/{{owner.getNickname()}}/{{repository.getName()}}/issues/new">create new issue</a>
+  {% endif %}
  
   <div style="border:1px solid black;">
   <h3>Labels</h3>

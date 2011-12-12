@@ -1,11 +1,47 @@
 <?php
 class Repository
 {
+	const TYPE_PUBLIC = 0x0;
+	const TYPE_PRIVATE = 0x01;
+	
+	
 	protected $name;
 	protected $description;
 	protected $homepage_url;
 	protected $origin_user;
 	protected $labels = array();
+	protected $type = self::TYPE_PUBLIC;
+	
+	public function setPublic()
+	{
+		$this->type = self::TYPE_PUBLIC;
+	}
+	
+	public function setPrivate()
+	{
+		$this->type = self::TYPE_PRIVATE;
+	}
+	
+	public function hasPermission(User $owner, $user)
+	{
+		if ($this->type == self::TYPE_PUBLIC) {
+			return true;
+		}
+		
+		if (!$user instanceof User) {
+			return false;
+		}
+		
+		if ($this->type == self::TYPE_PRIVATE) {
+			if ($owner->getKey() == $user->getKey()) {
+				return true;
+			} else {
+				return false;
+			}
+		} else {
+			return true;
+		}
+	}
 	
 	public function addLabel($label)
 	{
