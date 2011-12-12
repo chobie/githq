@@ -4,10 +4,18 @@
     <div>{{issue.getAuthor().getNickname()}} opened this issue at {{issue.getRegisteredAt()}}</div>
     	<div class="issue_container">
 	    <div><h3>{{issue.getTitle()}}</h3></div>
+	    
+	    {% if user.getNickname() == owner.getNickname() %}
+	    <div style="text-align:right"><a href="/{{owner.getNickname()}}/{{repository.getName()}}/issues/edit/{{issue.getId()}}">EDIT</a></div>
+	    {% endif %}
+	    
 	    {% if issue.hasLabel() %}
 	    <div>Labels: 
 	    {% for item in issue.getLabels() %}
-	    	[{{item}}]
+	    	<form method="POST" action="/{{owner.getNickname()}}/{{repository.getName()}}/issues/update">[{{item}} 
+	    	<input type="hidden" name="label" value="{{item}}" />
+	    	<input type="hidden" name="id" value="{{issue.getId()}}" />
+	    	<input type="submit" value="x" name="label_delete" />]</form>
 	    {% endfor %}
 	    </div>
 	    {% endif %}

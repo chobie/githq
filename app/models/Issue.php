@@ -38,7 +38,21 @@ class Issue extends \UIKit\Framework\UIStoredObject
 	
 	public function addLabel($label)
 	{
-		$this->labels[] = $label;
+		$key = array_search($label,$this->labels);
+		if ($key === false) {
+			$this->labels[] = $label;
+		} else {
+			return false;
+		}
+		
+	}
+	
+	public function removeLabel($label)
+	{
+		$key = array_search($label,$this->labels);
+		if ($key !== false) {
+			unset($this->labels[$key]);
+		}
 	}
 	
 	public function getLabels()
@@ -190,22 +204,22 @@ class Issue extends \UIKit\Framework\UIStoredObject
 			if ($old->getStatus() != $issue->getStatus()) {
 				$stmt->zAdd("issue_list.{$issue->getOwner()}.{$issue->getRepository()}.{$issue->getStatus()}",$issue->getRegisteredAtAsTimestamp(),$issue->getId());
 				foreach($issue->getLabels() as $label) {
-					$offset = array_search($label, $current_labels);
+					$offset = md5($label);
 					$stmt->zAdd("issue_labels.{$issue->getOwner()}.{$issue->getRepository()}.{$offset}.{$issue->getStatus()}",$issue->getRegisteredAtAsTimestamp(),$issue->getId());			
 				}
-				$stmt->zRem("issue_list.{$issue->getOwner()}.{$issue->getRepository()}.{$old->getStatus()}",$issue->getId());
+				$stmt->zDelete("issue_list.{$issue->getOwner()}.{$issue->getRepository()}.{$old->getStatus()}",$issue->getId());
 				foreach($old->getLabels() as $label) {
-					$offset = array_search($label, $old_labels);
+					$offset = md5($label);
 					$stmt->zDelete("issue_labels.{$issue->getOwner()}.{$issue->getRepository()}.{$offset}.{$issue->getStatus()}",$issue->getId());
 				}
 				
 			}
 
-			if ($diff = hash_diff($current_labels, $old_labels)) {
+			if ($diff = hash_diff($old_labels,$current_labels)) {
 				if (isset($diff['-'])){
 					foreach ($diff['-'] as $label) {
 						//@todo issue_list.<owner>.repository.label.status,
-						$offset = array_search($label, $old_labels);  
+						$offset = md5($label);
 						$stmt->zDelete("issue_labels.{$issue->getOwner()}.{$issue->getRepository()}.{$offset}.{$issue->getStatus()}",$issue->getId());
 					}
 				}
@@ -213,7 +227,7 @@ class Issue extends \UIKit\Framework\UIStoredObject
 				if (isset($diff['+'])){
 					foreach ($diff['+'] as $label) {
 						//@todo issue_list.<owner>.repository.label.status,  
-						$offset = array_search($label, $current_labels);
+						$offset = md5($label);
 						$stmt->zAdd("issue_labels.{$issue->getOwner()}.{$issue->getRepository()}.{$offset}.{$issue->getStatus()}",$issue->getRegisteredAtAsTimestamp(),$issue->getId());
 					}
 				}

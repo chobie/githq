@@ -2,7 +2,7 @@
 {% block contents %}  
   {% if user != owner %}
   
-  {% if user.getRepository(repository.getName()) == false %}
+  {% if user and user.getRepository(repository.getName()) == false %}
   <div>
   <form method="POST" action="/{{user.getNickname()}}/{{repository.getName()}}">
     <input type="hidden" name="action" value="fork" />
@@ -31,7 +31,7 @@
   
   <div>
     <div>{{commit.getMessage()}}</div>
-    <div>{{commit.getAuthor().name}}</div>
+    <div><img src="http://www.gravatar.com/avatar/{{commit.getAuthor().email|md5}}?s=20">{{commit.getAuthor().name}}</div>
     <div>{{commit.getAuthor().time.format('Y-m-d H:i:s')}}</div>
   </div>
 

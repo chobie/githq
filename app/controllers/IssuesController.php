@@ -6,7 +6,12 @@ class IssuesController extends GitHQController
 		$user = $this->getUser();
 		$owner = User::get(UserPointer::getIdByNickname($params['user']),'user');
 		$repository = $owner->getRepository($params['repository']);
-		$list = IssueReferences::getList($owner->getKey(),$repository->getName(),Issue::OPENED);
+		if (isset($_REQUEST['label'])) {
+			$label = $repository->getLabel($_REQUEST['label']);
+			$list = IssueReferences::getListWithLabel($label, $owner->getKey(), $repository->getName(),Issue::OPENED);
+		} else {
+			$list = IssueReferences::getList($owner->getKey(),$repository->getName(),Issue::OPENED);
+		}
 		$issues = array();
 		foreach ($list as $id) {
 			$issues[] = Issue::get(join(':',array($owner->getKey(),$repository->getName(),$id)),'issue');
@@ -61,6 +66,21 @@ class IssuesController extends GitHQController
 		));
 	}
 	
+	public function onUpdate($params)
+	{
+		$user = $this->getUser();
+		$owner = User::get(UserPointer::getIdByNickname($params['user']),'user');
+		$repository = $owner->getRepository($params['repository']);
+		$issue = Issue::fetchLocked(join(':',array($owner->getKey(),$repository->getName(),$_REQUEST['id'])),'issue');
+
+		if (isset($_REQUEST['label_delete'])) {
+			$issue->removeLabel($_REQUEST['label']);			
+		}
+
+		$issue->save();
+		header("Location: /{$user->getNickname()}/{$repository->getName()}/issues/{$issue->getId()}");
+	}
+	
 	public function onIssueComments($params)
 	{
 		$user = $this->getUser();
@@ -79,11 +99,35 @@ class IssuesController extends GitHQController
 				$owner = User::fetchLocked(UserPointer::getIdByNickname($params['user']),'user');
 				$repository = $owner->getRepository($params['repository']);
 				$repository->addLabel($_REQUEST['label']);
+				$owner->save();
 			}
 			$issue->addLabel($_REQUEST['label']);
 		}
 
 		$issue->save();
 		header("Location: /{$user->getNickname()}/{$repository->getName()}/issues/{$issue->getId()}");
+	}
+	
+	public function onEdit($params)
+	{
+		$user = $this->getUser();
+		$owner = User::get(UserPointer::getIdByNickname($params['user']),'user');
+		$repository = $owner->getRepository($params['repository']);
+		$issue = Issue::get(join(':',array($owner->getKey(),$repository->getName(),$params['id'])),'issue');
+		
+		if (isset($_REQUEST['update'])) {
+			$issue = Issue::fetchLocked(join(':',array($owner->getKey(),$repository->getName(),$params['id'])),'issue');
+			$issue->setTitle($_REQUEST['title']);
+			$issue->setBody($_REQUEST['contents']);
+			$issue->save();
+			header("Location: /{$user->getNickname()}/{$repository->getName()}/issues/{$issue->getId()}");
+		}
+		
+		$this->render("edit.htm",array(
+					"user" => $user,
+					"issue" => $issue,
+					"owner" => $owner,
+					"repository" => $repository,
+		));
 	}
 }

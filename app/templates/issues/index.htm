@@ -4,8 +4,8 @@
  
   <div style="border:1px solid black;">
   <h3>Labels</h3>
-  {% for lab in repository.getLabels() %}
-  {{lab}}
+  {% for label in repository.getLabels() %}
+  <a href="/{{owner.getNickname()}}/{{repository.getName()}}/issues?label={{label}}">{{label}}</a>
   {% endfor %}
   </div>
  

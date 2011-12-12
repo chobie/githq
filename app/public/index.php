@@ -14,9 +14,17 @@ class GitHQApplicationDelegate extends UIKit\Framework\UIWebApplicationDelegate
 									'controller' => 'IssuesController',
 									'action' => 'onDefault',
 		));
+		$router->add('/{user}/{repository}/issues/update',array(
+											'controller' => 'IssuesController',
+											'action' => 'onUpdate',
+		));
 		$router->add('/{user}/{repository}/issues/new',array(
 									'controller' => 'IssuesController',
 									'action' => 'onNew',
+		));
+		$router->add('/{user}/{repository}/issues/edit/{id,digit}',array(
+														'controller' => 'IssuesController',
+														'action' => 'onEdit',
 		));
 		$router->add('/{user}/{repository}/issues/{id,digit}',array(
 												'controller' => 'IssuesController',

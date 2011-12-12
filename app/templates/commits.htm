@@ -5,7 +5,7 @@
   {% for commit in commits %}
   <div style="margin-bottom:1em;;border:1px solid #C5D5DD;-webkit-border-radius:5px;-moz-border-radius:5px;">
   	<div style="padding:0.5em;background-color:#E4F1F6;border-bottom:1px solid #C5D5DD;">{{commit.getAuthor().time.format('Y-m-d h:i:s')}}</div>
-  	<div style="padding:0.5em"><a href="/{{owner.getNickName()}}/{{repository.getName()}}/commit/{{commit.getId()}}">{{commit.getMessage()}}</a></div>
+  	<div style="padding:0.5em"><img src="http://www.gravatar.com/avatar/{{commit.getAuthor().email|md5}}?s=30" /><a href="/{{owner.getNickName()}}/{{repository.getName()}}/commit/{{commit.getId()}}">{{commit.getMessage()}}</a></div>
   </div>
   {% endfor %}
   {% endif %}

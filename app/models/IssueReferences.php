@@ -16,7 +16,8 @@ class IssueReferences
 	public static function getListWithLabel($label,$owner,$repository,$status,$start="+inf",$end="-inf")
 	{
 		$redis = GitHQController::getRedisClient();
-		return $redis->zRevRangeByScore("issue_labels.{$owner}.{$repository}.{$status}",$start,$end);
+		$offset = md5($label);
+		return $redis->zRevRangeByScore("issue_labels.{$owner}.{$repository}.{$offset}.{$status}",$start,$end);
 	}
 	
 	public static function getList($owner,$repository,$status,$start="+inf",$end="-inf")
