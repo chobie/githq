@@ -16,10 +16,12 @@
   <div style="border:1px solid black;">
   <h3>Labels</h3>
   {% for label in repository.getLabels() %}
-  <a href="/{{owner.getNickname()}}/{{repository.getName()}}/issues?label={{label}}">{{label}}</a>
+  <a href="/{{owner.getNickname()}}/{{repository.getName()}}/issues?label={{label.getName()}}">{{label.getName()}}</a>
   {% endfor %}
   </div>
  
+ 
+  {% set labels = repository.getLabels() %}
   {% for issue in issues %}
   <div>
   
@@ -27,8 +29,8 @@
     
     {% if issue.hasLabel() %}
     <span>Labels: 
-    {% for item in issue.getLabels() %}
-    	[{{item}}]
+    {% for label_id in issue.getLabelIds() %}
+    	[{{labels.getLabelById(label_id).getName()}}]
     {% endfor %}
     </span>
     {% endif %}

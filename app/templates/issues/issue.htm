@@ -12,9 +12,10 @@
 	    {% endif %}
 	    
 	    {% if issue.hasLabel() %}
+	    {% set labels = repository.getLabels() %}
 	    <div>Labels: 
-	    {% for item in issue.getLabels() %}
-	    	<form method="POST" action="/{{owner.getNickname()}}/{{repository.getName()}}/issues/update">[{{item}} 
+	    {% for item in issue.getLabelIds() %}
+	    	<form method="POST" action="/{{owner.getNickname()}}/{{repository.getName()}}/issues/update">[{{labels.getLabelById(item).getName()}} 
 	    	<input type="hidden" name="label" value="{{item}}" />
 	    	<input type="hidden" name="id" value="{{issue.getId()}}" />
 	    	<input type="submit" value="x" name="label_delete" />]</form>

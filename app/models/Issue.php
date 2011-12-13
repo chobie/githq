@@ -62,26 +62,26 @@ class Issue extends \UIKit\Framework\UIStoredObject
 		return (bool)(count($this->labels));
 	}
 	
-	public function addLabel($label)
+	public function addLabelId($label_id)
 	{
-		$key = array_search($label,$this->labels);
+		$key = array_search($label_id,$this->labels);
 		if ($key === false) {
-			$this->labels[] = $label;
+			$this->labels[] = $label_id;
 		} else {
 			return false;
 		}
 		
 	}
 	
-	public function removeLabel($label)
+	public function removeLabelId($label_id)
 	{
-		$key = array_search($label,$this->labels);
+		$key = array_search($label_id,$this->labels);
 		if ($key !== false) {
 			unset($this->labels[$key]);
 		}
 	}
 	
-	public function getLabels()
+	public function getLabelIds()
 	{
 		return $this->labels;
 	}
@@ -224,37 +224,33 @@ class Issue extends \UIKit\Framework\UIStoredObject
 	public function save()
 	{
 		return parent::save(function ($stmt,$issue, $old){
-			$current_labels = $issue->getLabels();
-			$old_labels = $old->getLabels();
+			$current_labels = $issue->getLabelIds();
+			$old_labels = $old->getLabelIds();
 				
 			if ($old->getStatus() != $issue->getStatus()) {
 				$stmt->zAdd("issue_list.{$issue->getOwner()}.{$issue->getRepository()}.{$issue->getStatus()}",$issue->getRegisteredAtAsTimestamp(),$issue->getId());
-				foreach($issue->getLabels() as $label) {
-					$offset = md5($label);
-					$stmt->zAdd("issue_labels.{$issue->getOwner()}.{$issue->getRepository()}.{$offset}.{$issue->getStatus()}",$issue->getRegisteredAtAsTimestamp(),$issue->getId());			
+				foreach($issue->getLabelIds() as $label_id) {
+					$stmt->zAdd("issue_labels.{$issue->getOwner()}.{$issue->getRepository()}.{$label_id}.{$issue->getStatus()}",$issue->getRegisteredAtAsTimestamp(),$issue->getId());			
 				}
 				$stmt->zDelete("issue_list.{$issue->getOwner()}.{$issue->getRepository()}.{$old->getStatus()}",$issue->getId());
-				foreach($old->getLabels() as $label) {
-					$offset = md5($label);
-					$stmt->zDelete("issue_labels.{$issue->getOwner()}.{$issue->getRepository()}.{$offset}.{$issue->getStatus()}",$issue->getId());
+				foreach($old->getLabelIds() as $label_id) {
+					$stmt->zDelete("issue_labels.{$issue->getOwner()}.{$issue->getRepository()}.{$label_id}.{$issue->getStatus()}",$issue->getId());
 				}
 				
 			}
 
 			if ($diff = hash_diff($old_labels,$current_labels)) {
 				if (isset($diff['-'])){
-					foreach ($diff['-'] as $label) {
+					foreach ($diff['-'] as $label_id) {
 						//@todo issue_list.<owner>.repository.label.status,
-						$offset = md5($label);
-						$stmt->zDelete("issue_labels.{$issue->getOwner()}.{$issue->getRepository()}.{$offset}.{$issue->getStatus()}",$issue->getId());
+						$stmt->zDelete("issue_labels.{$issue->getOwner()}.{$issue->getRepository()}.{$label_id}.{$issue->getStatus()}",$issue->getId());
 					}
 				}
 
 				if (isset($diff['+'])){
-					foreach ($diff['+'] as $label) {
+					foreach ($diff['+'] as $label_id) {
 						//@todo issue_list.<owner>.repository.label.status,  
-						$offset = md5($label);
-						$stmt->zAdd("issue_labels.{$issue->getOwner()}.{$issue->getRepository()}.{$offset}.{$issue->getStatus()}",$issue->getRegisteredAtAsTimestamp(),$issue->getId());
+						$stmt->zAdd("issue_labels.{$issue->getOwner()}.{$issue->getRepository()}.{$label_id}.{$issue->getStatus()}",$issue->getRegisteredAtAsTimestamp(),$issue->getId());
 					}
 				}
 			}

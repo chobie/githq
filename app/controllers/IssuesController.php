@@ -12,8 +12,8 @@ class IssuesController extends GitHQController
 			$list = IssueReferences::getListWithMilestone($milestone, $owner->getKey(), $repository->getName(),Issue::OPENED);
 				
 		} else if (isset($_REQUEST['label'])) {
-			$label = $repository->getLabel($_REQUEST['label']);
-			$list = IssueReferences::getListWithLabel($label, $owner->getKey(), $repository->getName(),Issue::OPENED);
+			$label = $repository->getLabels()->getLabelByName($_REQUEST['label']);
+			$list = IssueReferences::getListWithLabel($label->getId(), $owner->getKey(), $repository->getName(),Issue::OPENED);
 		} else {
 			$list = IssueReferences::getList($owner->getKey(),$repository->getName(),Issue::OPENED);
 		}
@@ -79,7 +79,7 @@ class IssuesController extends GitHQController
 		$issue = Issue::fetchLocked(join(':',array($owner->getKey(),$repository->getName(),$_REQUEST['id'])),'issue');
 
 		if (isset($_REQUEST['label_delete'])) {
-			$issue->removeLabel($_REQUEST['label']);			
+			$issue->removeLabelId($_REQUEST['label']);			
 		}
 
 		$issue->save();
@@ -100,13 +100,21 @@ class IssuesController extends GitHQController
 			$issue->openIssue();
 		}
 		if (isset($_REQUEST['label']) && !empty($_REQUEST['label'])) {
-			if($repository->getLabel($_REQUEST['label']) === false) {
+			$labels = $repository->getLabels();
+			$label = $labels->getLabelByName($_REQUEST['label']);
+			if($label == false) {
 				$owner = User::fetchLocked(UserPointer::getIdByNickname($params['user']),'user');
 				$repository = $owner->getRepository($params['repository']);
-				$repository->addLabel($_REQUEST['label']);
+				$labels = $repository->getLabels();
+				$next = $labels->getNextId();
+				$label = new Label();
+				$label->setId($next);
+				$label->setName($_REQUEST['label']);
+
+				$labels->addLabel($label);
 				$owner->save();
 			}
-			$issue->addLabel($_REQUEST['label']);
+			$issue->addLabelId($label->getId());
 		}
 
 		$issue->save();
