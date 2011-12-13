@@ -18,6 +18,7 @@ class Issue extends \UIKit\Framework\UIStoredObject
 	protected $registered_at;
 	protected $comments = array();
 	protected $labels = array();
+	protected $milestones;
 	
 	
 	public function getKey()
@@ -29,6 +30,31 @@ class Issue extends \UIKit\Framework\UIStoredObject
 	{
 		parent::__construct($key);
 		$this->registered_at = $_SERVER['REQUEST_TIME'];
+	}
+	
+	
+	public function setMilestone($milestone)
+	{
+		$this->milestone = $milestone;
+	}
+	
+	public function getMilestone()
+	{
+		return $this->milestone;
+	}
+	
+	public function hasMilestone()
+	{
+		if (isset($this->milestone)) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	public function removeMilestone()
+	{
+		$this->milestone = null;
 	}
 	
 	public function hasLabel()
@@ -229,6 +255,23 @@ class Issue extends \UIKit\Framework\UIStoredObject
 						//@todo issue_list.<owner>.repository.label.status,  
 						$offset = md5($label);
 						$stmt->zAdd("issue_labels.{$issue->getOwner()}.{$issue->getRepository()}.{$offset}.{$issue->getStatus()}",$issue->getRegisteredAtAsTimestamp(),$issue->getId());
+					}
+				}
+			}
+			
+			if ($old->getMilestone() != $issue->getMilestone()) {
+				$mile = $old->getMilestone();
+				if($mile){
+					$offset = md5($old->getMilestone());
+					if($offset){
+						$stmt->zDelete("issue_labels.{$issue->getOwner()}.{$issue->getRepository()}.{$offset}.{$issue->getStatus()}",$issue->getId());
+					}
+				}
+				$mile = $issue->getMilestone();
+				if($mile){
+					$offset = md5($mile);
+					if($offset) {
+						$stmt->zAdd("issue_milestone.{$issue->getOwner()}.{$issue->getRepository()}.{$offset}.{$issue->getStatus()}",$issue->getRegisteredAtAsTimestamp(), $issue->getId());
 					}
 				}
 			}

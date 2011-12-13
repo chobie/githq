@@ -4,7 +4,9 @@
     <div>{{issue.getAuthor().getNickname()}} opened this issue at {{issue.getRegisteredAt()}}</div>
     	<div class="issue_container">
 	    <div><h3>{{issue.getTitle()}}</h3></div>
-	    
+	    {% if issue.getMilestone() %}
+	    Milestone: {{issue.getMilestone()}}
+	    {% endif %}
 	    {% if user.getNickname() == owner.getNickname() %}
 	    <div style="text-align:right"><a href="/{{owner.getNickname()}}/{{repository.getName()}}/issues/edit/{{issue.getId()}}">EDIT</a></div>
 	    {% endif %}

@@ -6,7 +6,12 @@ class IssuesController extends GitHQController
 		$user = $this->getUser();
 		$owner = User::get(UserPointer::getIdByNickname($params['user']),'user');
 		$repository = $owner->getRepository($params['repository']);
-		if (isset($_REQUEST['label'])) {
+		
+		if (isset($_REQUEST['milestone'])) {
+			$milestone = $repository->getMilestone($_REQUEST['milestone']);
+			$list = IssueReferences::getListWithMilestone($milestone, $owner->getKey(), $repository->getName(),Issue::OPENED);
+				
+		} else if (isset($_REQUEST['label'])) {
 			$label = $repository->getLabel($_REQUEST['label']);
 			$list = IssueReferences::getListWithLabel($label, $owner->getKey(), $repository->getName(),Issue::OPENED);
 		} else {
@@ -119,7 +124,20 @@ class IssuesController extends GitHQController
 			$issue = Issue::fetchLocked(join(':',array($owner->getKey(),$repository->getName(),$params['id'])),'issue');
 			$issue->setTitle($_REQUEST['title']);
 			$issue->setBody($_REQUEST['contents']);
+			if (!empty($_REQUEST['milestone'])) {
+				$issue->setMilestone($_REQUEST['milestone']);
+			} else {
+				$issue->removeMilestone();
+			}
 			$issue->save();
+
+			if (!$repository->getMilestone($_REQUEST['milestone'])) {
+				$owner = User::fetchLocked(UserPointer::getIdByNickname($params['user']),'user');
+				$repository = $owner->getRepository($params['repository']);
+				$repository->addMilestone($_REQUEST['milestone']);
+				$owner->save();
+			}
+			
 			header("Location: /{$user->getNickname()}/{$repository->getName()}/issues/{$issue->getId()}");
 		}
 		

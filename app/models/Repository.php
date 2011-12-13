@@ -10,6 +10,7 @@ class Repository
 	protected $homepage_url;
 	protected $origin_user;
 	protected $labels = array();
+	protected $milestones = array();
 	protected $type = self::TYPE_PUBLIC;
 	
 	public function setPublic()
@@ -41,6 +42,28 @@ class Repository
 		} else {
 			return true;
 		}
+	}
+	
+	public function addMileStone($milestone)
+	{
+		if (!in_array(milestone,$this->milestones)) {
+			$this->milestones[] = $milestone;
+		}
+	}
+	
+	public function getMilestone($milestone)
+	{
+		$key = array_search($milestone, $this->milestones);
+		if ($key !== false) {
+			return $this->milestones[$key];
+		} else {
+			return false;
+		}
+	}
+	
+	public function getMilestones()
+	{
+		return $this->milestones;
 	}
 	
 	public function addLabel($label)
