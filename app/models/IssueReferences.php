@@ -16,8 +16,7 @@ class IssueReferences
 	public static function getListWithMilestone($milestone,$owner,$repository,$status,$start="+inf",$end="-inf")
 	{
 		$redis = GitHQController::getRedisClient();
-		$offset = md5($milestone);
-		return $redis->zRevRangeByScore("issue_milestone.{$owner}.{$repository}.{$offset}.{$status}",$start,$end);
+		return $redis->zRevRangeByScore("issue_milestone.{$owner}.{$repository}.{$milestone}.{$status}",$start,$end);
 	}
 	
 	public static function getListWithLabel($label,$owner,$repository,$status,$start="+inf",$end="-inf")

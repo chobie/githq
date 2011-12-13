@@ -9,7 +9,7 @@
   <div style="border:1px solid black;">
   <h3>Milestones</h3>
   {% for milestone in repository.getMilestones() %}
-  <a href="/{{owner.getNickname()}}/{{repository.getName()}}/issues?milestone={{milestone|url_encode}}">{{milestone}}</a>
+  <a href="/{{owner.getNickname()}}/{{repository.getName()}}/issues?milestone={{milestone.getName()|url_encode}}">{{milestone.getName()}}</a>
   {% endfor %}
   
   </div>
