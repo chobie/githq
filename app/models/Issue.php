@@ -18,7 +18,7 @@ class Issue extends \UIKit\Framework\UIStoredObject
 	protected $registered_at;
 	protected $comments = array();
 	protected $labels = array();
-	protected $milestones;
+	protected $milestone;
 	
 	
 	public function getKey()
