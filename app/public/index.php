@@ -39,7 +39,19 @@ class GitHQApplicationDelegate extends UIKit\Framework\UIWebApplicationDelegate
 									'controller' => 'RootController',
 									'action' => 'onCommit',
 		));
-
+		$router->add('/{user}/{repository}/admin',array(
+								'controller' => 'AdminController',
+								'action' => 'onDefault',
+		));
+		$router->add('/{user}/{repository}/admin/delete',array(
+										'controller' => 'AdminController',
+										'action' => 'onDelete',
+		));
+		$router->add('/{user}/{repository}/admin/update',array(
+												'controller' => 'AdminController',
+												'action' => 'onUpdate',
+		));
+		
 		$router->add('/{user}/{repository}/blame/{refs}/{path,greed}',array(
 								'controller' => 'RootController',
 								'action' => 'onBlame',

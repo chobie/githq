@@ -27,6 +27,10 @@
   {% if repository.hasOrigin() %}
     <div>forked from <a href="/{{repository.getOriginUser().getNickname()}}/{{repository.getName()}}">{{repository.getOriginUser().getNickname()}}/{{repository.getName()}}</a></div>
   {% endif %}
+  
+  {% if owner == user%}
+  <div style="text-align:right"><a href="/{{owner.getNickname()}}/{{repository.getName()}}/admin">admin</a></div>
+  {% endif %}
   {% endif %}
 
 

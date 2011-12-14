@@ -1,0 +1,27 @@
+{% extends "template.htm" %}
+{% block contents %}
+
+<h3>Settings</h3>
+<form method="POST" action="/{{owner.getNickname()}}/{{repository.getName()}}/admin/update">
+<table>
+<tr>
+	<td>Repository Name</td>
+	<td><input type="text" value="{{repository.getName()}}" name="name" /></td>	
+</tr>
+<tr>
+	<td>Visibility</td>
+	<td><input type="radio" name="visibility" value="0" />Public <input type="radio" name="visibility" value="1" /> Private</td>
+</tr>
+<tr>
+	<td>Default Branch</td>
+	<td><input type="text" value="" name="default_branch" /></td>	
+</tr>
+</table>
+<input type="submit" value="update repository" name="update"/>
+</form>
+
+<form method="POST" action="/{{owner.getNickname()}}/{{repository.getName()}}/admin/delete">
+<div>Once you delete a repository, there is no going back.</div>
+<input type="submit" value="delete this repository" name="delete" />
+</form>
+{% endblock %}

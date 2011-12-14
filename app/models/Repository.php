@@ -137,6 +137,16 @@ class Repository
 		}
 	}
 	
+	public function delete($name)
+	{
+		if (is_dir("/home/git/repositories/{$name}/{$this->name}.git")) {
+			system("rm -rf /home/git/repositories/{$name}/{$this->name}.git");
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
 	/**
 	 * get current repository name
 	 * 

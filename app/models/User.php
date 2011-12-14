@@ -137,6 +137,17 @@ class User extends UIKit\Framework\UIStoredObject
 		}
 	}
 	
+	public function removeRepository($key)
+	{
+		if (isset($this->repositories[$key])) {
+			$this->repositories[$key]->delete($this->getNickname());
+			unset($this->repositories[$key]);
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
 	/**
 	 * get all repositories
 	 * @return array $repositories
