@@ -9,21 +9,22 @@ class RepositoriesController extends GitHQController
 			$description  = $_REQUEST['description'];
 			$homepage_url = $_REQUEST['homepage_url'];
 			
+			$user = User::fetchLocked($_SESSION['user']->getKey(),"user");
 			$repo = new Repository($project_name);
+			$id = $user->getNextRepositoryId();
+			$repo->setId($id);
 			$repo->setDescription($description);
 			$repo->setDescription($homepage_url);
-			$user = $this->getUser();
 			
-			if ($repo->create($user->getNickname())) {
-				$user = User::fetchLocked($_SESSION['user']->getKey(),"user");
+			if ($repo->create($user->getKey())) {
 				$user->addRepository($repo);
 				if ($_REQUEST['visibility'] == 1) {
 					$repo->setPrivate();
 				}
-				$user->save();
 				$_SESSION['user'] = $user;
-				header("Location: http://githq.org");
 			}
+			$user->save();
+			header("Location: http://githq.org/");
 		}
 	}
 

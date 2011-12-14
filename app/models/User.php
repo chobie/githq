@@ -8,8 +8,14 @@ class User extends UIKit\Framework\UIStoredObject
 	protected $email;
 	protected $password;
 	protected $salt;
+	protected $repository_sequence = 0;
 	protected $repositories = array();
 	protected $public_keys = array();
+	
+	public function getNextRepositoryId()
+	{
+		return $this->repository_sequence++;
+	}
 	
 	public function getEmail()
 	{

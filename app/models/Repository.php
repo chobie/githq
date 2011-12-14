@@ -4,6 +4,7 @@ class Repository
 	const TYPE_PUBLIC = 0x0;
 	const TYPE_PRIVATE = 0x01;
 	
+	protected $id;
 	protected $name;
 	protected $description;
 	protected $homepage_url;
@@ -11,6 +12,16 @@ class Repository
 	protected $labels = array();
 	protected $milestones;
 	protected $type = self::TYPE_PUBLIC;
+	
+	public function setId($id)
+	{
+		$this->id = $id;
+	}
+	
+	public function getId()
+	{
+		return $this->id;
+	}
 	
 	public function setPublic()
 	{
@@ -127,10 +138,11 @@ class Repository
 	 */
 	public function create($name)
 	{
-		if (!is_dir("/home/git/repositories/{$name}/{$this->name}.git")) {
-			system("mkdir -p /home/git/repositories/{$name}/{$this->name}.git");
-			system("cd /home/git/repositories/{$name}/{$this->name}.git; git init --bare --shared");
-			system("chmod 777 -R /home/git/repositories/{$name}/{$this->name}.git");
+		$id = $this->getId();
+		if (!is_dir("/home/git/repositories/{$name}/{$id}")) {
+			system("mkdir -p /home/git/repositories/{$name}/{$id}");
+			system("cd /home/git/repositories/{$name}/{$id}; git init --bare --shared");
+			system("chmod 777 -R /home/git/repositories/{$name}/{$id}");
 			return true;
 		} else {
 			return false;

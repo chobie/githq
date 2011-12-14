@@ -35,7 +35,7 @@ class RootController extends GitHQController
 			}
 			
 			try{
-				$repo = new \Git\Repository("/home/git/repositories/{$params['controller.orig']}/{$params['action.orig']}.git");
+				$repo = new \Git\Repository("/home/git/repositories/{$owner->getKey()}/{$repository->getId()}");
 				$ref = $repo->lookupRef("refs/heads/master");
 				$commit = $repo->getCommit($ref->getId());
 				$tree = $commit->getTree();
@@ -98,7 +98,7 @@ class RootController extends GitHQController
 		$user = $this->getUser();
 		
 		$owner = User::get(UserPointer::getIdByNickname($params['user']),'user');
-		$repo = new \Git\Repository("/home/git/repositories/{$params['user']}/{$params['repository']}.git");
+		$repo = new \Git\Repository("/home/git/repositories/{$owner->getKey()}/{$params['repository']}.git");
 		$refm = new \Git\Reference\Manager($repo);
 		$branches = $refm->getList();
 
@@ -149,7 +149,7 @@ class RootController extends GitHQController
 	{
 		$user = $this->getUser();
 		$owner = User::get(UserPointer::getIdByNickname($params['user']),'user');
-		$repo = new \Git\Repository("/home/git/repositories/{$params['user']}/{$params['repository']}.git");
+		$repo = new \Git\Repository("/home/git/repositories/{$owner->getKey()}/{$params['repository']}.git");
 		$ref = $repo->lookupRef("refs/heads/master");
 		$commit = $repo->getCommit($ref->getId());
 		$current_path = '';
@@ -250,8 +250,9 @@ class RootController extends GitHQController
 	{
 		$owner = User::get(UserPointer::getIdByNickname($params['user']),"user");
 		$user = $this->getUser();
-		$repo = new \Git\Repository("/home/git/repositories/{$params['user']}/{$params['repository']}.git");
-		$stat = `GIT_DIR=/home/git/repositories/{$params['user']}/{$params['repository']}.git git log -p {$params['commit']} -n1`;
+		$repository = $owner->getRepository($params['repository']);
+		$repo = new \Git\Repository("/home/git/repositories/{$owner->getKey()}/{$repository->getId()}");
+		$stat = `GIT_DIR=/home/git/repositories/{$owner->getKey()}/{$repository->getId()} git log -p {$params['commit']} -n1`;
 		$struct = Text\Diff\Parser::parse($stat);
 		
 		$ref = $repo->lookupRef("refs/heads/master");
@@ -270,7 +271,8 @@ class RootController extends GitHQController
 	{
 		$owner = User::get(UserPointer::getIdByNickname($params['user']),"user");
 		$user = $this->getUser();
-		$repo = new \Git\Repository("/home/git/repositories/{$params['user']}/{$params['repository']}.git");
+		$repository = $owner->getRepository($params['repository']);
+		$repo = new \Git\Repository("/home/git/repositories/{$owner->getKey()}/{$repository->getId()}");
 		$ref = $repo->lookupRef("refs/heads/master");
 		$commit = $repo->getCommit($ref->getId());
 		$walker = $repo->getWalker();
@@ -319,7 +321,8 @@ class RootController extends GitHQController
 		$user = $this->getUser();
 		
 		$owner = User::get(UserPointer::getIdByNickname($params['user']),'user');
-		$repo = new \Git\Repository("/home/git/repositories/{$params['user']}/{$params['repository']}.git");
+		$repository = $owner->getRepository($params['repository']);
+		$repo = new \Git\Repository("/home/git/repositories/{$owner->getKey()}/{$repository->getId()}");
 		$refm = new \Git\Reference\Manager($repo);
 		$branches = $refm->getList();
 		
@@ -338,7 +341,7 @@ class RootController extends GitHQController
 		}
 		
 
-		$stat = `GIT_DIR=/home/git/repositories/{$params['user']}/{$params['repository']}.git git blame -p master -- {$params['path']}`;
+		$stat = `GIT_DIR=/home/git/repositories/{$owner->getKey()}/{$repository->getId()} git blame -p master -- {$params['path']}`;
 		$blame = Git\Util\Blame\Parser::parse($stat);
 		
 		$this->render("blame.htm",array(
