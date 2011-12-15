@@ -10,7 +10,7 @@
 </tr>
 <tr>
 	<td>Visibility</td>
-	<td><input type="radio" name="visibility" value="0" />Public <input type="radio" name="visibility" value="1" /> Private</td>
+	<td><input type="radio" name="visibility" value="0" {% if repository.isPublic() %}checked{% endif %} />Public <input type="radio" name="visibility" value="1" {% if repository.isPrivate() %}checked{% endif %} /> Private</td>
 </tr>
 <tr>
 	<td>Default Branch</td>

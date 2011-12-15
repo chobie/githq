@@ -23,6 +23,21 @@ class Repository
 		return $this->id;
 	}
 	
+	public function isPublic()
+	{
+		return self::TYPE_PUBLIC == $this->type;
+	}
+	
+	public function isPrivate()
+	{
+		return self::TYPE_PRIVATE == $this->type;
+	}
+	
+	public function setStatus($status)
+	{
+		$this->type = $status;
+	}
+	
 	public function setPublic()
 	{
 		$this->type = self::TYPE_PUBLIC;

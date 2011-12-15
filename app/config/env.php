@@ -99,5 +99,27 @@ function determine_array_type($array)
 
 date_default_timezone_set('Asia/Tokyo');
 
+class Twig_Filter_Sundown extends \Twig_Extension
+{
+	public function getName()
+	{
+		return 'sundown';
+	}
+
+	public function getFilters()
+	{
+		return array(
+			'sundown' => new \Twig_Filter_Function('twig_sundown_filter'),
+		);
+	}
+}
+
+function twig_sundown_filter($string)
+{
+	$sundown = new Sundown($string);
+	return $sundonw->to_html();
+	
+}
+
 require "development.php";
 

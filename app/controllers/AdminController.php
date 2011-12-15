@@ -14,6 +14,13 @@ class AdminController extends GitHQController
 	
 	public function onUpdate($params)
 	{
+		$owner = User::fetchLocked(UserPointer::getIdByNickname($params['user']),'user');
+		$repo = $owner->getRepository($params['repository']);
+		
+		$repo->setStatus($_REQUEST['visibility']);
+		$owner->save();
+		header("Location: http://githq.org/{$owner->getNickname()}/{$repo->getName()}/admin");
+		
 	}
 	
 	public function onDelete($params)
