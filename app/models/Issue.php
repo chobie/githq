@@ -111,12 +111,12 @@ class Issue extends \UIKit\Framework\UIStoredObject
 		return ($this->status == self::OPENED) ? true : false;
 	}
 	
-	public function setRepository($repository)
+	public function setRepositoryId($repository)
 	{
 		$this->repository = $repository;
 	}
 	
-	public function getRepository()
+	public function getRepositoryId()
 	{
 		return $this->repository;
 	}
@@ -181,10 +181,10 @@ class Issue extends \UIKit\Framework\UIStoredObject
 	{
 		$retVal = false;
 		$retVal = parent::create(function($stmt,$issue){
-			$stmt->zAdd("issue_list.{$issue->getOwner()}.{$issue->getRepository()}.{$issue->getStatus()}",$issue->getRegisteredAtAsTimestamp(),$issue->getId());
+			$stmt->zAdd("issue_list.{$issue->getOwner()}.{$issue->getRepositoryId()}.{$issue->getStatus()}",$issue->getRegisteredAtAsTimestamp(),$issue->getId());
 			if ($issue->hasLabel()) {
 				foreach ($issue->getLabels() as $offset => $label){
-					$stmt->zAdd("issue_labels.{$issue->getOwner()}.{$issue->getRepository()}." . sha1($label) ,$issue->getRegisteredAtAsTimestamp(),$issue->getId());	
+					$stmt->zAdd("issue_labels.{$issue->getOwner()}.{$issue->getRepositoryId()}." . sha1($label) ,$issue->getRegisteredAtAsTimestamp(),$issue->getId());	
 				}
 			}
 		});
@@ -228,13 +228,13 @@ class Issue extends \UIKit\Framework\UIStoredObject
 			$old_labels = $old->getLabelIds();
 				
 			if ($old->getStatus() != $issue->getStatus()) {
-				$stmt->zAdd("issue_list.{$issue->getOwner()}.{$issue->getRepository()}.{$issue->getStatus()}",$issue->getRegisteredAtAsTimestamp(),$issue->getId());
+				$stmt->zAdd("issue_list.{$issue->getOwner()}.{$issue->getRepositoryId()}.{$issue->getStatus()}",$issue->getRegisteredAtAsTimestamp(),$issue->getId());
 				foreach($issue->getLabelIds() as $label_id) {
-					$stmt->zAdd("issue_labels.{$issue->getOwner()}.{$issue->getRepository()}.{$label_id}.{$issue->getStatus()}",$issue->getRegisteredAtAsTimestamp(),$issue->getId());			
+					$stmt->zAdd("issue_labels.{$issue->getOwner()}.{$issue->getRepositoryId()}.{$label_id}.{$issue->getStatus()}",$issue->getRegisteredAtAsTimestamp(),$issue->getId());			
 				}
-				$stmt->zDelete("issue_list.{$issue->getOwner()}.{$issue->getRepository()}.{$old->getStatus()}",$issue->getId());
+				$stmt->zDelete("issue_list.{$issue->getOwner()}.{$issue->getRepositoryId()}.{$old->getStatus()}",$issue->getId());
 				foreach($old->getLabelIds() as $label_id) {
-					$stmt->zDelete("issue_labels.{$issue->getOwner()}.{$issue->getRepository()}.{$label_id}.{$issue->getStatus()}",$issue->getId());
+					$stmt->zDelete("issue_labels.{$issue->getOwner()}.{$issue->getRepositoryId()}.{$label_id}.{$issue->getStatus()}",$issue->getId());
 				}
 				
 			}
@@ -243,14 +243,14 @@ class Issue extends \UIKit\Framework\UIStoredObject
 				if (isset($diff['-'])){
 					foreach ($diff['-'] as $label_id) {
 						//@todo issue_list.<owner>.repository.label.status,
-						$stmt->zDelete("issue_labels.{$issue->getOwner()}.{$issue->getRepository()}.{$label_id}.{$issue->getStatus()}",$issue->getId());
+						$stmt->zDelete("issue_labels.{$issue->getOwner()}.{$issue->getRepositoryId()}.{$label_id}.{$issue->getStatus()}",$issue->getId());
 					}
 				}
 
 				if (isset($diff['+'])){
 					foreach ($diff['+'] as $label_id) {
 						//@todo issue_list.<owner>.repository.label.status,  
-						$stmt->zAdd("issue_labels.{$issue->getOwner()}.{$issue->getRepository()}.{$label_id}.{$issue->getStatus()}",$issue->getRegisteredAtAsTimestamp(),$issue->getId());
+						$stmt->zAdd("issue_labels.{$issue->getOwner()}.{$issue->getRepositoryId()}.{$label_id}.{$issue->getStatus()}",$issue->getRegisteredAtAsTimestamp(),$issue->getId());
 					}
 				}
 			}
@@ -258,11 +258,11 @@ class Issue extends \UIKit\Framework\UIStoredObject
 			if ($old->getMilestoneId() != $issue->getMilestoneId()) {
 				$mile = $old->getMilestoneId();
 				if($mile){
-					$stmt->zDelete("issue_milestone.{$issue->getOwner()}.{$issue->getRepository()}.{$mile}.{$issue->getStatus()}",$issue->getId());
+					$stmt->zDelete("issue_milestone.{$issue->getOwner()}.{$issue->getRepositoryId()}.{$mile}.{$issue->getStatus()}",$issue->getId());
 				}
 				$mile = $issue->getMilestoneId();
 				if($mile){
-					$stmt->zAdd("issue_milestone.{$issue->getOwner()}.{$issue->getRepository()}.{$mile}.{$issue->getStatus()}",$issue->getRegisteredAtAsTimestamp(), $issue->getId());
+					$stmt->zAdd("issue_milestone.{$issue->getOwner()}.{$issue->getRepositoryId()}.{$mile}.{$issue->getStatus()}",$issue->getRegisteredAtAsTimestamp(), $issue->getId());
 				}
 			}
 

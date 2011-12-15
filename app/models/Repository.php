@@ -151,8 +151,9 @@ class Repository
 	
 	public function delete($name)
 	{
-		if (is_dir("/home/git/repositories/{$name}/{$this->name}.git")) {
-			system("rm -rf /home/git/repositories/{$name}/{$this->name}.git");
+		$id = $this->getId();
+		if (is_dir("/home/git/repositories/{$name}/{$id}")) {
+			system("rm -rf /home/git/repositories/{$name}/{$id}");
 			return true;
 		} else {
 			return false;
@@ -175,14 +176,14 @@ class Repository
 		$repository->setDescription($this->getDescription());
 		$repository->setHomepageUrl($this->getHomepageUrl());
 		
-		$repo_name = $repository->getName();
-		$from_user = $owner->getNickname();
-		$to_user = $forker->getNickname();
+		$repo_name = $repository->getId();
+		$from_user = $owner->getKey();
+		$to_user = $forker->getKey();
 
-		if (!is_dir("/home/git/repositories/{$to_user}/{$repo_name}.git")) {
+		if (!is_dir("/home/git/repositories/{$to_user}/{$repo_name}")) {
 			$repository->setOrigin($owner->getKey());
-			system("mkdir -p /home/git/repositories/{$to_user}/{$repo_name}.git");
-			if(system("git clone file:///home/git/repositories/{$from_user}/{$repo_name}.git --bare --shared /home/git/repositories/{$to_user}/{$repo_name}.git")){
+			system("mkdir -p /home/git/repositories/{$to_user}/{$repo_name}");
+			if(system("git clone file:///home/git/repositories/{$from_user}/{$repo_name} --bare --shared /home/git/repositories/{$to_user}/{$repo_name}")){
 				return $repository;
 			} else {
 				return false;

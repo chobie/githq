@@ -53,7 +53,7 @@ class RootController extends GitHQController
 			$this->render("repository.htm",array(
 				'user' => $user,
 				'owner'=> $owner,
-				'issue_count'  => IssueReferences::getOpenedIssueCount($owner->getKey(),$owner->getRepository($params['action.orig'])->getName()),	
+				'issue_count'  => IssueReferences::getOpenedIssueCount($owner->getKey(),$owner->getRepository($params['action.orig'])->getId()),	
 				'repository'=> $owner->getRepository($params['action.orig']),
 				'commit' => $commit,
 				'tree' => $tree,
@@ -98,7 +98,8 @@ class RootController extends GitHQController
 		$user = $this->getUser();
 		
 		$owner = User::get(UserPointer::getIdByNickname($params['user']),'user');
-		$repo = new \Git\Repository("/home/git/repositories/{$owner->getKey()}/{$params['repository']}.git");
+		$repository = $owner->getRepository($params['repository']);
+		$repo = new \Git\Repository("/home/git/repositories/{$owner->getKey()}/{$repository->getId()}");
 		$refm = new \Git\Reference\Manager($repo);
 		$branches = $refm->getList();
 
@@ -134,12 +135,12 @@ class RootController extends GitHQController
 		$this->render("repository.htm",array(
 			'user'         => $user,
 			'owner'        => $owner,
-			'repository'   => $owner->getRepository($params['repository']),
+			'repository'   => $repository,
 			'commit'       => $commit,
 			'tree'         => $tree,
 			'blob'         => $blob,
 			'data'         => $data,
-			'issue_count'  => IssueReferences::getOpenedIssueCount($owner->getKey(), $owner->getRepository($params['repository'])->getName()),
+			'issue_count'  => IssueReferences::getOpenedIssueCount($owner->getKey(), $owner->getRepository($params['repository'])->getId()),
 			'current_path' => dirname($params['path']) . '/',
 			'path'         => $params['path']
 		));
@@ -149,7 +150,9 @@ class RootController extends GitHQController
 	{
 		$user = $this->getUser();
 		$owner = User::get(UserPointer::getIdByNickname($params['user']),'user');
-		$repo = new \Git\Repository("/home/git/repositories/{$owner->getKey()}/{$params['repository']}.git");
+		$repository = $owner->getRepository($params['repository']);
+		
+		$repo = new \Git\Repository("/home/git/repositories/{$owner->getKey()}/{$repository->getId()}");
 		$ref = $repo->lookupRef("refs/heads/master");
 		$commit = $repo->getCommit($ref->getId());
 		$current_path = '';
@@ -168,10 +171,10 @@ class RootController extends GitHQController
 		$this->render("repository.htm",array(
 			'user'         => $user,
 			'owner'        => $owner,
-			'repository'   => $owner->getRepository($params['repository']),
+			'repository'   => $repository,
 			'commit'       => $commit,
 			'tree'         => $tree,
-			'issue_count'  => IssueReferences::getOpenedIssueCount($owner->getKey(), $owner->getRepository($params['repository'])->getName()),
+			'issue_count'  => IssueReferences::getOpenedIssueCount($owner->getKey(), $owner->getRepository($params['repository'])->getId()),
 			'current_path' => $current_path,
 			'parent_dir'   => $parent_dir,
 		));
@@ -351,7 +354,7 @@ class RootController extends GitHQController
 					'commit'       => $commit,
 					'tree'         => $tree,
 					'blame'         => $blame,
-					'issue_count'  => IssueReferences::getOpenedIssueCount($owner->getKey(), $owner->getRepository($params['repository'])->getName()),
+					'issue_count'  => IssueReferences::getOpenedIssueCount($owner->getKey(), $owner->getRepository($params['repository'])->getId()),
 					'current_path' => dirname($params['path']) . '/',
 					'path'         => $params['path']
 		));

@@ -2,11 +2,12 @@
 class Milestones implements Iterator
 {
 	protected $position = 0;
+	protected $sequence = 0;
 	protected $milestones = array();
 	
 	public function __sleep()
 	{
-		return array('milestones');
+		return array('milestones','sequence');
 	}
 	
 
@@ -16,7 +17,9 @@ class Milestones implements Iterator
 	
 	public function getNextId()
 	{
-		return count($this->milestones);
+		$id = $this->sequence;
+		$this->sequence++;
+		return $id;
 	}
 	
 	public function getMilestoneById($id)

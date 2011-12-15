@@ -4,6 +4,7 @@ class UserPointer
 	public static function getIdByEmail($email)
 	{
 		$redis = GitHQController::getRedisClient();
+		$email = sha1($email);
 		return $redis->get("pointer.user_id.email.{$email}");
 	}
 	
@@ -22,6 +23,7 @@ class UserPointer
 	public static function setIdWithEmail($id, $email)
 	{
 		$redis = GitHQController::getRedisClient();
+		$email = sha1($email);
 		$redis->set("pointer.user_id.email.{$email}",$id);
 	}
 	

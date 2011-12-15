@@ -14,8 +14,8 @@ class UsersController extends GitHQController
 					//$id = UserPointer::getNextId();
 					$user = new User($user_id);
 					$user->setNickname($_REQUEST['username']);
-					//$user->setEmail($_REQUEST['email']);
-					//$user->setPassword($_REQUEST['password']);
+					$user->setEmail($_REQUEST['email']);
+					$user->setPassword($_REQUEST['password']);
 					if ($user->create()) {
 						header("Location: http://githq.org/");
 					} else {
