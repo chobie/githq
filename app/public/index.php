@@ -30,6 +30,37 @@ class GitHQApplicationDelegate extends UIKit\Framework\UIWebApplicationDelegate
 												'controller' => 'IssuesController',
 												'action' => 'onIssue',
 		));
+		$router->add('/{user}/{repository}/zipball/{tag}',array(
+												'controller' => 'RootController',
+												'action' => 'onZipBall',
+		));
+		$router->add('/logout',array(
+												'controller' => 'RootController',
+												'action' => 'onLogout',
+		));
+		$router->add('/session',array(
+														'controller' => 'RootController',
+														'action' => 'onSession',
+		));
+		$router->add('/about',array(
+							'controller' => 'RootController',
+							'action' => 'onAbout'
+		));
+		$router->add('/account',array(
+										'controller' => 'RootController',
+										'action' => 'onAccount',
+		));
+		$router->add('/connect',array(
+												'controller' => 'RootController',
+												'action' => 'onConnect',
+		));
+		
+		
+		
+		$router->add('/{user}/{repository}/tags',array(
+										'controller' => 'RootController',
+										'action' => 'onTags',
+		));
 		
 		$router->add('/{user}/{repository}/commits/{refs}/{path,greed}',array(
 								'controller' => 'RootController',
@@ -74,20 +105,22 @@ class GitHQApplicationDelegate extends UIKit\Framework\UIWebApplicationDelegate
 						'controller' => 'RootController',
 						'action' => 'onDefault',
 		));
-		$router->add('/about',array(
-					'controller' => 'RootController',
-					'action' => 'onAbout'
-		));
+		/*
 		$router->add('/{action,alpha,camel,prepend(on)}',array(
 						'controller' => 'RootController',
 						'action' => 'default',
 		));
-		/*
-		$router->add('/{user,vars}/',array(
+		*/
+
+		$router->add('/{user,vars}',array(
 								'controller' => 'RootController',
 								'action' => 'onUser',
 		));
-		*/
+		$router->add('/',array(
+										'controller' => 'RootController',
+										'action' => 'onDefault',
+		));
+		
 		$router->add('/{controller,vars,camel,append(Controller)}/{action,vars,camel,prepend(on),optional}',array(
 						'controller' => 'RootController',
 						'action' => 'default',

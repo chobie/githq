@@ -16,6 +16,9 @@
   	<div class="fill">
   		<div class="container">
   		<a class="brand" href="/">githq</a>
+  		<ul class="nav">
+  			<li class="active"><a href="#">Home</a></li>
+  		</ul>
 		{% if user %}
   		<ul class="nav secondary-nav">
 			<li><a href="#"><img src="{{user.getImageUrl()}}?s=20" />{{user.getNickname()}}</a></li>
@@ -28,21 +31,6 @@
   </div>
   
   <div class="container">  
-
-  {% if owner %}
-  <div class="page-header row">
-  	<h1 class="span11"><a href="/{{owner.getNickname()}}">{{owner.getNickname()}}</a>/<a href="/{{owner.getNickname()}}/{{repository.getName()}}">{{repository.getName()}}</a></h1>
-    {% if owner == user%}
-    <div class="span5"><span class="btn secondary"><a href="/{{owner.getNickname()}}/{{repository.getName()}}/admin">admin</a></span></div>
-    {% endif %}
-
-  {% if repository.hasOrigin() %}
-    <div>forked from <a href="/{{repository.getOriginUser().getNickname()}}/{{repository.getName()}}">{{repository.getOriginUser().getNickname()}}/{{repository.getName()}}</a></div>
-  {% endif %}
-  </div>
-  {% endif %}
-
-
   {% block contents %}{% endblock %}
   <hr />
   <div>

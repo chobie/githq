@@ -255,13 +255,16 @@ class Issue extends \UIKit\Framework\UIStoredObject
 				}
 			}
 			
-			if ($old->getMilestoneId() != $issue->getMilestoneId()) {
+			error_log($old->getMilestoneId());
+			error_log($issue->getMilestoneId());
+			
+			if ($old->getMilestoneId() !== $issue->getMilestoneId()) {
 				$mile = $old->getMilestoneId();
-				if($mile){
+				if($mile !== false){
 					$stmt->zDelete("issue_milestone.{$issue->getOwner()}.{$issue->getRepositoryId()}.{$mile}.{$issue->getStatus()}",$issue->getId());
 				}
 				$mile = $issue->getMilestoneId();
-				if($mile){
+				if($mile !== false){
 					$stmt->zAdd("issue_milestone.{$issue->getOwner()}.{$issue->getRepositoryId()}.{$mile}.{$issue->getStatus()}",$issue->getRegisteredAtAsTimestamp(), $issue->getId());
 				}
 			}

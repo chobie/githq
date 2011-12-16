@@ -1,24 +1,37 @@
 {% extends "template.htm" %}
 {% block contents %}
+
+  <ul class="tabs">
+    <li><a href="/{{owner.getNickname()}}/{{repository.getName}}">Files</a></li>
+    <li><a href="/{{owner.getNickname()}}/{{repository.getName()}}/commits/master">Commits</a></li>
+    <li><a href="#">Branches</a></li>
+    <li><a href="/{{owner.getNickname()}}/{{repository.getName()}}/tags">Tags</a></li>
+    <li class="active"><a href="/{{owner.getNickname()}}/{{repository.getName()}}/issues">Issues ({{issue_count}})</a></li>
+  </ul>
+
   <div>
-    <div>{{issue.getAuthor().getNickname()}} opened this issue at {{issue.getRegisteredAt()}}</div>
+    <div><img src="{{user.getImageUrl()}}" height="20"/>{{issue.getAuthor().getNickname()}} opened this issue at {{issue.getRegisteredAt()}}</div>
     	<div class="issue_container">
-	    <div><h3>{{issue.getTitle()}}</h3></div>
-	    {% if issue.getMilestoneId() %}
+	    <div><h2>{{issue.getTitle()}}</h2></div>
+	    {% if issue.hasMilestone() %}
 	    Milestone: {{repository.getMilestones().getMilestoneById(issue.getMilestoneId())}}
 	    {% endif %}
 	    {% if user.getNickname() == owner.getNickname() %}
-	    <div style="text-align:right"><a href="/{{owner.getNickname()}}/{{repository.getName()}}/issues/edit/{{issue.getId()}}">EDIT</a></div>
+	    <div style="text-align:right"><span class="btn secondary"><a href="/{{owner.getNickname()}}/{{repository.getName()}}/issues/edit/{{issue.getId()}}">EDIT</a></span></div>
 	    {% endif %}
 	    
 	    {% if issue.hasLabel() %}
 	    {% set labels = repository.getLabels() %}
 	    <div>Labels: 
 	    {% for item in issue.getLabelIds() %}
+	    {% if user == owner %}
 	    	<form method="POST" action="/{{owner.getNickname()}}/{{repository.getName()}}/issues/update">[{{labels.getLabelById(item).getName()}} 
 	    	<input type="hidden" name="label" value="{{item}}" />
 	    	<input type="hidden" name="id" value="{{issue.getId()}}" />
 	    	<input type="submit" value="x" name="label_delete" />]</form>
+	    {% else %}
+		[{{labels.getLabelById(item).getName()}}]
+	    {% endif %}
 	    {% endfor %}
 	    </div>
 	    {% endif %}
@@ -42,9 +55,9 @@
     <div><textarea name="comment" style="width:800px; height:10em;"></textarea></div>
     <div>label: <input type="text" name="label" value="" /></div>
     <input type="hidden" name="issue" value="{{issue.getId()}}" />
-    <input type="submit" value="comment on this issue" />
-  	<input type="submit" value="close this issue" name="close" />
-  	<input type="submit" value="re-open this issue" name="open" />
+    <input type="submit" value="comment on this issue" class="btn primary"/>
+  	<input type="submit" value="close this issue" name="close"  class="btn primary"/>
+  	<input type="submit" value="re-open this issue" name="open" class="btn secondary"/>
   </form>
   </div>
   {% endif %}

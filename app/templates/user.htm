@@ -1,17 +1,126 @@
-{% extends "template.htm" %}
+{% extends "template2.htm" %}
 {% block contents %}
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript">
+      google.load("visualization", "1", {packages:["corechart"]});
+      google.setOnLoadCallback(drawChart);
+      function drawChart() {
+        var data = new google.visualization.DataTable();
+        data.addColumn('string', 'Week');
+        data.addColumn('number', 'commit by author');
+        data.addRows([
+['50',0],
+['51',0],
+['0',0],
+['1',0],
+['2',0],
+['3',0],
+['4',0],
+['5',0],
+['6',0],
+['7',0],
+['8',0],
+['9',0],
+['10',0],
+['11',0],
+['12',0],
+['13',0],
+['14',0],
+['15',0],
+['16',0],
+['17',0],
+['18',0],
+['19',0],
+['20',0],
+['21',0],
+['22',0],
+['23',0],
+['24',0],
+['25',0],
+['26',0],
+['27',0],
+['28',0],
+['29',0],
+['30',0],
+['31',0],
+['32',0],
+['33',0],
+['34',0],
+['35',0],
+['36',0],
+['37',0],
+['38',0],
+['39',0],
+['40',0],
+['41',0],
+['42',0],
+['43',0],
+['44',0],
+['45',0],
+['46',0],
+['47',17],
+['48',9],
+['49',20]
+        ]);
+
+        var options = {
+          width: 416, height: 40,
+          hAxis: {textPosition: 'none'},
+          vAxis: {textPosition: 'none',gridlines:{color:'#FFF'},maxValue:50},
+          legend: {position:'none'},
+          tooltip: {trigger: 'none'}
+        };
+
+        var chart = new google.visualization.AreaChart(document.getElementById('chart_div'));
+        chart.draw(data, options);
+      }
+    </script>
 
 
+<h2><img src="https://graph.facebook.com/{{owner.getKey()}}/picture" />{{owner.getNickname()}} ({{owner.getProfile().getName()}})</h2>
+
+<address>
+<strong>Name</strong><br />
+<p>{{owner.getProfile().getName()}}</p>
+{% if user %}
+<strong>Email</strong><br />
+<p>{{owner.getProfile().getEmail()|numericentity|raw}}</p>
+{% endif %}
+<strong>Location</strong><br />
+<p>{{owner.getProfile().getLocation()}}</p>
+<strong>Company</strong>
+<p>{{owner.getProfile().getCompany()}}</p>
+<strong>Member Since</strong><br />
+<p>{{owner.getRegisteredAt()}}</p>
+</address>
+
+
+<table>
+<tr>
+<td style="vertical-align:top">
 <h2>Repositories</h2>
 {% for repository in owner.getRepositories() %}
-
-<div style="border:#DDDDDD 1px solid;">
-<div><a href="/{{owner.getNickname()}}/{{repository.getName()}}">{{repository.getName()}}</a></div>
-<div>
-	{{repository.getDescription()}}
-
+{% if repository.hasPermission(owner,user) %}
+<div style="border:#DDDDDD 1px solid;border-radius:5px;margin-bottom:1em;width:420px">
+<div style="padding:0.5em;"><a href="/{{owner.getNickname()}}/{{repository.getName()}}">{{repository.getName()}}</a></div>
+<div style="background:#f7f7f7;">
+	<div>{{repository.getDescription()}}</div>
+    <div id="chart_div" style="padding-top:0.5em;"></div>
+    <div style="padding-right:1em;text-align:right;font-size:8px">52 week participation</div>
 </div>
 </div>
+{% endif %}
 {% endfor %}
+</td>
+<td style="vertical-align:top">
+<h2>Public Activity</h2>
+  {% if timeline %}
+  {% for activity in timeline %}
+  <div><img src="{{activity.getImageUrl()}}" height="30" />{{activity.getDescription()|raw}}</div>
+  {% endfor %}
+  {% endif %}
 
+</td>
+</tr>
+</table>
 {% endblock %}

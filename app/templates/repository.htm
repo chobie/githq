@@ -1,7 +1,6 @@
 {% extends "template.htm" %}
 {% block contents %}  
   {% if user != owner %}
-  
   {% if user and user.getRepository(repository.getName()) == false %}
   <div>
   <form method="POST" action="/{{user.getNickname()}}/{{repository.getName()}}">
@@ -14,45 +13,65 @@
   {% endif %}
   {% endif %}
  
-  <div>
-  Files | <a href="/{{owner.getNickname()}}/{{repository.getName()}}/commits/master">Commits</a> | Branches | Tags | Downloads | <a href="/{{owner.getNickname()}}/{{repository.getName()}}/issues">Issues ({{issue_count}})</a>
+  <ul class="tabs">
+    <li class="active"><a href="#">Files</a></li>
+    <li><a href="/{{owner.getNickname()}}/{{repository.getName()}}/commits/master">Commits</a></li>
+    <li><a href="#">Branches</a></li>
+    <li><a href="/{{owner.getNickname()}}/{{repository.getName()}}/tags">Tags</a></li>
+    <li><a href="/{{owner.getNickname()}}/{{repository.getName()}}/issues">Issues ({{issue_count}})</a></li>
+  </ul>
   
-  <div>
-  
+  {% if tags %}
+  <div>{% for tag in tags %}<a href="/{{owner.getNickname()}}/{{repository.getName()}}/commit/{{tag.oid}}">{{tag.name}}</a> | {% endfor %}</div>
+  {% endif %}  
+
   {% if user %}
-  <input type="text" value="git@githq.org:{{owner.getNickname()}}/{{repository.getName()}}.git" style="width:20em;"/>
+  <div><input type="text" value="git@githq.org:{{owner.getNickname()}}/{{repository.getName()}}.git" style="width:20em;"/></div>
   {% endif %}
-  </div>
-  </div>
-  
-  <div>
   
   {% if commit %}
   
-  <div>
-    <div>{{commit.getMessage()}}</div>
-    <div><img src="http://www.gravatar.com/avatar/{{commit.getAuthor().email|md5}}?s=20">{{commit.getAuthor().name}}</div>
-    <div>{{commit.getAuthor().time.format('Y-m-d H:i:s')}}</div>
+  <div class="commit">
+    <p>{{commit.getMessage()}}</p>
+    <div>
+    <img src="https://secure.gravatar.com/avatar/{{commit.getAuthor().email|md5}}?s=20">{{commit.getAuthor().name}}<br />
+    {{commit.getAuthor().time.format('Y-m-d H:i:s')}}</div>
   </div>
 
-  <div>
-    <div>name age message</div>
-  {% if parent_dir %}
-  <div><img src="/assets/dir.png" /><a href="/{{owner.getNickname()}}/{{repository.getName()}}/tree/master/{{parent_dir}}">..</a></div>
-  {% endif %}
-  {% for entry in tree %}
-    {% if entry.isBlob() %}
-    <div><img src="/assets/txt.png" /><a href="/{{owner.getNickname()}}/{{repository.getName()}}/blob/master/{{current_path}}{{entry.name}}">{{entry.name}}</a></div>
-    {% else %}
-    <div><img src="/assets/dir.png" /><a href="/{{owner.getNickname()}}/{{repository.getName()}}/tree/master/{{current_path}}{{entry.name}}">{{entry.name}}</a></div>
-    {% endif %}
-  {% endfor %}
-  
+
+  <table class="zebra-striped">
+  	<tr>
+  		<th>name</th><th>age</th><th>message</th>
+  	</tr>
+		  {% if parent_dir %}
+  	<tr>
+	<td><img src="/assets/dir.png" /><a href="/{{owner.getNickname()}}/{{repository.getName()}}/tree/master/{{parent_dir}}">..</a></td>
+	<td></td>
+	<td></td>
+	</tr>
+		  {% endif %}
+		  {% for entry in tree %}
+	<tr>
+		    {% if entry.isBlob() %}
+		    <td><img src="/assets/txt.png" /><a href="/{{owner.getNickname()}}/{{repository.getName()}}/blob/master/{{current_path}}{{entry.name}}">{{entry.name}}</a></td>
+		    <td></td>
+		    <td></td>
+		    {% else %}
+		    <td><img src="/assets/dir.png" /><a href="/{{owner.getNickname()}}/{{repository.getName()}}/tree/master/{{current_path}}{{entry.name}}">{{entry.name}}</a></td>
+		    <td></td>
+		    <td></td>
+		    {% endif %}
+	</tr>
+		  {% endfor %}
+  </table>
+
   {% if data %}
+  <div>
   <h2>{{path}}</h2>
   <div style="text-align:right"><a href="/{{owner.getNickname()}}/{{repository.getName()}}/blame/master/{{path}}">blame</a></div>
   <div style="text-align:right"><a href="/{{owner.getNickname()}}/{{repository.getName()}}/commits/master/{{path}}">history</a></div>
   <div class="highlight" style="white-space:nowrap;font-family:'Bitstream Vera Sans Mono','Courier',monospace;">{{data|raw}}</div>
+  </div>
   {% endif %}
   
   {% else %}
@@ -80,7 +99,5 @@
   git push -u origin master
 </pre>
   {% endif %}
-  </div>
-  </div>
 
  {% endblock %}

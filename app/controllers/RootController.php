@@ -1,7 +1,6 @@
 <?php
 class RootController extends GitHQController
-{
-	
+{	
 	public function onDefault($params =  array())
 	{
 		$data = null;
@@ -29,6 +28,10 @@ class RootController extends GitHQController
 		if (isset($params['controller'])) {
 			$owner = User::get(UserPointer::getIdByNickname($params['controller.orig']),"user");
 			$repository = $owner->getRepository($params['action.orig']);
+			if (!$repository) {
+				echo "<h1>404 Not Found</h1>";
+				return;
+			}
 			if (!$repository->hasPermission($owner, $user)) {
 				echo "<h1>403 Forbidden</h1>";
 				return;
@@ -60,7 +63,11 @@ class RootController extends GitHQController
 				'data' => $data,
 			));
 		} else {
-			$this->render("index.htm",array('user'=>$user));
+			$timeline = Activity::getGlobalTimeline();
+			$this->render("index.htm",array(
+				'user'=>$user,
+				'timeline' => $timeline,
+			));
 		}
 	}
 	
@@ -151,8 +158,10 @@ class RootController extends GitHQController
 		$user = $this->getUser();
 		$owner = User::get(UserPointer::getIdByNickname($params['user']),'user');
 		$repository = $owner->getRepository($params['repository']);
+			
 		
 		$repo = new \Git\Repository("/home/git/repositories/{$owner->getKey()}/{$repository->getId()}");
+		
 		$ref = $repo->lookupRef("refs/heads/master");
 		$commit = $repo->getCommit($ref->getId());
 		$current_path = '';
@@ -313,9 +322,13 @@ class RootController extends GitHQController
 	{
 		$owner = User::get(UserPointer::getIdByNickname($params['user']),"user");
 		$user = $this->getUser();
+		
+		$timeline = Activity::getTimelineByUserId($owner->getKey());
+		
 		$this->render("user.htm",array(
 			'owner' => $owner,
 			'user' => $user,
+			'timeline' => $timeline,
 		));
 	}
 	
@@ -398,5 +411,68 @@ class RootController extends GitHQController
 					'repository'=> $owner->getRepository($params['repository']),
 					"commits" => $commits
 		));
+	}
+	
+	public function onTags($params)
+	{
+		$user = $this->getUser();
+		$owner = User::get(UserPointer::getIdByNickname($params['user']),'user');
+		$repository = $owner->getRepository($params['repository']);
+		
+		$repo = new \Git\Repository("/home/git/repositories/{$owner->getKey()}/{$repository->getId()}");
+		$tags = array();
+		$branches = array();
+		foreach($repo->getReferences() as $ref) {
+			if(preg_match("/refs\/tags/",$ref->name)) {
+				$ref->name = basename($ref->name);
+				$ctags[$ref->name] = $ref;
+				$atags[] = $ref->name;
+			} else if (preg_match("/refs\/heads/",$ref->name)) {
+				$branches[] = $ref;
+			}
+		}
+		if($atags){
+		foreach(\VersionSorter::rsort($atags) as $id){
+			$tags[] = $ctags[$id];
+		}
+		}
+				
+		$this->render("tags.htm",array(
+					'user'         => $user,
+					'owner'        => $owner,
+					'repository'   => $repository,
+					'commit'       => $commit,
+					'tree'         => $tree,
+					'issue_count'  => IssueReferences::getOpenedIssueCount($owner->getKey(), $owner->getRepository($params['repository'])->getId()),
+					'tags' => $tags,
+		));
+		
+	}
+
+	public function onZipBall($params)
+	{
+		ini_set("max_memory","128M");
+		
+		$user = $this->getUser();
+		$owner = User::get(UserPointer::getIdByNickname($params['user']),'user');
+		$repository = $owner->getRepository($params['repository']);
+	
+		$spec = array(
+			0 => array("pipe","r"),
+			1 => array("pipe","w")
+		);
+		$proc = proc_open("git archive --format zip {$params['tag']}",$spec,$pipes,"/home/git/repositories/{$owner->getKey()}/{$repository->getId()}");
+		if(is_resource($proc)) {
+			fclose($pipes[0]);
+			$content = stream_get_contents($pipes[1]);
+			fclose($pipes[1]);
+			proc_close($proc);
+		}
+		header("Content-Disposition: inline; filename=\"{$owner->getNickname()}-{$repository->getName()}-{$params['tag']}.zip\"");
+		header("Content-type: application/zip");
+		header("Content-Length: " . strlen($content));
+		echo $content;
+		exit;
+		
 	}
 }

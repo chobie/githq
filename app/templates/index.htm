@@ -1,20 +1,45 @@
 {% extends "template.htm" %}
 {% block contents %}
   {% if not user %}
-  <a href="/connect"><img src="/assets/fb-connect-large.png"></a>
-  {% else %}
   
-  <div>Your Repositories</div>
+  <div class="hero-unit">
+  <h1>All your repositories are belong to us!</h1>
+  {% if not timeline %}
+  <h2>githq Timeline</h2>
+  <div style="overflow:auto;max-height:300px;min-height:300px;">
+  {% for activity in timeline %}
+  <div><img src="{{activity.getImageUrl()}}" height="30" />{{activity.getDescription()|raw}}</div>
+  {% endfor %}
+  </div>
+  {% endif %}
+  </div><!-- /hero-unit -->
+  
+  <div class="fbconnect"><a href="/connect"><img src="/assets/fb-connect-large.png"></a></div>
+  
+  {% else %}
+  <div class="container-fluid">
+  	<div class="content" style="max-height:300px;min-height:300px;">
+	  <h2>githq Timeline</h2>
+ 		 {% for activity in timeline %}
+  		<p><img src="{{activity.getImageUrl()}}"  style="height:30px;" />{{activity.getDescription()|raw}}</p>
+  		{% endfor %}  
+  	</div>
+
+  	<div class="sidebar">
+  	<div class="well">
+  <h3>Your Repositories</h3>
   
   {% if user.hasRepositories() %}
   
   {% for repository in user.getRepositories() %}
-  <div><a href="/{{user.getNickname()}}/{{repository.getName()}}">{{user.getNickname()}}/{{repository.getName()}}</a></div>
-  
+  <p><a href="/{{user.getNickname()}}/{{repository.getName()}}">{{user.getNickname()}}/{{repository.getName()}}</a></p>
   {% endfor %}
-  
+  <p><a href="/repositories/new" class="btn primary large">create repository</a></p>
+	</div>
+  	</div>
+
   {% endif %}
-  <a href="/repositories/new">create repository</a>
-  
+  </div>
   {% endif %}
+  
 {% endblock %}

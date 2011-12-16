@@ -27,6 +27,18 @@ $config->set("issue", array(
 	          "persistence" => true,
 	)
 ));
+$config->set("activity", array(
+	     "strategy"     => "UIKit\\Framework\\UIStoredRedisStrategy",
+	     "serializer"   => "UIKit\\Framework\\UIStoredPHPSerializer",
+	     "cache"        => "UIKit\\Framework\\UIStoredPHPArrayCache",
+	     "expiration"   => 0,
+	     "lock_timeout" => 5,
+	     "redis"        => array(
+	          "host" => "localhost",
+	          "port" => 6379,
+	          "persistence" => true,
+)
+));
 
 $i = UIStoredUnderlying::getInstance();
 

@@ -10,7 +10,6 @@ class IssuesController extends GitHQController
 		if (isset($_REQUEST['milestone'])) {
 			$milestone = $repository->getMilestones()->getMilestoneByName($_REQUEST['milestone']);
 			$list = IssueReferences::getListWithMilestone($milestone->getId(), $owner->getKey(), $repository->getId(),Issue::OPENED);
-				
 		} else if (isset($_REQUEST['label'])) {
 			$label = $repository->getLabels()->getLabelByName($_REQUEST['label']);
 			$list = IssueReferences::getListWithLabel($label->getId(), $owner->getKey(), $repository->getId(),Issue::OPENED);
@@ -44,7 +43,13 @@ class IssuesController extends GitHQController
 			$issue->setAuthor($user->getKey());
 			$issue->setTitle($_REQUEST['title']);
 			$issue->setBody($_REQUEST['contents']);
-			$issue->create();
+			if ($issue->create()) {
+				$a = new Activity(Activity::getNextId(),'activity');
+				$a->setImageUrl("http://www.gravatar.com/avatar/" . md5($user->getEmail()));
+				$a->setDescription("{$user->getNickname()} opened <a href=\"/{$owner->getNickname()}/{$repository->getName()}/issues/{$id}\">issue {$id}</a> on {$owner->getNickname()}/{$repository->getName()}");
+				$a->setSenderId($user->getKey());
+				$a->create();
+			}
 			header("Location: /{$owner->getNickname()}/{$repository->getName()}/issues");
 		} else {
 			$this->render("new.htm",array(
@@ -117,7 +122,13 @@ class IssuesController extends GitHQController
 			$issue->addLabelId($label->getId());
 		}
 
-		$issue->save();
+		if($issue->save()) {
+			$a = new Activity(Activity::getNextId(),'activity');
+			$a->setImageUrl("http://www.gravatar.com/avatar/" . md5($user->getEmail()));
+			$a->setDescription("{$user->getNickname()} commented <a href=\"/{$owner->getNickname()}/{$repository->getName()}/issues/{$_REQUEST['issue']}\">issue {$_REQUEST['issue']}</a> on {$owner->getNickname()}/{$repository->getName()}");
+			$a->setSenderId($user->getKey());
+			$a->create();
+		}
 		header("Location: /{$user->getNickname()}/{$repository->getName()}/issues/{$issue->getId()}");
 	}
 	

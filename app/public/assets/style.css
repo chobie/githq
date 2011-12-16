@@ -1,5 +1,28 @@
 @CHARSET "UTF-8";
 
+body {
+	padding-top: 60px;
+}
+
+.fbconnecgt {
+	padding-top: 30px;
+	text-align:right !important;
+}
+
+.commit {
+	margin-top:1em;
+	margin-bottom:1em;
+	border:1px solid #C5D5DD;
+	-webkit-border-radius:5px;
+	-moz-border-radius:5px;
+}
+.commit p {
+	padding:0.5em;background-color:#E4F1F6;border-bottom:1px solid #C5D5DD;
+}
+.commit div {
+	padding:0.5em;
+}
+/* old */
 
 .issue_container {
 	border: 1px solid #C5D5DD;
@@ -34,5 +57,8 @@
 }
 
 .diff div{
+	white-space:pre;
+}
+code {
 	white-space:pre;
 }

@@ -1,14 +1,22 @@
 {% extends "template.htm" %}
 {% block contents %}
 
-  <h3>Account Information</h3>
-  <form action="/account" method="POST">
-  <table>
-  	<tr>
-  		<td>Account Email</td><td><input type="text" name="email" value="{{user.getEmail()}}" /></td>
-  	</tr>
-  </table>
-  <input type="submit" value="Update account information" name="account" />
+
+  <form action="/account" method="POST" class="form-stacked">
+  	<fieldset>
+    <legend>Account Information</legend>
+    <div class="clearfix">
+    	<label for="email">Account Email</label>
+    	<div class="input">
+    		<input type="text" name="email" id="email" value="{{user.getEmail()}}" class="xlarge" />
+    	</div>
+    </div><!-- /clearfix -->
+    <div class="clearfix">
+    <div class="actions">
+    	  <button type="submit" name="account" class="btn primary"/>Update account information</button>
+    </div>
+    </div><!-- /clearfix -->
+    </fieldset>
   </form>
   
   <h3>Public Profile</h3>

@@ -1,44 +1,56 @@
 {% extends "template.htm" %}
 {% block contents %}
 
+  <ul class="tabs">
+    <li><a href="#">Files</a></li>
+    <li><a href="/{{owner.getNickname()}}/{{repository.getName()}}/commits/master">Commits</a></li>
+    <li><a href="#">Branches</a></li>
+    <li><a href="/{{owner.getNickname()}}/{{repository.getName()}}/tags">Tags</a></li>
+    <li class="active"><a href="/{{owner.getNickname()}}/{{repository.getName()}}/issues">Issues ({{issue_count}})</a></li>
+  </ul>
+
+
   {% if user %}
-  <a href="/{{owner.getNickname()}}/{{repository.getName()}}/issues/new">create new issue</a>
+  <p><a href="/{{owner.getNickname()}}/{{repository.getName()}}/issues/new" class="btn primary">create new issue</a></p>
   {% endif %}
  
- 
-  <div style="border:1px solid black;">
+  <div class="container-fluid">
+  <div class="sidebar">
+  	<div class="well">
+
   <h3>Milestones</h3>
-  {% for milestone in repository.getMilestones() %}
-  <a href="/{{owner.getNickname()}}/{{repository.getName()}}/issues?milestone={{milestone.getName()|url_encode}}">{{milestone.getName()}}</a>
-  {% endfor %}
+ 	  {% for milestone in repository.getMilestones() %}
+ 		<a href="/{{owner.getNickname()}}/{{repository.getName()}}/issues?milestone={{milestone.getName()|url_encode}}" class="label">{{milestone.getName()}}</a>
+ 		{% endfor %}
   
-  </div>
-  <div style="border:1px solid black;">
-  <h3>Labels</h3>
-  {% for label in repository.getLabels() %}
-  <a href="/{{owner.getNickname()}}/{{repository.getName()}}/issues?label={{label.getName()}}">{{label.getName()}}</a>
-  {% endfor %}
-  </div>
- 
- 
-  {% set labels = repository.getLabels() %}
+  	<h3>Labels</h3>
+  	{% for label in repository.getLabels() %}
+	  <a href="/{{owner.getNickname()}}/{{repository.getName()}}/issues?label={{label.getName()}}" class="label">{{label.getName()}}</a>
+  	{% endfor %}
+  	</div>
+  </div><!--  /sidebar -->
+  
+
+	<div class="content">
+	<div class="hero-unit">
+ {% set labels = repository.getLabels() %}
   {% for issue in issues %}
-  <div>
+  <div style="border:1px solid #7f7f7f;border-radius:5px;margin-bottom:1em;padding:0.5em;background:#FFF;">
   
-    <div>{% if issue.getMilestone()%}[{{issue.getMilestone()}}]{% endif %}<a href="/{{owner.getNickname()}}/{{repository.getName()}}/issues/{{issue.getId()}}">#{{issue.getId()}} {{issue.getTitle()}}</a>
+    <div>{% if issue.hasMilestone()%}<span class="label">{{repository.getMilestones().getMilestoneById(issue.getMilestoneId())}}</span>{% endif %}<a href="/{{owner.getNickname()}}/{{repository.getName()}}/issues/{{issue.getId()}}">#{{issue.getId()}} {{issue.getTitle()}}</a>
     
     {% if issue.hasLabel() %}
-    <span>Labels: 
     {% for label_id in issue.getLabelIds() %}
-    	[{{labels.getLabelById(label_id).getName()}}]
+    	<span class="label">{{labels.getLabelById(label_id).getName()}}</span>
     {% endfor %}
-    </span>
     {% endif %}
     
     
     </div>
-    <div>by {{issue.getAuthor().getNickname()}} {{issue.getRegisteredAt()}}</div>
+    <div>by <a href="/{{owner.getNickname()}}">{{issue.getAuthor().getNickname()}}</a> {{issue.getRegisteredAt()}}</div>
   </div>
   {% endfor %}
- 
+  </div>
+  </div>
+  </div>
 {% endblock %}

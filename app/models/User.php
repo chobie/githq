@@ -42,7 +42,7 @@ class User extends UIKit\Framework\UIStoredObject
 	
 	public function getImageUrl()
 	{
-		return sprintf('http://www.gravatar.com/avatar/%s',md5($this->getEmail()));
+		return sprintf('https://secure.gravatar.com/avatar/%s',md5($this->getEmail()));
 	}
 	
 	/**

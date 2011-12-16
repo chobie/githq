@@ -1,0 +1,20 @@
+{% extends "template.htm" %}
+{% block contents %}
+
+  <ul class="tabs">
+    <li><a href="#">Files</a></li>
+    <li><a href="/{{owner.getNickname()}}/{{repository.getName()}}/commits/master">Commits</a></li>
+    <li><a href="#">Branches</a></li>
+    <li class="active"><a href="/{{owner.getNickname()}}/{{repository.getName()}}/tags">Tags</a></li>
+    <li><a href="/{{owner.getNickname()}}/{{repository.getName()}}/issues">Issues ({{issue_count}})</a></li>
+  </ul>
+
+<div>
+{% for tag in tags %}
+<div>
+<a href="/{{owner.getNickname()}}/{{repository.getName()}}/zipball/{{tag.name}}">{{tag.name}}.zip</a><br />
+* <a href="/{{owner.getNickname()}}/{{repository.getName()}}/commit/{{tag.oid}}">{{tag.oid}}</a>
+</div>
+{% endfor %}
+</div>
+{% endblock %}
