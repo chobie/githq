@@ -31,10 +31,15 @@ class GitHQApplicationDelegate extends UIKit\Framework\UIWebApplicationDelegate
 												'action' => 'onIssue',
 		));
 		
+		$router->add('/{user}/{repository}/commits/{refs}/{path,greed}',array(
+								'controller' => 'RootController',
+								'action' => 'onCommitsHisotry',
+		));
 		$router->add('/{user}/{repository}/commits/{refs}',array(
 						'controller' => 'RootController',
 						'action' => 'onCommits',
 		));
+		
 		$router->add('/{user}/{repository}/commit/{commit}',array(
 									'controller' => 'RootController',
 									'action' => 'onCommit',

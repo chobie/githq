@@ -367,4 +367,36 @@ class RootController extends GitHQController
 			'user'=>$user
 		));
 	}
+	
+	public function onCommitsHisotry($params)
+	{
+		$path = $params['path'];
+		$owner = User::get(UserPointer::getIdByNickname($params['user']),"user");
+
+		$user = $this->getUser();
+		$repository = $owner->getRepository($params['repository']);
+		$repo = new \Git\Repository("/home/git/repositories/{$owner->getKey()}/{$repository->getId()}");
+		$ref = $repo->lookupRef("refs/heads/master");
+		$commit = $repo->getCommit($ref->getId());
+		$walker = $repo->getWalker();
+		$walker->push($commit->getId());
+		$i=0;
+		$commits = array();
+		$last = null;
+		while($i < 20 && $tmp = $walker->next()) {
+			$tree = $tmp->getTree();
+			$t = $this->resolve_filename($tree, $path);
+			if($t instanceof Git\Object && $last != $t->getId()) {
+				$commits[] = $tmp;
+				$last = $t->getId();
+				$i++;
+			}
+		}
+		$this->render("commits.htm",array(
+					'user'=> $user,
+					'owner' => $owner,
+					'repository'=> $owner->getRepository($params['repository']),
+					"commits" => $commits
+		));
+	}
 }
