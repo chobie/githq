@@ -29,12 +29,10 @@ class RootController extends GitHQController
 			$owner = User::get(UserPointer::getIdByNickname($params['controller.orig']),"user");
 			$repository = $owner->getRepository($params['action.orig']);
 			if (!$repository) {
-				echo "<h1>404 Not Found</h1>";
-				return;
+				return $this->render("404.htm",array());
 			}
 			if (!$repository->hasPermission($owner, $user)) {
-				echo "<h1>403 Forbidden</h1>";
-				return;
+				return $this->render("403.htm",array());
 			}
 			
 			try{
@@ -299,7 +297,9 @@ class RootController extends GitHQController
 			'user'=> $user,
 			'owner' => $owner,
 			'repository'=> $owner->getRepository($params['repository']),
-			"commits" => $commits
+			"commits" => $commits,
+			'issue_count'  => IssueReferences::getOpenedIssueCount($owner->getKey(), $owner->getRepository($params['repository'])->getId()),
+		
 		));
 	}
 	

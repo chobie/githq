@@ -20,7 +20,8 @@
   </form>
   
   <h3>Public Profile</h3>
-  <form action="/account" method="POST">
+  <form action="/account" method="POST" class="form-stacked">
+  <fieldset>
   <table>
   <tr>
   <td>Name</td>
@@ -44,14 +45,17 @@
   	<td><input type="text" value="{{profile.getLocation()}}" name="location" /></td>
   </tr>
   </table>
- 
-  <input type="submit" value="Update profile information" />
+  <div class="actions">
+  	<button type="submit" class="btn primary">Update profile information</button>
+  </div>
+  </fieldset>
   </form>
   
   <h3>SSH Public Key</h3>
   {% if user.getPublicKeys() %}
 	  {% for item in user.getPublicKeys() %}
-	  <form method="POST" action="/account">
+	  <form method="POST" action="/account" class="form-stacked">
+	  <filedset>
 	  <input type="hidden" name="offset" value="{{loop.index0}}" />
 	  <table>
 	  <tr>
@@ -61,12 +65,18 @@
 	  <td>Key</td><td><textarea name="key" style="width:1024px;">{{item}}</textarea></td>
 	  </tr>
 	  </table>
-	  <div><input type="submit" value="Update ssh public key" name="public_key" /></div>
-	  <div><input type="submit" value="delete this public key" name="del_public_key" /></div>
+	  <div class="clearfix">
+	  <div class="actions">
+		<button type="submit" name="public_key" class="btn primary" />Update ssh public key</button> 
+		<button type="submit" name="del_public_key" class="btn secondary" />delete this ssh public key</button> 
+	  </div>
+	  </div>
+	  </fieldset>
 	  </form>
 	  {% endfor %}
   {% else %}
-	  <form method="POST" action="/account">
+	  <form method="POST" action="/account" class="form-stacked">
+	  <fieldset>
 	  <table>
 	  <tr>
 	  <td>Title</td><td><div><input type="text" name="title" value="" /></div></td>
@@ -75,8 +85,13 @@
 	  <td>Key</td><td><textarea name="key" style="width:1024px;"></textarea></td>
 	  </tr>
 	  </table>
-	  <div><input type="submit" value="Update ssh public key" name="public_key" /></div>
-	  <div><input type="submit" value="delete this public key" name="del_public_key" /></div>
+	  <div class="clearfix">
+	  <div class="actions">
+		<button type="submit" name="public_key" class="btn primary" />Update ssh public key</button> 
+		<button type="submit" name="del_public_key" class="btn secondary" />delete this ssh public key</button> 
+	  </div>
+	  </div>
+	  </fieldset>
 	  </form>   
   {% endif %}
 {% endblock %}

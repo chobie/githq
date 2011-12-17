@@ -25,7 +25,9 @@ class IssuesController extends GitHQController
 			'user' => $user,
 			'owner' => $owner,
 			'issues' => $issues,
-			'repository' => $owner->getRepository($params['repository'])
+			'repository' => $owner->getRepository($params['repository']),
+			'issue_count'  => IssueReferences::getOpenedIssueCount($owner->getKey(), $owner->getRepository($params['repository'])->getId()),
+		
 		));
 	}
 
@@ -73,6 +75,8 @@ class IssuesController extends GitHQController
 			"issue" => $issue,
 			"owner" => $owner,
 			"repository" => $repository,
+			'issue_count'  => IssueReferences::getOpenedIssueCount($owner->getKey(), $owner->getRepository($params['repository'])->getId()),
+		
 		));
 	}
 	
