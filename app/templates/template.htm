@@ -35,6 +35,20 @@
     {% if owner == user%}
     <div class="span5"><span class="btn secondary"><a href="/{{owner.getNickname()}}/{{repository.getName()}}/admin">admin</a></span></div>
     {% endif %}
+    
+	{% if user != owner %}
+	{% if user and user.getRepository(repository.getName()) == false %}
+	<form method="POST" action="/{{user.getNickname()}}/{{repository.getName()}}">
+	  <input type="hidden" name="action" value="fork" />
+	  <input type="hidden" name="user" value="{{owner.getNickname()}}" />
+	  <input type="hidden" name="repository" value="{{repository.getName()}}" />
+	  <div class="actions">
+	  	<button type="submit" class="btn secondary">fork</button>
+	  </div>
+	</form>
+	{% endif %}
+	{% endif %}
+    
 
   {% if repository.hasOrigin() %}
     <div>forked from <a href="/{{repository.getOriginUser().getNickname()}}/{{repository.getName()}}">{{repository.getOriginUser().getNickname()}}/{{repository.getName()}}</a></div>

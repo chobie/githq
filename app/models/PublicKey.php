@@ -43,6 +43,10 @@ class PublicKey
 		}
 	}
 	
+	/**
+	 * get current public key
+	 * @return string key
+	 */
 	public function __toString()
 	{
 		return $this->key;

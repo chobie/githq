@@ -1,18 +1,5 @@
 {% extends "template.htm" %}
-{% block contents %}  
-  {% if user != owner %}
-  {% if user and user.getRepository(repository.getName()) == false %}
-  <div>
-  <form method="POST" action="/{{user.getNickname()}}/{{repository.getName()}}">
-    <input type="hidden" name="action" value="fork" />
-    <input type="hidden" name="user" value="{{owner.getNickname()}}" />
-    <input type="hidden" name="repository" value="{{repository.getName()}}" />
-    <input type="submit" value="fork this repository" />
-  </form>
-  </div>
-  {% endif %}
-  {% endif %}
- 
+{% block contents %}   
   <ul class="tabs">
     <li class="active"><a href="#">Files</a></li>
     <li><a href="/{{owner.getNickname()}}/{{repository.getName()}}/commits/master">Commits</a></li>
@@ -26,7 +13,7 @@
   {% endif %}  
 
   {% if user %}
-  <div><input type="text" value="git@githq.org:{{owner.getNickname()}}/{{repository.getName()}}.git" style="width:20em;"/></div>
+  <div><span class="btn secondary">ssh</span><input type="text" value="git@githq.org:{{owner.getNickname()}}/{{repository.getName()}}.git" style="width:20em;"/></div>
   {% endif %}
   
   {% if commit %}
@@ -43,26 +30,26 @@
   	<tr>
   		<th>name</th><th>age</th><th>message</th>
   	</tr>
-		  {% if parent_dir %}
+  	{% if parent_dir %}
   	<tr>
 	<td><img src="/assets/dir.png" /><a href="/{{owner.getNickname()}}/{{repository.getName()}}/tree/master/{{parent_dir}}">..</a></td>
 	<td></td>
 	<td></td>
 	</tr>
-		  {% endif %}
-		  {% for entry in tree %}
+	{% endif %}
+	{% for entry in tree %}
 	<tr>
-		    {% if entry.isBlob() %}
-		    <td><img src="/assets/txt.png" /><a href="/{{owner.getNickname()}}/{{repository.getName()}}/blob/master/{{current_path}}{{entry.name}}">{{entry.name}}</a></td>
-		    <td></td>
-		    <td></td>
-		    {% else %}
-		    <td><img src="/assets/dir.png" /><a href="/{{owner.getNickname()}}/{{repository.getName()}}/tree/master/{{current_path}}{{entry.name}}">{{entry.name}}</a></td>
-		    <td></td>
-		    <td></td>
-		    {% endif %}
+	{% if entry.isBlob() %}
+	<td><img src="/assets/txt.png" /><a href="/{{owner.getNickname()}}/{{repository.getName()}}/blob/master/{{current_path}}{{entry.name}}">{{entry.name}}</a></td>
+	<td></td>
+	<td></td>
+	{% else %}
+	<td><img src="/assets/dir.png" /><a href="/{{owner.getNickname()}}/{{repository.getName()}}/tree/master/{{current_path}}{{entry.name}}">{{entry.name}}</a></td>
+	<td></td>
+	<td></td>
+	{% endif %}
 	</tr>
-		  {% endfor %}
+	{% endfor %}
   </table>
 
   {% if data %}
