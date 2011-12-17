@@ -11,7 +11,7 @@ $config->set("user", array(
      "lock_timeout" => 5,
      "redis"        => array(
           "host" => "localhost",
-          "port" => 6379,
+          "port" => REDIS_PORT,
           "persistence" => true,
      )
 ));
@@ -23,7 +23,7 @@ $config->set("issue", array(
 	     "lock_timeout" => 5,
 	     "redis"        => array(
 	          "host" => "localhost",
-	          "port" => 6379,
+	          "port" => REDIS_PORT,
 	          "persistence" => true,
 	)
 ));
@@ -35,13 +35,14 @@ $config->set("activity", array(
 	     "lock_timeout" => 5,
 	     "redis"        => array(
 	          "host" => "localhost",
-	          "port" => 6379,
+	          "port" => REDIS_PORT,
 	          "persistence" => true,
 )
 ));
 
 $i = UIStoredUnderlying::getInstance();
-
 foreach ($config->keys() as $key) {
      $i->addStrategy($key, $config->get($key . ".strategy"));
+     $i->addSerializer($key, $config->get($key . ".serializer"));
+     $i->addCache($key,$config->get($key . '.cache'));
 }

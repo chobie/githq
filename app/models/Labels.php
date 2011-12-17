@@ -14,11 +14,21 @@ class Labels implements Iterator
 	{
 	}
 	
+	/**
+	 * get next label id
+	 * @toto この実装だとだめ
+	 * @return integer id
+	 */
 	public function getNextId()
 	{
 		return count($this->labels);
 	}
 	
+	/**
+	 * get label by id
+	 * 
+	 * @param Label $label
+	 */
 	public function getLabelById($id)
 	{
 		if (isset($this->labels[$id])) {
@@ -26,6 +36,12 @@ class Labels implements Iterator
 		}
 	}
 	
+	/**
+	 * get label by name
+	 * 
+	 * @param string $name
+	 * @return Label $label
+	 */
 	public function getLabelByName($name)
 	{
 		foreach ((array)$this->labels as $label) {
@@ -35,10 +51,17 @@ class Labels implements Iterator
 		}
 	}
 	
+	/**
+	 * add label
+	 * 
+	 * @param Label $label
+	 * @return Label
+	 */
 	public function addLabel(Label $label)
 	{
 		$this->labels[$label->getId()] = $label;
 	}
+	
 	
 	public function current()
 	{

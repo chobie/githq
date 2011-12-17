@@ -1,38 +1,126 @@
 <?php
+/**
+ * githq's User blob 
+ * 
+ * @author chobie
+ */
 class User extends UIKit\Framework\UIStoredObject
 {
-	const SALT_LENGTH = 4;
+	const KEY_USER_EMAIL        = 'pointer.user_id.email';
+	const KEY_USER_NICKNAME     = 'pointer.user_id.nickname';
+	const KEY_PUBLIC_KEYS       = 'public_keys';
+	const KEY_PUBLIC_KEYS_QUEUE = 'queue.public_keys';
 
+	const SALT_LENGTH         = 4;
+	
+	const USER_TYPE_PUBLIC    = 0;
+	const USER_TYPE_ORGANIZER = 1;
+	const USER_TYPE_ADMIN     = 3;
+	
+	protected static $dissallowed_nicknames = array(
+		"login","session","connect","about",
+	);
+	
 	protected $profile;
-
+	protected $nickname;
 	protected $email;
 	protected $password;
 	protected $salt;
+	protected $type = self::USER_TYPE_PUBLIC;
 	protected $repository_sequence = 0;
 	protected $repositories = array();
-	protected $public_keys = array();
+	protected $public_keys  = array();
+	protected $members = array();
 	
+	/**
+	 * get members 
+	 * @return array $members
+	 */
+	public function getMembers()
+	{
+		return $this->members;
+	}
+	
+	/**
+	 * add member
+	 * 
+	 * @param string $user_id
+	 * @throws \Exception
+	 */
+	public function addMember($user_id){
+		if (!$this->isOrganizer()) {
+			throw new \Exception("this user could not add member");
+		}
+		
+		$key = array_search($user_id,$this->members);
+		if ($key === false) {
+			$this->members[] = $user_id;
+		}
+	}
+	
+	/**
+	 * check user type as Organizer
+	 * @return boolean 
+	 */
+	public function isOrganizer()
+	{
+		return $this->type == self::USER_TYPE_ORGANIZER;
+	}
+	
+	/**
+	 * set user as organizer
+	 */
+	public function setUserAsOrganizer()
+	{
+		$this->type = self::USER_TYPE_ORGANIZER;
+	}
+	
+	/**
+	 * get next repository id.
+	 * @return int $repository_sequence
+	 */
 	public function getNextRepositoryId()
 	{
 		return $this->repository_sequence++;
 	}
-	
+		
+	/**
+	 * get user's email
+	 * @return string $email
+	 */
 	public function getEmail()
 	{
 		return $this->email;
 	}
 	
+	
+	/**
+	 * return public keys
+	 * @return array public keys
+	 */
 	public function getPublicKeys()
 	{
 		return $this->public_keys;
 	}
 	
+	
+	/**
+	 * remove specified public key with offset.
+	 * 
+	 * @param int $offset
+	 */
 	public function removePublicKey($offset)
 	{
 		if (isset($this->public_keys[$offset]))
 			unset($this->public_keys[$offset]);
 	}
 	
+	
+	/**
+	 * add public key
+	 *
+	 * @param PublicKey $key
+	 */
 	public function addPublicKey(PublicKey $key)
 	{
 		if(!in_array($key,$this->public_keys)){
@@ -143,6 +231,13 @@ class User extends UIKit\Framework\UIStoredObject
 		}
 	}
 	
+	/**
+	 * remove specified repository.
+	 * 
+	 * this should not remove real repository.
+	 * 
+	 * @param string $key
+	 */
 	public function removeRepository($key)
 	{
 		if (isset($this->repositories[$key])) {
@@ -184,27 +279,50 @@ class User extends UIKit\Framework\UIStoredObject
 		return $this->profile;
 	}
 	
+	/**
+	 * set user's nickname
+	 * 
+	 * @param string $nickname
+	 */
 	public function setNickname($nickname)
 	{
 		$this->nickname = $nickname;
 	}
 	
+	/**
+	 * get user nickname
+	 * @return string $nickname
+	 */
 	public function getNickname()
 	{
 		return $this->nickname;
 	}
 	
-	public function create()
+	/**
+	 * (non-PHPdoc)
+	 * @see UIKit\Framework.UIStoredObject::create()
+	 */
+	public function create(\Closure $closure = null)
 	{
-		$retVal = false;
-		if ($retVal = parent::create()) {
-			UserPointer::setIdWithEmail($this->key, $this->email);
-			UserPointer::setIdWithNickname($this->key, $this->nickname);
+		$nickname = $this->getNickname();
+		if($nickname === null || $nickname === false) {
+			throw new \InvalidArgumentException("user requires nickname");
 		}
-		return $retVal;
+
+		return parent::create(function($stmt, $object) {
+			$email = sha1($object->getEmail());
+			$id = $object->getKey();
+			$nickname = $object->getNickname();
+			$stmt->set(User::KEY_USER_EMAIL . ".{$email}",$id);
+			$stmt->set(User::KEY_USER_NICKNAME. ".{$nickname}",$id);
+		});
 	}
-	
-	public function save()
+
+	/**
+	 * (non-PHPdoc)
+	 * @see UIKit\Framework.UIStoredObject::save()
+	 */
+	public function save(\Closure $closure = null)
 	{
 		$retVal = parent::save(function($stmt,$user,$old){
 			$keys = $user->getPublicKeys();
@@ -212,17 +330,27 @@ class User extends UIKit\Framework\UIStoredObject
 			if($diff = hash_diff($old_keys,$keys)) {
 				if (isset($diff['-'])) {
 					foreach($diff['-'] as $value) {
-						$stmt->hdel("public_keys",$user->getKey() . "." . sha1($value->__toString()));
+						$stmt->hdel(User::KEY_PUBLIC_KEYS,$user->getKey() . "." . sha1($value->__toString()));
 					}
 				}
 				
 				if (isset($diff['+'])) {
 					foreach($diff['+'] as $value) {
-						$stmt->hset("public_keys",$user->getKey() . "." . sha1($value->__toString()), $value->__toString());
+						$stmt->hset(User::KEY_PUBLIC_KEYS,$user->getKey() . "." . sha1($value->__toString()), $value->__toString());
 					}
 				}
-				$stmt->lpush("queue.public_keys",$user->getKey());
+				$stmt->lpush(User::KEY_PUBLIC_KEYS_QUEUE,$user->getKey());
 			}
 		});
 	}
+
+	/**
+	 * get next user's id
+	 * @return intger user_id
+	 */
+	public static function getNextId()
+	{
+		return $this->getClient()->incr("sequence.user_id");
+	}
+	
 }

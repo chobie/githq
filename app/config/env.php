@@ -2,7 +2,7 @@
 require_once __DIR__ . "/../vendor/php-uikit/UIKit/Framework/UIAutoLoader.php";
 require_once __DIR__ . '/../vendor/twig/lib/Twig/Autoloader.php';
 require_once __DIR__ . '/../vendor/Albino/src/Albino.php';
-require_once __DIR__ . '/../vendor/php-sdk/src/facebook.php';
+//require_once __DIR__ . '/../vendor/php-sdk/src/facebook.php';
 require_once __DIR__ . '/../vendor/Text_Diff/src/Text/Diff/Line.php';
 require_once __DIR__ . '/../vendor/Text_Diff/src/Text/Diff/Lines.php';
 require_once __DIR__ . '/../vendor/Text_Diff/src/Text/Diff/Parser.php';
@@ -14,6 +14,11 @@ require_once __DIR__ . '/../vendor/Git_Util/src/Git/Util/Blame/Commit.php';
 require_once __DIR__ . '/../vendor/Git_Util/src/Git/Util/Blame/File.php';
 require_once __DIR__ . '/../vendor/Git_Util/src/Git/Util/Blame/Group.php';
 require_once __DIR__ . '/../vendor/Git_Util/src/Git/Util/Blame/Line.php';
+
+
+if (!defined("REDIS_PORT")) {
+	define("REDIS_PORT",6379);
+}
 
 UIKit\Framework\UIAutoLoader::add_include_path(dirname(__DIR__) . '/libs');
 UIKit\Framework\UIAutoLoader::add_include_path(dirname(__DIR__) . '/controllers');

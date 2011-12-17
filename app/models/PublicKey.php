@@ -10,16 +10,28 @@ class PublicKey
 		$this->key = trim($string);
 	}
 	
+	/**
+	 * set public key title
+	 *
+	 * @param string $title
+	 */
 	public function setTitle($title)
 	{
 		$this->title = $title;
 	}
 	
+	/**
+	 * @return string title
+	 */
 	public function getTitle()
 	{
 		return $this->title;
 	}
 	
+	/**
+	 * verify ssh public key
+	 * @return boolean 
+	 */
 	public function verify()
 	{
 		if(preg_match(self::VALIDATION,$this->key,$match)) {

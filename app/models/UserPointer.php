@@ -14,12 +14,17 @@ class UserPointer
 		return $redis->get("pointer.user_id.nickname.{$nickname}");
 	}
 	
+	/**
+	 * @obsoleted
+	 */
 	public static function setIdWithNickname($id, $nickname)
 	{
 		$redis = GitHQController::getRedisClient();
 		$redis->set("pointer.user_id.nickname.{$nickname}",$id);
 	}
-	
+	/**
+	* @obsoleted
+	*/
 	public static function setIdWithEmail($id, $email)
 	{
 		$redis = GitHQController::getRedisClient();
