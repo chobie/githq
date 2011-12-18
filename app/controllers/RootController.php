@@ -5,6 +5,7 @@ class RootController extends GitHQController
 	{
 		$data = null;
 		$user = $this->getUser();
+		$organizations = null;
 		
 		if ($this->getRequest()->isPost()) {
 			$owner = User::get(UserPointer::getIdByNickname($_REQUEST['user']),"user");
@@ -28,6 +29,7 @@ class RootController extends GitHQController
 		if (isset($params['controller'])) {
 			$owner = User::get(UserPointer::getIdByNickname($params['controller.orig']),"user");
 			$repository = $owner->getRepository($params['action.orig']);
+						
 			if (!$repository) {
 				return $this->render("404.htm",array());
 			}
@@ -62,9 +64,14 @@ class RootController extends GitHQController
 			));
 		} else {
 			$timeline = Activity::getGlobalTimeline();
+			if ($user) {
+				$organizations = $user->getJoinedOrganizations();
+			}
+			
 			$this->render("index.htm",array(
 				'user'=>$user,
 				'timeline' => $timeline,
+				'organizations' => $organizations,
 			));
 		}
 	}
@@ -147,7 +154,8 @@ class RootController extends GitHQController
 			'data'         => $data,
 			'issue_count'  => IssueReferences::getOpenedIssueCount($owner->getKey(), $owner->getRepository($params['repository'])->getId()),
 			'current_path' => dirname($params['path']) . '/',
-			'path'         => $params['path']
+			'path'         => $params['path'],
+			'path_parts'   => explode("/",$params['path']),
 		));
 	}
 
@@ -282,21 +290,26 @@ class RootController extends GitHQController
 		$owner = User::get(UserPointer::getIdByNickname($params['user']),"user");
 		$user = $this->getUser();
 		$repository = $owner->getRepository($params['repository']);
+		
 		$repo = new \Git\Repository("/home/git/repositories/{$owner->getKey()}/{$repository->getId()}");
-		$ref = $repo->lookupRef("refs/heads/master");
-		$commit = $repo->getCommit($ref->getId());
-		$walker = $repo->getWalker();
-		$walker->push($commit->getId());
-		$i=0;
-		$commits = array();
-		while($i < 20 && $tmp = $walker->next()) {
-			$commits[] = $tmp;
-			$i++;
+		try {
+			$ref = $repo->lookupRef("refs/heads/master");
+			$commit = $repo->getCommit($ref->getId());
+			$walker = $repo->getWalker();
+			$walker->push($commit->getId());
+			$i=0;
+			$commits = array();
+			while($i < 20 && $tmp = $walker->next()) {
+				$commits[] = $tmp;
+				$i++;
+			}
+		} catch (\InvalidArgumentException $e) {
+			$commits = array();
 		}
 		$this->render("commits.htm",array(
 			'user'=> $user,
 			'owner' => $owner,
-			'repository'=> $owner->getRepository($params['repository']),
+			'repository'=> $repository,
 			"commits" => $commits,
 			'issue_count'  => IssueReferences::getOpenedIssueCount($owner->getKey(), $owner->getRepository($params['repository'])->getId()),
 		

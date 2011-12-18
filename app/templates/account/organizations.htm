@@ -1,0 +1,26 @@
+{% extends "template.htm" %}
+{% block contents %}
+<form method="POST" action="/account/organizations/new" class="form-stacked">
+<fieldset>
+<div class="clearfix">
+	<label for="name">Organization Name</label>
+	<div class="input">
+		<input type="text" value="" name="name" />
+	</div>
+</div>
+
+<div class="clearfix">
+	<label for="email">Organization Email</label>
+	<div class="input">
+		<input type="text" value="" name="email" />
+	</div>
+</div>
+
+<div class="clearfix">
+	<div class="actions">
+		<button class="btn primary">Create Organization</button>
+	</div>
+</div>
+</fieldset>
+</form>
+{% endblock %}

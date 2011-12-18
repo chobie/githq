@@ -77,7 +77,14 @@
     </script>
 
 
-<h2><img src="https://graph.facebook.com/{{owner.getKey()}}/picture" />{{owner.getNickname()}} ({{owner.getProfile().getName()}})</h2>
+<h2>
+{% if owner.isOrganization() %}
+<img src="/assets/org.png" height="50"/>
+{% else %}
+<img src="https://graph.facebook.com/{{owner.getKey()}}/picture" />
+{% endif %}
+{{owner.getNickname()}}{% if owner.getProfile().getName() %} ({{owner.getProfile().getName()}}){% endif %}</h2>
+{% if owner.isOrganization() %}Organization{% endif %}
 
 <address>
 <strong>Name</strong><br />

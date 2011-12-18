@@ -1,0 +1,27 @@
+{% extends "template.htm" %}
+{% block contents %}
+  <div class="container-fluid">
+  	<div class="content">
+	  <h2>githq Timeline</h2>
+ 		 {% for activity in timeline %}
+  		<p><img src="{{activity.getImageUrl()}}"  style="height:30px;" />{{activity.getDescription()|raw}}</p>
+  		{% endfor %}  
+  	</div>
+
+  	<div class="sidebar">
+  	<div class="well">
+	  <h3>{{organization.getNickname()}} Repositories</h3>
+	  
+	  {% if organization.hasRepositories() %}
+	  
+	  {% for repository in organization.getRepositories() %}
+	  <p><a href="/{{organization.getNickname()}}/{{repository.getName()}}">{{organization.getNickname()}}/{{repository.getName()}}</a></p>
+	  {% endfor %}
+	  <p><a href="/organization/{{organization.getNickname()}}/repositories/new" class="btn primary large">create repository</a></p>
+	</div>
+  	</div>
+
+  {% endif %}
+  </div>
+  
+{% endblock %}

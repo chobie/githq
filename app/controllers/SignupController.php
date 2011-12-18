@@ -8,6 +8,6 @@ class SignupController extends GitHQController
 			exit;
 		}
 		
-		$this->render("free.htm",array('user'=>$user));
+		$this->render("free.htm");
 	}
 }

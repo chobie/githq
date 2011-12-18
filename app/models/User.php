@@ -6,11 +6,10 @@
  */
 class User extends UIKit\Framework\UIStoredObject
 {
-	const KEY_USER_EMAIL        = 'pointer.user_id.email';
-	const KEY_USER_NICKNAME     = 'pointer.user_id.nickname';
-	const KEY_PUBLIC_KEYS       = 'public_keys';
-	const KEY_PUBLIC_KEYS_QUEUE = 'queue.public_keys';
-
+	const KEY_USER_EMAIL           = 'pointer.user_id.email';
+	const KEY_USER_NICKNAME        = 'pointer.user_id.nickname';
+	const KEY_PUBLIC_KEYS          = 'public_keys';
+	const KEY_PUBLIC_KEYS_QUEUE    = 'queue.public_keys';
 	const SALT_LENGTH         = 4;
 	
 	const USER_TYPE_PUBLIC    = 0;
@@ -18,7 +17,7 @@ class User extends UIKit\Framework\UIStoredObject
 	const USER_TYPE_ADMIN     = 3;
 	
 	protected static $dissallowed_nicknames = array(
-		"login","session","connect","about",
+		"login","session","connect","about","organizations"
 	);
 	
 	protected $profile;
@@ -32,12 +31,28 @@ class User extends UIKit\Framework\UIStoredObject
 	protected $public_keys  = array();
 	protected $members = array();
 	
+	public function getJoinedOrganizations()
+	{
+		$redis = GitHQController::getRedisClient();
+		$members = $redis->smembers("user.{$this->getKey()}.organizations");
+		$result = array();
+		if ($members) {
+			foreach ($members as $member) {
+				$result[] = User::get($member,'user');
+			}
+		}
+		return $result;
+	}
+	
 	/**
 	 * get members 
 	 * @return array $members
 	 */
 	public function getMembers()
 	{
+		if (!$this->isOrganizer()) {
+			return array();
+		}
 		return $this->members;
 	}
 	
@@ -62,7 +77,7 @@ class User extends UIKit\Framework\UIStoredObject
 	 * check user type as Organizer
 	 * @return boolean 
 	 */
-	public function isOrganizer()
+	public function isOrganization()
 	{
 		return $this->type == self::USER_TYPE_ORGANIZER;
 	}
@@ -315,6 +330,12 @@ class User extends UIKit\Framework\UIStoredObject
 			$nickname = $object->getNickname();
 			$stmt->set(User::KEY_USER_EMAIL . ".{$email}",$id);
 			$stmt->set(User::KEY_USER_NICKNAME. ".{$nickname}",$id);
+			if ($members = $object->getMembers()) {
+				foreach($members as $member) {
+					$stmt->sadd("organization.members.".$object->getKey(),$member);
+					$stmt->sadd("user.".$member.".organizations",$object->getKey());
+				}
+			}
 		});
 	}
 

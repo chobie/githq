@@ -50,6 +50,24 @@ class GitHQApplicationDelegate extends UIKit\Framework\UIWebApplicationDelegate
 										'controller' => 'RootController',
 										'action' => 'onAccount',
 		));
+		$router->add('/organizations/{organization,vars}',array(
+							'controller' => 'OrganizationsController',
+							'action' => 'onDefault',
+		));
+		$router->add('/organizations/{organization,vars}/repositories/new',array(
+					'controller' => 'OrganizationsController',
+					'action' => 'onNew',
+		));
+		$router->add('/account/organizations/{action,alpha,camel,prepend(on)}',array(
+														'controller' => 'AccountController',
+														'action' => 'onDefault',
+		));
+		
+		$router->add('/account/{action,alpha,camel,prepend(on)}',array(
+												'controller' => 'AccountController',
+												'action' => 'onDefault',
+		));
+		
 		$router->add('/connect',array(
 												'controller' => 'RootController',
 												'action' => 'onConnect',

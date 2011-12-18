@@ -69,6 +69,27 @@ class Repository
 		}
 	}
 	
+	public function hasWritePermission(User $owner, $user)
+	{
+		if ($this->type == self::TYPE_PUBLIC) {
+			return true;
+		}
+		
+		if (!$user instanceof User) {
+			return false;
+		}
+		
+		if ($this->type == self::TYPE_PRIVATE) {
+			if ($owner->getKey() == $user->getKey()) {
+				return true;
+			} else {
+				return false;
+			}
+		} else {
+			return true;
+		}
+	}
+	
 	public function getMilestones()
 	{
 		return $this->milestones;

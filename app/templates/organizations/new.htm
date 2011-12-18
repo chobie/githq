@@ -1,0 +1,37 @@
+{% extends "template.htm" %}
+{% block contents %}
+  <form action="/organizations/{{organization}}/repositories/new" method="POST" class="form-stacked">
+  <fieldset>
+  <div class="clearfix">
+  	<label for="project_name">Project Name</label>
+  	<div class="input">
+  	<input type="text" value="" name="project_name" />
+  	</div>
+  </div>
+
+  <div class="clearfix">
+  	<label for="description">Description(optional)</label>
+  	<div class="input">
+  	<input type="text" value="" name="description" />
+  	</div>
+  </div>
+
+  <div class="clearfix">
+  	<label for="homepage_url">Homepage Url(optional)</label>
+  	<div class="input">
+  	<input type="text" value="" name="description" />
+  	</div>
+  </div>
+
+
+  <p>Who has access to this repository? (You can change this later)</p>
+  <div class="clearfix">
+    <label><input type="radio" value="0" name="visibility" checked="checked" />Anyone</label>
+    <label><input type="radio" value="1" name="visibility" />Organization member only</label>
+  </div>
+  <div class="actions">
+    <input type="submit" value="Create repository" class="btn primary"/>
+  </div>
+  </fieldset>
+  </form>
+{% endblock %}

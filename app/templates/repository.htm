@@ -54,9 +54,21 @@
 
   {% if data %}
   <div>
-  <h2>{{path}}</h2>
-  <div style="text-align:right"><a href="/{{owner.getNickname()}}/{{repository.getName()}}/blame/master/{{path}}">blame</a></div>
-  <div style="text-align:right"><a href="/{{owner.getNickname()}}/{{repository.getName()}}/commits/master/{{path}}">history</a></div>
+  
+  <div style="text-align:right">
+  <span class="span1 btn secondary"><a href="/{{owner.getNickname()}}/{{repository.getName()}}/blame/master/{{path}}">blame</a></span>
+  <span class="span1 btn secondary"><a href="/{{owner.getNickname()}}/{{repository.getName()}}/commits/master/{{path}}">history</a></span>
+  </div>
+
+  {% if path_parts %}
+  <ul class="breadcrumb">
+  <li><img src="/assets/txt.png" /></li>
+  {% for parts in path_parts %}
+  <li><a href="#">{{parts}}</a>{% if not loop.last %}<span class="divider">/</span>{% endif %}
+  {% endfor %}
+  </ul>
+  {% endif %}
+  
   <div class="highlight" style="white-space:nowrap;font-family:'Bitstream Vera Sans Mono','Courier',monospace;">{{data|raw}}</div>
   </div>
   {% endif %}
@@ -76,13 +88,13 @@
   touch README
   git add README
   git commit -m 'first commit'
-  git remote add origin git@githq.org:{{user.getNickname()}}/{{repository.getName()}}.git
+  git remote add origin git@githq.org:{{owner.getNickname()}}/{{repository.getName()}}.git
   git push -u origin master
 </pre>
       
 <h3>Existing Git Repo?  cd existing_git_repo</h3>
 <pre>
-  git remote add origin git@githq.org:{{user.getNickname()}}/{{repository.getName()}}.git
+  git remote add origin git@githq.org:{{owner.getNickname()}}/{{repository.getName()}}.git
   git push -u origin master
 </pre>
   {% endif %}
