@@ -27,6 +27,7 @@ class OrganizationsController extends GitHQController
 			$user = User::fetchLocked(UserPointer::getIdByNickname($params['organization']),"user");
 			$repo = new Repository($project_name);
 			$id = $user->getNextRepositoryId();
+			error_log("repository_id: {$id}");
 			$repo->setId($id);
 			$repo->setDescription($description);
 			$repo->setHomepageUrl($homepage_url);

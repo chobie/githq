@@ -27,17 +27,28 @@
   	</div>
   </div><!-- /topbar -->
   
-  <div class="container">  
-
+  <div class="container">
   {% if owner %}
   <div class="page-header row">
-  	<h1 class="span11"><a href="/{{owner.getNickname()}}">{{owner.getNickname()}}</a>/<a href="/{{owner.getNickname()}}/{{repository.getName()}}">{{repository.getName()}}</a></h1>
+  	<div class="span10">
+  		<h1><a href="/{{owner.getNickname()}}">{{owner.getNickname()}}</a>/<a href="/{{owner.getNickname()}}/{{repository.getName()}}">{{repository.getName()}}</a></h1>
+  		{% if repository.hasOrigin() %}
+			  <div>forked from <a href="/{{repository.getOriginUser().getNickname()}}/{{repository.getName()}}">{{repository.getOriginUser().getNickname()}}/{{repository.getName()}}</a></div>
+  		{% endif %}
+  	</div>
     {% if owner == user%}
-    <div class="span5"><span class="btn secondary"><a href="/{{owner.getNickname()}}/{{repository.getName()}}/admin">admin</a></span></div>
+    <div class="span2"><span class="btn secondary"><a href="/{{owner.getNickname()}}/{{repository.getName()}}/admin">admin</a></span></div>
     {% endif %}
     
+    {% if repository.getOrigin() %}
+        <div class="span2"><span class="btn secondary"><a href="/{{owner.getNickname()}}/{{repository.getName()}}/pull/new/master">pull request</a></span></div>
+    {% endif %}
+    
+    
 	{% if user != owner %}
+
 	{% if user and user.getRepository(repository.getName()) == false %}
+	<div class="span2">
 	<form method="POST" action="/{{user.getNickname()}}/{{repository.getName()}}">
 	  <input type="hidden" name="action" value="fork" />
 	  <input type="hidden" name="user" value="{{owner.getNickname()}}" />
@@ -46,15 +57,12 @@
 	  	<button type="submit" class="btn secondary">fork</button>
 	  </div>
 	</form>
+	</div>
 	{% endif %}
 	{% endif %}
-    
-
-  {% if repository.hasOrigin() %}
-    <div>forked from <a href="/{{repository.getOriginUser().getNickname()}}/{{repository.getName()}}">{{repository.getOriginUser().getNickname()}}/{{repository.getName()}}</a></div>
-  {% endif %}
   </div>
   {% endif %}
+
 
   {% block contents %}{% endblock %}
   <footer>

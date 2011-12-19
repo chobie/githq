@@ -209,17 +209,18 @@ class Repository
 	public function fork(\User $owner, \User $forker)
 	{
 		$repository = new \Repository($this->getName());
+		$repo_name = $forker->getNextRepositoryId();
+		$repository->setId($repo_name);
 		$repository->setDescription($this->getDescription());
 		$repository->setHomepageUrl($this->getHomepageUrl());
 		
-		$repo_name = $repository->getId();
 		$from_user = $owner->getKey();
 		$to_user = $forker->getKey();
-
+		
 		if (!is_dir("/home/git/repositories/{$to_user}/{$repo_name}")) {
 			$repository->setOrigin($owner->getKey());
 			system("mkdir -p /home/git/repositories/{$to_user}/{$repo_name}");
-			if(system("git clone file:///home/git/repositories/{$from_user}/{$repo_name} --bare --shared /home/git/repositories/{$to_user}/{$repo_name}")){
+			if(system("git clone file:///home/git/repositories/{$from_user}/{$this->getId()} --bare --shared /home/git/repositories/{$to_user}/{$repo_name}")){
 				return $repository;
 			} else {
 				return false;

@@ -17,7 +17,7 @@
 	  {% for repository in organization.getRepositories() %}
 	  <p><a href="/{{organization.getNickname()}}/{{repository.getName()}}">{{organization.getNickname()}}/{{repository.getName()}}</a></p>
 	  {% endfor %}
-	  <p><a href="/organization/{{organization.getNickname()}}/repositories/new" class="btn primary large">create repository</a></p>
+	  <p><a href="/organizations/{{organization.getNickname()}}/repositories/new" class="btn primary large">create repository</a></p>
 	</div>
   	</div>
 
