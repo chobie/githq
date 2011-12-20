@@ -9,43 +9,77 @@
     <li class="active"><a href="/{{owner.getNickname()}}/{{repository.getName()}}/issues">Issues ({{issue_count}})</a></li>
   </ul>
 
-  <div>
-    <div><img src="{{user.getImageUrl()}}" height="20"/><a href="/{{issue.getAuthor().getNickname()}}">{{issue.getAuthor().getNickname()}}</a> opened this issue at {{issue.getRegisteredAt()}}</div>
-    	<div class="issue_container">
-	    <div><h2>{{issue.getTitle()}}</h2></div>
-	    {% if issue.hasMilestone() %}
-	    Milestone: {{repository.getMilestones().getMilestoneById(issue.getMilestoneId())}}
-	    {% endif %}
-	    {% if user.getNickname() == owner.getNickname() %}
-	    <div style="text-align:right"><span class="btn secondary"><a href="/{{owner.getNickname()}}/{{repository.getName()}}/issues/edit/{{issue.getId()}}">EDIT</a></span></div>
-	    {% endif %}
-	    
-	    {% if issue.hasLabel() %}
-	    {% set labels = repository.getLabels() %}
-	    <div>Labels: 
-	    {% for item in issue.getLabelIds() %}
-	    {% if user == owner %}
-	    	<form method="POST" action="/{{owner.getNickname()}}/{{repository.getName()}}/issues/update">[{{labels.getLabelById(item).getName()}} 
-	    	<input type="hidden" name="label" value="{{item}}" />
-	    	<input type="hidden" name="id" value="{{issue.getId()}}" />
-	    	<input type="submit" value="x" name="label_delete" />]</form>
-	    {% else %}
-		[{{labels.getLabelById(item).getName()}}]
-	    {% endif %}
-	    {% endfor %}
+
+  <div class="row">
+    <div class="span13">
+	  <div class="row">
+    	<div class="span1">
+      	<img src="{{user.getImageUrl()}}" height="40"/>
+    	</div>
+    	<div class="span12">
+	    	<div class="issue_container">
+	    	<div><a href="/{{issue.getAuthor().getNickname()}}">{{issue.getAuthor().getNickname()}}</a> opened this issue at {{issue.getRegisteredAt()}}</div>
+	    	
+		    <div><h2>{{issue.getTitle()}}</h2></div>
+		    {% if issue.hasMilestone() %}
+		    Milestone: {{repository.getMilestones().getMilestoneById(issue.getMilestoneId())}}
+		    {% endif %}
+		    {% if user.getNickname() == owner.getNickname() %}
+		    <div style="text-align:right"><span class="btn secondary"><a href="/{{owner.getNickname()}}/{{repository.getName()}}/issues/edit/{{issue.getId()}}">EDIT</a></span></div>
+		    {% endif %}
+		    
+		    {% if issue.hasLabel() %}
+		    {% set labels = repository.getLabels() %}
+		    <div>Labels: 
+		    {% for item in issue.getLabelIds() %}
+		    {% if user == owner %}
+		    	<form method="POST" action="/{{owner.getNickname()}}/{{repository.getName()}}/issues/update">[{{labels.getLabelById(item).getName()}} 
+		    	<input type="hidden" name="label" value="{{item}}" />
+		    	<input type="hidden" name="id" value="{{issue.getId()}}" />
+		    	<input type="submit" value="x" name="label_delete" />]</form>
+		    {% else %}
+			[{{labels.getLabelById(item).getName()}}]
+		    {% endif %}
+		    {% endfor %}
+		    </div>
+		    {% endif %}
+		    
+		    <div>{{issue.getBodyAsMd()|raw}}</div>
+		    </div>
+    </div><!-- /span12 -->
+    </div><!-- /row -->
+	  {% if issue.getComments() %}
+	  {% for item in issue.getComments() %}
+	  <div class="row" style="margin-top:1em;">
+	    <div class="span1">
+	      <img src="{{item.getCommenter().getImageUrl()}}" height="40"/>
 	    </div>
-	    {% endif %}
-	    
-	    <div>{{issue.getBodyAsMd()|raw}}</div>
+	    <div class="span12">
+	      <div class="issue_container">
+	      <div ><a href="/{{item.getCommenter().getNickname()}}">{{item.getCommenter().getNickname()}}</a> commented {{item.getRegisteredAt()}}</div>
+	      <div style="margin-left:2em;">{{item.getCommentAsMd()|raw}}</div>
+	      </div> 
 	    </div>
-  </div>
-  
-  {% if issue.getComments() %}
-  {% for item in issue.getComments() %}
-  <div><a href="/{{item.getCommenter().getNickname()}}">{{item.getCommenter().getNickname()}}</a> commented {{item.getRegisteredAt()}}</div>
-  <div style="margin-left:2em;">{{item.getCommentAsMd()|raw}}</div>
-  {% endfor %}
-  {% endif %}
+	  </div>
+	  {% endfor %}
+	  {% endif %}
+
+    </div>
+
+    
+    <div class="span3">
+    <div class="well">
+    	<h3>Label</h3>
+    	<ul class="unstyled">
+    	{% set labels = repository.getLabels()%}
+    	{% for label in labels %}
+    		<li><span class="btn secondary small span2 center">{{label.getName()}}</span></li>
+        {% endfor %}
+    	</ul>
+    </div>
+    </div>
+  </div><!-- /row -->
+
  
   {% if user %}
   <div>

@@ -19,56 +19,16 @@
     {{commit.getAuthor().time.format('Y-m-d H:i:s')}}</div>
   </div>
 
-
-  <table class="zebra-striped">
-  	<tr>
-  		<th>name</th><th>age</th><th>message</th>
-  	</tr>
-  	{% if parent_dir %}
-  	<tr>
-	<td><img src="/assets/dir.png" /><a href="/{{owner.getNickname()}}/{{repository.getName()}}/tree/master/{{parent_dir}}">..</a></td>
-	<td></td>
-	<td></td>
-	</tr>
-	{% endif %}
-	{% for entry in tree %}
-	<tr>
-	{% if entry.isBlob() %}
-	<td><img src="/assets/txt.png" /><a href="/{{owner.getNickname()}}/{{repository.getName()}}/blob/master/{{current_path}}{{entry.name}}">{{entry.name}}</a></td>
-	<td></td>
-	<td>{% if commits[entry.name]%}{{commits[entry.name].getMessage()}}{% endif%}</td>
-	{% else %}
-	<td><img src="/assets/dir.png" /><a href="/{{owner.getNickname()}}/{{repository.getName()}}/tree/master/{{current_path}}{{entry.name}}">{{entry.name}}</a></td>
-	<td></td>
-	<td></td>
-	{% endif %}
-	</tr>
-	{% endfor %}
-  </table>
+  {% if tree %}
+  {% include "_tree.htm" %}
+  {% endif %}
 
   {% if data %}
-  <div>
-  
-  <div style="text-align:right">
-  <span class="span1 btn secondary"><a href="/{{owner.getNickname()}}/{{repository.getName()}}/blame/master/{{path}}">blame</a></span>
-  <span class="span1 btn secondary"><a href="/{{owner.getNickname()}}/{{repository.getName()}}/commits/master/{{path}}">history</a></span>
-  </div>
-
-  {% if path_parts %}
-  <ul class="breadcrumb">
-  <li><img src="/assets/txt.png" /></li>
-  {% for parts in path_parts %}
-  <li><a href="#">{{parts}}</a>{% if not loop.last %}<span class="divider">/</span>{% endif %}
-  {% endfor %}
-  </ul>
-  {% endif %}
-  
-  <div class="highlight" style="white-space:nowrap;font-family:'Bitstream Vera Sans Mono','Courier',monospace;">{{data|raw}}</div>
-  </div>
+  {% include "_blob.htm" %}
   {% endif %}
   
   {% else %}
-  
+  {% if user %}
 <h3>Global setup:Set up git</h3>
 <pre>
   git config --global user.name "{{user.getNickname()}}"
@@ -91,6 +51,9 @@
   git remote add origin git@githq.org:{{owner.getNickname()}}/{{repository.getName()}}.git
   git push -u origin master
 </pre>
+{% else %}
+nothing.
+{% endif %}
   {% endif %}
 
  {% endblock %}

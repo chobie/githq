@@ -7,8 +7,12 @@
   <route id="" pattern="/{user}/{repository}/issues">
     <default key="controller">IssuesController</default>
     <default key="action">onDefault</default>
-
   </route>
+  <route id="" pattern="/{user}/{repository}/watch">
+    <default key="controller">RepositoriesController</default>
+    <default key="action">onWatch</default>
+  </route>
+
   <route id="" pattern="/{user}/{repository}/issues/update">
     <default key="controller">IssuesController</default>
     <default key="action">onUpdate</default>
@@ -132,6 +136,7 @@
     <default key="controller">RootController</default>
     <default key="action">onBlame</default>
   </route>
+
   <route id="" pattern="/{user}/{repository}/blob/{refs}/{path,greed}">
     <default key="controller">RootController</default>
     <default key="action">onBlob</default>

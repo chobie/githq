@@ -6,8 +6,20 @@
     <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=yes">
     <title>GitHQ - Social Coding</title>
     <script type="application/javascript" src="/assets/jquery-1.7.1.min.js"></script>
+    <script type="application/javascript" src="/assets/jquery.pjax.js"></script>
     <script type="application/javscript" src="/assets/bootstrap-dropdown.js"></script>
     <script type="application/javscript" src="/assets/bootstrap-tabs.js"></script>
+    <script>
+    $(function(){
+    	$('a[data-pjax]').pjax()
+        $('#main')
+        .bind('pjax:start', function() {
+        	
+        })
+        .bind('pjax:end',   function() {
+        })
+    });
+    </script>
     <link rel="stylesheet" href="/assets/bootstrap.min.css">
     <link rel="stylesheet" href="/assets/bootstrap-tabs.css">
     <link rel="stylesheet" href="/assets/pygments.css" />
@@ -31,6 +43,7 @@
   </div><!-- /topbar -->
   
   <div class="container">
+
   {% if owner %}
   <div class="page-header row">
   	<div class="span10">
@@ -47,7 +60,7 @@
     {% if repository.getOrigin() %}
         <div class="span2"><span class="btn secondary"><a href="/{{owner.getNickname()}}/{{repository.getName()}}/pull/new/master">pull request</a></span></div>
     {% endif %}
-    
+	<div class="span2"><a href="/{{owner.getNickname()}}/{{repository.getName()}}/watch">Watch</a> ({{watcher|default(0)}})</div>    
     
 	{% if user != owner %}
 

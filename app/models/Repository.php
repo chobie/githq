@@ -18,6 +18,19 @@ class Repository
 		"fork" => true,
 	);
 	
+	
+	public function watch(User $owner,$watcher)
+	{
+		$redis = \GitHQ\Bundle\AbstractController::getRedisClient();
+		$redis->sadd(sprintf("watch.%s.%s",$owner->getKey(), $this->getId()), $watcher->getKey());
+	}
+	
+	public static function getWatchedCount(User $user, Repository $repository)
+	{
+		$redis = \GitHQ\Bundle\AbstractController::getRedisClient();
+		return $redis->scard(sprintf("watch.%s.%s",$user->getKey(), $repository->getId()));
+	}
+	
 	public function isIssueEnabled()
 	{
 		return $this->features['issue'];

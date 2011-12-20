@@ -1,6 +1,16 @@
 <?php
 class RepositoriesController extends GitHQ\Bundle\AbstractController
 {
+	public function onWatch($params)
+	{
+		$user = $this->getUser();
+		$owner = User::get(User::getIdByNickname($params['user']),'user');
+		$repository = $owner->getRepository($params['repository']);
+		$repository->watch($owner,$user);
+		
+		header("Location: /{$owner->getNickname()}/{$repository->getName()}");
+		return;
+	}
 	
 	public function onDefault()
 	{
@@ -28,6 +38,7 @@ class RepositoriesController extends GitHQ\Bundle\AbstractController
 					$a->create();
 				}
 				$_SESSION['user'] = $user;
+				$repo->watch($user,$user);
 			}
 			$user->save();
 			header("Location: http://githq.org/");

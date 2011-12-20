@@ -61,6 +61,7 @@ class RootController extends GitHQ\Bundle\AbstractController
 				'commit' => $commit,
 				'tree' => $tree,
 				'data' => $data,
+				'watcher'      => Repository::getWatchedCount($owner, $repository),
 			));
 		} else {
 			$timeline = Activity::getGlobalTimeline();
@@ -144,12 +145,28 @@ class RootController extends GitHQ\Bundle\AbstractController
 			$data = "<pre>" . htmlspecialchars($blob->data) . "</pre>";
 		}
 
+		if (isset($_REQUEST['_pjax'])) {
+			$this->render("_blob.htm",array(
+						'user'         => $user,
+						'owner'        => $owner,
+						'repository'   => $repository,
+						'commit'       => $commit,
+			//			'tree'         => $tree,
+						'blob'         => $blob,
+						'data'         => $data,
+						'issue_count'  => IssueReferences::getOpenedIssueCount($owner->getKey(), $owner->getRepository($params['repository'])->getId()),
+						'current_path' => dirname($params['path']) . '/',
+						'path'         => $params['path'],
+						'path_parts'   => explode("/",$params['path']),
+			));
+				
+		} else {
 		$this->render("repository.htm",array(
 			'user'         => $user,
 			'owner'        => $owner,
 			'repository'   => $repository,
 			'commit'       => $commit,
-			'tree'         => $tree,
+//			'tree'         => $tree,
 			'blob'         => $blob,
 			'data'         => $data,
 			'issue_count'  => IssueReferences::getOpenedIssueCount($owner->getKey(), $owner->getRepository($params['repository'])->getId()),
@@ -157,6 +174,7 @@ class RootController extends GitHQ\Bundle\AbstractController
 			'path'         => $params['path'],
 			'path_parts'   => explode("/",$params['path']),
 		));
+		}
 	}
 
 	public function onTree($params)
@@ -182,17 +200,32 @@ class RootController extends GitHQ\Bundle\AbstractController
 			$tree = $this->resolve_filename($tree,$params['path']);
 		}
 		$parent_dir = dirname($current_path);
-		
-		$this->render("repository.htm",array(
-			'user'         => $user,
-			'owner'        => $owner,
-			'repository'   => $repository,
-			'commit'       => $commit,
-			'tree'         => $tree,
-			'issue_count'  => IssueReferences::getOpenedIssueCount($owner->getKey(), $owner->getRepository($params['repository'])->getId()),
-			'current_path' => $current_path,
-			'parent_dir'   => $parent_dir,
-		));
+		error_log(print_r($_SERVER,true));
+		if (isset($_REQUEST['_pjax'])) {
+			$this->render("_tree.htm",array(
+							'user'         => $user,
+							'owner'        => $owner,
+							'repository'   => $repository,
+							'commit'       => $commit,
+							'tree'         => $tree,
+							'issue_count'  => IssueReferences::getOpenedIssueCount($owner->getKey(), $owner->getRepository($params['repository'])->getId()),
+							'current_path' => $current_path,
+							'parent_dir'   => $parent_dir,
+							'watcher'      => Repository::getWatchedCount($owner, $repository),
+			));
+		} else {
+			$this->render("repository.htm",array(
+				'user'         => $user,
+				'owner'        => $owner,
+				'repository'   => $repository,
+				'commit'       => $commit,
+				'tree'         => $tree,
+				'issue_count'  => IssueReferences::getOpenedIssueCount($owner->getKey(), $owner->getRepository($params['repository'])->getId()),
+				'current_path' => $current_path,
+				'parent_dir'   => $parent_dir,
+				'watcher'      => Repository::getWatchedCount($owner, $repository),
+			));
+		}
 	}
 
 

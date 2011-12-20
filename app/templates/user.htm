@@ -1,5 +1,9 @@
 {% extends "template2.htm" %}
 {% block contents %}
+{% if owner.getKey() == user.getKey() %}
+<div class="alert-message warning">This is you!</div>
+{% endif %}
+
 <h2>
 {% if owner.isOrganization() %}
 <img src="/assets/org.png" height="50"/>

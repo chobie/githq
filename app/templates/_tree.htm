@@ -1,0 +1,25 @@
+  <table class="zebra-striped" id="main">
+  	<tr>
+  		<th>name</th><th>age</th><th>message</th>
+  	</tr>
+  	{% if parent_dir %}
+  	<tr>
+	<td><img src="/assets/dir.png" /><a href="/{{owner.getNickname()}}/{{repository.getName()}}/tree/master/{{parent_dir}}">..</a></td>
+	<td></td>
+	<td></td>
+	</tr>
+	{% endif %}
+	{% for entry in tree %}
+	<tr>
+	{% if entry.isBlob() %}
+	<td><img src="/assets/txt.png" /><a href="/{{owner.getNickname()}}/{{repository.getName()}}/blob/master/{{current_path}}{{entry.name}}" data-pjax="#main">{{entry.name}}</a></td>
+	<td></td>
+	<td>{% if commits[entry.name]%}{{commits[entry.name].getMessage()}}{% endif%}</td>
+	{% else %}
+	<td><img src="/assets/dir.png" /><a href="/{{owner.getNickname()}}/{{repository.getName()}}/tree/master/{{current_path}}{{entry.name}}" data-pjax="#main">{{entry.name}}</a></td>
+	<td></td>
+	<td></td>
+	{% endif %}
+	</tr>
+	{% endfor %}
+  </table>

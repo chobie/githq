@@ -59,10 +59,10 @@
   {% endif %}
  
   {% if ret %}
-  auto merge ok 
+  <div class="alert-message success">merge looks fine</div> 
   <form method="POST" action="/{{owner.getNickname()}}/{{repository.getName()}}/pull/{{issue.getId()}}/close">
     <input type="hidden" name="issue" value="{{issue.getId()}}" />
-  	<input type="submit" value="close this issue" name="close"  class="btn primary"/>
+  	<input type="submit" value="accet this request" name="close"  class="btn primary"/>
   </form>
 
   {% endif %}
