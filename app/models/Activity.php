@@ -55,7 +55,7 @@ class Activity extends \UIKit\Framework\UIStoredObject
 	 */
 	public static function getTimelineByUserId($user_id)
 	{
-		$redis = GitHQController::getRedisClient();
+		$redis = GitHQ\Bundle\AbstractController::getRedisClient();
 		$list = $redis->lrange(self::KEY_TIMELINE_USERS . ".{$user_id}",0,100);
 		$result = Activity::mget($list, 'activity');
 		return $result;
@@ -67,7 +67,7 @@ class Activity extends \UIKit\Framework\UIStoredObject
 	 */
 	public static function getGlobalTimeline()
 	{
-		$redis = GitHQController::getRedisClient();
+		$redis = GitHQ\Bundle\AbstractController::getRedisClient();
 		$list = $redis->lrange(self::KEY_TIMELINE_GLOBAL,0,100);
 		$result = Activity::mget($list, 'activity');
 		return $result;
@@ -79,7 +79,7 @@ class Activity extends \UIKit\Framework\UIStoredObject
 	 */
 	public static function getNextId()
 	{
-		$redis = GitHQController::getRedisClient();
+		$redis = GitHQ\Bundle\AbstractController::getRedisClient();
 		return $redis->incr(self::KEY_SEQUENCE);
 	}
 	

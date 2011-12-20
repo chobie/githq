@@ -1,5 +1,5 @@
 <?php
-class RepositoriesController extends GitHQController
+class RepositoriesController extends GitHQ\Bundle\AbstractController
 {
 	
 	public function onDefault()

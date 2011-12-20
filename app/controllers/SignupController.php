@@ -1,5 +1,5 @@
 <?php
-class SignupController extends GitHQController
+class SignupController extends GitHQ\Bundle\AbstractController
 {
 	public function onFree()
 	{

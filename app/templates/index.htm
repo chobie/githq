@@ -8,7 +8,7 @@
   <h2>githq Timeline</h2>
   <div style="overflow:auto;max-height:300px;min-height:300px;">
   {% for activity in timeline %}
-  <div><img src="{{activity.getImageUrl()}}" height="30" />{{activity.getDescription()|raw}}</div>
+  <div>{{activity.getDescription()|raw}}</div>
   {% endfor %}
   </div>
   {% endif %}
@@ -21,11 +21,12 @@
   	<div class="content">
 	  <h2>githq Timeline</h2>
  		 {% for activity in timeline %}
-  		<p><img src="{{activity.getImageUrl()}}"  style="height:30px;" />{{activity.getDescription()|raw}}</p>
+  		<p>{{activity.getDescription()|raw}}</p>
   		{% endfor %}  
   	</div>
 
   	<div class="sidebar">
+  	  	
   	<div class="well">
   	{% if organizations %}
 	  <h3>Organizations</h3>

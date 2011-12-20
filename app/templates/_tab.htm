@@ -1,0 +1,9 @@
+  <ul class="tabs">
+    <li class="active"><a href="#">Files</a></li>
+    <li><a href="/{{owner.getNickname()}}/{{repository.getName()}}/commits/master">Commits</a></li>
+    <li><a href="#">Branches</a></li>
+    <li><a href="/{{owner.getNickname()}}/{{repository.getName()}}/tags">Tags</a></li>
+    {% if repository.isIssueEnabled() %}
+    <li><a href="/{{owner.getNickname()}}/{{repository.getName()}}/issues">Issues ({{issue_count}})</a></li>
+    {% endif %}
+  </ul>

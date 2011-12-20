@@ -1,13 +1,13 @@
 <?php
-class AccountController extends GitHQController
+class AccountController extends GitHQ\Bundle\AbstractController
 {
 	public function onNew()
 	{
 		$user = $this->getUser();
 		if ($this->getRequest()->isPost()) {
 			
-			if (!UserPointer::getIdByEmail($this->getRequest()->get("email")) && !UserPointer::getIdByNickname($this->getRequest()->get("name")) ) {
-				$organization = new User("org." . UserPointer::getNextId(),"user");
+			if (!User::getIdByEmail($this->getRequest()->get("email")) && !User::getIdByNickname($this->getRequest()->get("name")) ) {
+				$organization = new User("org." . User::getNextId(),"user");
 				$organization->setNickname($this->getRequest()->get("name"));
 				$organization->setEmail($this->getRequest()->get("email"));
 				$organization->setUserAsOrganizer();
@@ -17,6 +17,7 @@ class AccountController extends GitHQController
 			}
 		}
 	}
+	
 	public function onOrganizations()
 	{
 		$user = $this->getUser();

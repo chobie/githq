@@ -1,12 +1,6 @@
 {% extends "template.htm" %}
 {% block contents %}   
-  <ul class="tabs">
-    <li class="active"><a href="#">Files</a></li>
-    <li><a href="/{{owner.getNickname()}}/{{repository.getName()}}/commits/master">Commits</a></li>
-    <li><a href="#">Branches</a></li>
-    <li><a href="/{{owner.getNickname()}}/{{repository.getName()}}/tags">Tags</a></li>
-    <li><a href="/{{owner.getNickname()}}/{{repository.getName()}}/issues">Issues ({{issue_count}})</a></li>
-  </ul>
+  {% include "_tab.htm" %}
   
   {% if tags %}
   <div>{% for tag in tags %}<a href="/{{owner.getNickname()}}/{{repository.getName()}}/commit/{{tag.oid}}">{{tag.name}}</a> | {% endfor %}</div>
@@ -42,7 +36,7 @@
 	{% if entry.isBlob() %}
 	<td><img src="/assets/txt.png" /><a href="/{{owner.getNickname()}}/{{repository.getName()}}/blob/master/{{current_path}}{{entry.name}}">{{entry.name}}</a></td>
 	<td></td>
-	<td></td>
+	<td>{% if commits[entry.name]%}{{commits[entry.name].getMessage()}}{% endif%}</td>
 	{% else %}
 	<td><img src="/assets/dir.png" /><a href="/{{owner.getNickname()}}/{{repository.getName()}}/tree/master/{{current_path}}{{entry.name}}">{{entry.name}}</a></td>
 	<td></td>

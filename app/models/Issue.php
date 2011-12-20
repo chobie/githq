@@ -19,6 +19,7 @@ class Issue extends \UIKit\Framework\UIStoredObject
 	protected $comments = array();
 	protected $labels = array();
 	protected $milestone;
+	protected $ref = array();
 	
 	/**
 	 * get current issue key
@@ -288,6 +289,30 @@ class Issue extends \UIKit\Framework\UIStoredObject
 		$this->status = $status;
 	}
 	
+	public function setPullrequest()
+	{
+		$this->type = self::TYPE_PULL;
+	}
+	
+	public function isPullrequest()
+	{
+		return $this->type == self::TYPE_PULL;
+	}
+	
+	public function attachRef($owner_id, $branch_name,$repository_id)
+	{
+		$this->ref = array(
+			'owner' => $owner_id,
+			'branch' => $branch_name,
+			'repository' => $repository_id,
+		);
+	}
+	
+	public function getRef()
+	{
+		return $this->ref;
+	}
+	
 	/**
 	 * (non-PHPdoc)
 	 * @see UIKit\Framework.UIStoredObject::type()
@@ -310,6 +335,9 @@ class Issue extends \UIKit\Framework\UIStoredObject
 				foreach ($issue->getLabels() as $offset => $label){
 					$stmt->zAdd("issue_labels.{$issue->getOwner()}.{$issue->getRepositoryId()}." . sha1($label) ,$issue->getRegisteredAtAsTimestamp(),$issue->getId());	
 				}
+			}
+			if ($issue->isPullrequest()){
+				$stmt->zAdd("pull_list.{$issue->getOwner()}.{$issue->getRepositoryId()}.{$issue->getStatus()}",$issue->getRegisteredAtAsTimestamp(),$issue->getId());
 			}
 		});
 		return $retVal;
@@ -382,10 +410,12 @@ class Issue extends \UIKit\Framework\UIStoredObject
 				
 			if ($old->getStatus() != $issue->getStatus()) {
 				$stmt->zAdd("issue_list.{$issue->getOwner()}.{$issue->getRepositoryId()}.{$issue->getStatus()}",$issue->getRegisteredAtAsTimestamp(),$issue->getId());
+				$stmt->zAdd("pull_list.{$issue->getOwner()}.{$issue->getRepositoryId()}.{$issue->getStatus()}",$issue->getRegisteredAtAsTimestamp(),$issue->getId());
 				foreach($issue->getLabelIds() as $label_id) {
 					$stmt->zAdd("issue_labels.{$issue->getOwner()}.{$issue->getRepositoryId()}.{$label_id}.{$issue->getStatus()}",$issue->getRegisteredAtAsTimestamp(),$issue->getId());			
 				}
 				$stmt->zDelete("issue_list.{$issue->getOwner()}.{$issue->getRepositoryId()}.{$old->getStatus()}",$issue->getId());
+				$stmt->zDelete("pull_list.{$issue->getOwner()}.{$issue->getRepositoryId()}.{$old->getStatus()}",$issue->getId());
 				foreach($old->getLabelIds() as $label_id) {
 					$stmt->zDelete("issue_labels.{$issue->getOwner()}.{$issue->getRepositoryId()}.{$label_id}.{$issue->getStatus()}",$issue->getId());
 				}

@@ -1,0 +1,77 @@
+{% extends "template.htm" %}
+{% block contents %}
+
+  <ul class="tabs">
+    <li><a href="/{{owner.getNickname()}}/{{repository.getName}}">Files</a></li>
+    <li><a href="/{{owner.getNickname()}}/{{repository.getName()}}/commits/master">Commits</a></li>
+    <li><a href="#">Branches</a></li>
+    <li><a href="/{{owner.getNickname()}}/{{repository.getName()}}/tags">Tags</a></li>
+    <li class="active"><a href="/{{owner.getNickname()}}/{{repository.getName()}}/issues">Issues ({{issue_count}})</a></li>
+  </ul>
+  
+  <ul class="breadcrumb">
+    <li><a href="/{{owner.getNickname()}}/{{repository.getName()}}/pull/{{issue.getId()}}">discussion</a></li>
+  	<li><a href="/{{owner.getNickname()}}/{{repository.getName()}}/pull/{{issue.getId()}}/files">files</a></li>
+  </ul>
+
+
+	{% for file in diff.getFiles() %}
+	
+	<table style="max-width:1024px;min-width:1024px;" class="diff">
+		<tr>
+		<th style="text-align:left" colspan="3">{{file.getName()}}</th>
+		</tr>
+		{% for hunk in file.getHunks() %}
+		<tr>
+		<td>...</td>
+		<td>...</td>
+		<td>
+		<div style="background:#CCC;text-align:left;">{{hunk.getSummary()}}</div>
+		</td>
+		</tr>
+
+		{% set lines = hunk.getLines() %}
+		{%for line in lines %}
+		<tr>
+		<td>{{line.getOldNumber()}}</td>
+		<td>{{line.getNewNumber()}}</td>
+		<td class="code" style="{% if line.isRemoved()%}background-color:#FFDDDD{% elseif line.isAdded()%}background-color:#D7FFDF{% endif %}">
+		<div style="white-space:pre;font-family:'Bitstream Vera Sans Mono','Courier',monospace;">{% spaceless %}
+		
+			{%if line.isRemoved() %}
+			  {% if lines.hasNext() %}
+			  	{% set next = lines.getNext() %}
+			  	{% if next.isAdded() %}
+			  		{% set diff = line.diff(next) %}
+					<span>{{diff.prefix}}<span style="background-color:#FFA9AA">{{diff.unique}}</span>{{diff.suffix}}</span>
+				{% else %}
+					<span>{{line.getLine()}}</span>
+			  	{% endif %}
+			  {% else %}
+					<span>{{line.getLine()}}</span>
+			  {% endif %}
+			{% elseif line.isAdded() %}
+			  {% if lines.hasPrevious() %}
+			  	{% set previous = lines.getPrevious() %}
+			  	{% if previous.isRemoved() %}
+			  		{% set diff = line.diff(previous) %}
+					<span>{{diff.prefix}}<span style="background-color:#97FFB1">{{diff.unique}}</span>{{diff.suffix}}</span>
+				{% else %}
+					<span>{{line.getLine()}}</span>
+			  	{% endif %}
+			  {% else %}
+					</span>{{line.getLine()}}</span>
+			  {% endif %}
+			{% else %}
+			<span>{{line.getLine()}}</span>
+			{% endif %}
+			
+			{% endspaceless %}
+			{% endfor %}
+		</div>
+		</td></tr>
+		{% endfor %}
+		
+	</table>
+	{% endfor %}
+{% endblock%}

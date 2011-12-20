@@ -1,12 +1,12 @@
 <?php
-class OrganizationsController extends GitHQController
+class OrganizationsController extends GitHQ\Bundle\AbstractController
 {
 	
 	public function onDefault($params)
 	{
 		$user = $this->getUser();
 		
-		$organization = User::get(UserPointer::getIdByNickname($params['organization']),'user');
+		$organization = User::get(User::getIdByNickname($params['organization']),'user');
 		
 		$timeline = Activity::getGlobalTimeline();
 		$this->render("index.htm",array(
@@ -24,7 +24,7 @@ class OrganizationsController extends GitHQController
 			$description  = $_REQUEST['description'];
 			$homepage_url = $_REQUEST['homepage_url'];
 			
-			$user = User::fetchLocked(UserPointer::getIdByNickname($params['organization']),"user");
+			$user = User::fetchLocked(User::getIdByNickname($params['organization']),"user");
 			$repo = new Repository($project_name);
 			$id = $user->getNextRepositoryId();
 			error_log("repository_id: {$id}");

@@ -23,11 +23,31 @@
 		<input type="text" value="" name="default_branch" />
 	</div>
 </div>
+
 <div class="actions">
 	<button type="submit" name="update" class="btn primary" />update repository</button>
 </div>
 </fieldset>
 </form>
+
+
+<h1>Features</h1>
+<form method="POST" action="/{{owner.getNickname()}}/{{repository.getName()}}/admin/update" class="form-stacked">
+<fieldset>
+<div class="clearfix">
+	<label for="visibility">Issue</label>
+	<div class="input">
+		<input type="radio" name="issue" value="1" {% if repository.isIssueEnabled() %}checked{% endif %} />Enabled
+		<input type="radio" name="issue" value="0" {% if not repository.isIssueEnabled() %}checked{% endif %} />Disabled
+	</div>
+</div>
+
+<div class="actions">
+	<button type="submit" name="features" class="btn primary" />update features</button>
+</div>
+</fieldset>
+</form>
+
 
 <h1>Delete this repository</h1>
 <form method="POST" action="/{{owner.getNickname()}}/{{repository.getName()}}/admin/delete" class="form-stacked">

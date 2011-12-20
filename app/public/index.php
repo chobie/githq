@@ -6,143 +6,17 @@ class GitHQApplicationDelegate extends UIKit\Framework\UIWebApplicationDelegate
 	protected function getRouting()
 	{
 		$router = new UIKit\Framework\UIRouter();
-		$router->add('/{user}/{repository}/issue_comments',array(
-												'controller' => 'IssuesController',
-												'action' => 'onIssueComments',
-		));
-		$router->add('/{user}/{repository}/issues',array(
-									'controller' => 'IssuesController',
-									'action' => 'onDefault',
-		));
-		$router->add('/{user}/{repository}/issues/update',array(
-											'controller' => 'IssuesController',
-											'action' => 'onUpdate',
-		));
-		$router->add('/{user}/{repository}/issues/new',array(
-									'controller' => 'IssuesController',
-									'action' => 'onNew',
-		));
-		$router->add('/{user}/{repository}/issues/edit/{id,digit}',array(
-														'controller' => 'IssuesController',
-														'action' => 'onEdit',
-		));
-		$router->add('/{user}/{repository}/issues/{id,digit}',array(
-												'controller' => 'IssuesController',
-												'action' => 'onIssue',
-		));
-		$router->add('/{user}/{repository}/zipball/{tag}',array(
-												'controller' => 'RootController',
-												'action' => 'onZipBall',
-		));
-		$router->add('/logout',array(
-												'controller' => 'RootController',
-												'action' => 'onLogout',
-		));
-		$router->add('/session',array(
-														'controller' => 'RootController',
-														'action' => 'onSession',
-		));
-		$router->add('/about',array(
-							'controller' => 'RootController',
-							'action' => 'onAbout'
-		));
-		$router->add('/account',array(
-										'controller' => 'RootController',
-										'action' => 'onAccount',
-		));
-		$router->add('/organizations/{organization,vars}',array(
-							'controller' => 'OrganizationsController',
-							'action' => 'onDefault',
-		));
-		$router->add('/organizations/{organization,vars}/repositories/new',array(
-					'controller' => 'OrganizationsController',
-					'action' => 'onNew',
-		));
-		$router->add('/account/organizations/{action,alpha,camel,prepend(on)}',array(
-														'controller' => 'AccountController',
-														'action' => 'onDefault',
-		));
+			$router = new UIKit\Framework\UIRouter();
+		$data = file_get_contents(__DIR__ . "/../config/routes.xml");
+		$xml = simplexml_load_string($data);
 		
-		$router->add('/account/{action,alpha,camel,prepend(on)}',array(
-												'controller' => 'AccountController',
-												'action' => 'onDefault',
-		));
-		
-		$router->add('/connect',array(
-												'controller' => 'RootController',
-												'action' => 'onConnect',
-		));
-		
-		
-		
-		$router->add('/{user}/{repository}/tags',array(
-										'controller' => 'RootController',
-										'action' => 'onTags',
-		));
-		
-		$router->add('/{user}/{repository}/commits/{refs}/{path,greed}',array(
-								'controller' => 'RootController',
-								'action' => 'onCommitsHisotry',
-		));
-		$router->add('/{user}/{repository}/commits/{refs}',array(
-						'controller' => 'RootController',
-						'action' => 'onCommits',
-		));
-		
-		$router->add('/{user}/{repository}/commit/{commit}',array(
-									'controller' => 'RootController',
-									'action' => 'onCommit',
-		));
-		$router->add('/{user}/{repository}/admin',array(
-								'controller' => 'AdminController',
-								'action' => 'onDefault',
-		));
-		$router->add('/{user}/{repository}/admin/delete',array(
-										'controller' => 'AdminController',
-										'action' => 'onDelete',
-		));
-		$router->add('/{user}/{repository}/admin/update',array(
-												'controller' => 'AdminController',
-												'action' => 'onUpdate',
-		));
-		
-		$router->add('/{user}/{repository}/blame/{refs}/{path,greed}',array(
-								'controller' => 'RootController',
-								'action' => 'onBlame',
-		));
-		
-		$router->add('/{user}/{repository}/blob/{refs}/{path,greed}',array(
-						'controller' => 'RootController',
-						'action' => 'onBlob',
-		));
-		$router->add('/{user}/{repository}/tree/{refs}/{path,greed}',array(
-						'controller' => 'RootController',
-						'action' => 'onTree',
-		));
-		$router->add('/{user}/{repository}.git/{path,greed}',array(
-						'controller' => 'RootController',
-						'action' => 'onDefault',
-		));
-		/*
-		$router->add('/{action,alpha,camel,prepend(on)}',array(
-						'controller' => 'RootController',
-						'action' => 'default',
-		));
-		*/
-
-		$router->add('/{user,vars}',array(
-								'controller' => 'RootController',
-								'action' => 'onUser',
-		));
-		$router->add('/',array(
-										'controller' => 'RootController',
-										'action' => 'onDefault',
-		));
-		
-		$router->add('/{controller,vars,camel,append(Controller)}/{action,vars,camel,prepend(on),optional}',array(
-						'controller' => 'RootController',
-						'action' => 'default',
-		));
+		foreach($xml->xpath("//route") as $element) {
+			$defaults = array();
+			foreach($element->default as $item) {
+				$defaults[(string)$item->attributes()->key] = (string)$item[0];
+			}
+			$router->add((string)$element->attributes()->pattern,$defaults);
+		}
 		return $router;
 	}
 	

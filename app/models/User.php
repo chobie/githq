@@ -31,9 +31,23 @@ class User extends UIKit\Framework\UIStoredObject
 	protected $public_keys  = array();
 	protected $members = array();
 	
+	public static function getIdByNickname($nickname)
+	{
+		$redis = GitHQ\Bundle\AbstractController::getRedisClient();
+		return $redis->get("pointer.user_id.nickname.{$nickname}");
+	}
+	
+	public static function getIdByEmail($email)
+	{
+		$redis = GitHQ\Bundle\AbstractController::getRedisClient();
+		$email = sha1($email);
+		return $redis->get("pointer.user_id.email.{$email}");
+	}
+	
+	
 	public function getJoinedOrganizations()
 	{
-		$redis = GitHQController::getRedisClient();
+		$redis = GitHQ\Bundle\AbstractController::getRedisClient();
 		$members = $redis->smembers("user.{$this->getKey()}.organizations");
 		$result = array();
 		if ($members) {
@@ -243,6 +257,15 @@ class User extends UIKit\Framework\UIStoredObject
 			return $this->repositories[$key];
 		} else {
 			return false;
+		}
+	}
+	
+	public function getRepositoryById($id)
+	{
+		foreach($this->repositories as $repo) {
+			if ($repo->getId() == $id) {
+				return $repo;
+			}
 		}
 	}
 	

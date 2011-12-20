@@ -1,5 +1,5 @@
 <?php
-class UsersController extends GitHQController
+class UsersController extends GitHQ\Bundle\AbstractController
 {
 	public function onDefault()
 	{
@@ -12,7 +12,7 @@ class UsersController extends GitHQController
 			}
 
 			try {
-				if (!UserPointer::getIdByNickname($request->get('username')) && !UserPointer::getIdByEmail($request->get('email'))) {
+				if (!User::getIdByNickname($request->get('username')) && !User::getIdByEmail($request->get('email'))) {
 					$user = new User($user_id);
 					$user->setNickname($request->get('username'));
 					$user->setEmail($request->get('email'));

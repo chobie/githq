@@ -1,0 +1,82 @@
+{% extends "template.htm" %}
+{% block contents %}
+
+  <ul class="tabs">
+    <li><a href="/{{owner.getNickname()}}/{{repository.getName}}">Files</a></li>
+    <li><a href="/{{owner.getNickname()}}/{{repository.getName()}}/commits/master">Commits</a></li>
+    <li><a href="#">Branches</a></li>
+    <li><a href="/{{owner.getNickname()}}/{{repository.getName()}}/tags">Tags</a></li>
+    <li class="active"><a href="/{{owner.getNickname()}}/{{repository.getName()}}/issues">Issues ({{issue_count}})</a></li>
+  </ul>
+  
+  <ul class="breadcrumb">
+  	<li class="active">disscussion</li>
+  	<li><a href="/{{owner.getNickname()}}/{{repository.getName()}}/pull/{{issue.getId()}}/files">files</a></li>
+  </ul>
+
+  <div>
+    <div><img src="{{user.getImageUrl()}}" height="20"/><a href="/{{issue.getAuthor().getNickname()}}">{{issue.getAuthor().getNickname()}}</a> opened this issue at {{issue.getRegisteredAt()}}</div>
+    	<div class="issue_container">
+	    <div><h2>{{issue.getTitle()}}</h2></div>
+	    {% if issue.hasMilestone() %}
+	    Milestone: {{repository.getMilestones().getMilestoneById(issue.getMilestoneId())}}
+	    {% endif %}
+	    {% if user.getNickname() == owner.getNickname() %}
+	    <div style="text-align:right"><span class="btn secondary"><a href="/{{owner.getNickname()}}/{{repository.getName()}}/issues/edit/{{issue.getId()}}">EDIT</a></span></div>
+	    {% endif %}
+	    
+	    {% if issue.hasLabel() %}
+	    {% set labels = repository.getLabels() %}
+	    <div>Labels: 
+	    {% for item in issue.getLabelIds() %}
+	    {% if user == owner %}
+	    	<form method="POST" action="/{{owner.getNickname()}}/{{repository.getName()}}/issues/update">[{{labels.getLabelById(item).getName()}} 
+	    	<input type="hidden" name="label" value="{{item}}" />
+	    	<input type="hidden" name="id" value="{{issue.getId()}}" />
+	    	<input type="submit" value="x" name="label_delete" />]</form>
+	    {% else %}
+		[{{labels.getLabelById(item).getName()}}]
+	    {% endif %}
+	    {% endfor %}
+	    </div>
+	    {% endif %}
+	    
+	    <div>{{issue.getBodyAsMd()|raw}}</div>
+	    </div>
+  </div>
+  
+  {% if issue.isPullRequest() %}
+  {% for commit in commits %}
+  <div class="raw" style="border:1px solid #666;border-radius:5px;width:800px;padding:0.5em;"><span class="span1"><img src="https://secure.gravatar.com/avatar/{{commit.getAuthor().email|md5}}?s=20"></span><span class="span2"><a href="/{{requestor.getNickname()}}/{{req_repo.getName()}}/commit/{{commit.getId()}}">{{commit.getId()}}</a></span> {{commit.getMessage()}}</div>
+  {% endfor %}
+  {% endif %}
+  
+  {% if issue.getComments() %}
+  {% for item in issue.getComments() %}
+  <div><a href="/{{item.getCommenter().getNickname()}}">{{item.getCommenter().getNickname()}}</a> commented {{item.getRegisteredAt()}}</div>
+  <div style="margin-left:2em;">{{item.getCommentAsMd()|raw}}</div>
+  {% endfor %}
+  {% endif %}
+ 
+  {% if ret %}
+  auto merge ok 
+  <form method="POST" action="/{{owner.getNickname()}}/{{repository.getName()}}/pull/{{issue.getId()}}/close">
+    <input type="hidden" name="issue" value="{{issue.getId()}}" />
+  	<input type="submit" value="close this issue" name="close"  class="btn primary"/>
+  </form>
+
+  {% endif %}
+  {% if user %}
+  <div>
+  <div>Comment on this issue</div>
+  <form method="POST" action="/{{owner.getNickname()}}/{{repository.getName()}}/issue_comments">
+    <div><textarea name="comment" style="width:800px; height:10em;"></textarea></div>
+    <div>label: <input type="text" name="label" value="" /></div>
+    <input type="hidden" name="issue" value="{{issue.getId()}}" />
+    <input type="submit" value="comment on this issue" class="btn primary"/>
+  	<input type="submit" value="close this issue" name="close"  class="btn primary"/>
+  	<input type="submit" value="re-open this issue" name="open" class="btn secondary"/>
+  </form>
+  </div>
+  {% endif %}
+{% endblock %}

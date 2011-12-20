@@ -4,7 +4,7 @@
   	<div class="content">
 	  <h2>githq Timeline</h2>
  		 {% for activity in timeline %}
-  		<p><img src="{{activity.getImageUrl()}}"  style="height:30px;" />{{activity.getDescription()|raw}}</p>
+  		<p>{{activity.getDescription()|raw}}</p>
   		{% endfor %}  
   	</div>
 

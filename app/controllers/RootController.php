@@ -1,5 +1,5 @@
 <?php
-class RootController extends GitHQController
+class RootController extends GitHQ\Bundle\AbstractController
 {	
 	public function onDefault($params =  array())
 	{
@@ -8,7 +8,7 @@ class RootController extends GitHQController
 		$organizations = null;
 		
 		if ($this->getRequest()->isPost()) {
-			$owner = User::get(UserPointer::getIdByNickname($_REQUEST['user']),"user");
+			$owner = User::get(User::getIdByNickname($_REQUEST['user']),"user");
 			if (!$user->getRepository($_REQUEST['repository'])) {
 				$origin = $owner->getRepository($_REQUEST['repository']);
 				
@@ -27,7 +27,7 @@ class RootController extends GitHQController
 		}
 		
 		if (isset($params['controller'])) {
-			$owner = User::get(UserPointer::getIdByNickname($params['controller.orig']),"user");
+			$owner = User::get(User::getIdByNickname($params['controller.orig']),"user");
 			$repository = $owner->getRepository($params['action.orig']);
 						
 			if (!$repository) {
@@ -109,7 +109,7 @@ class RootController extends GitHQController
 	{
 		$user = $this->getUser();
 		
-		$owner = User::get(UserPointer::getIdByNickname($params['user']),'user');
+		$owner = User::get(User::getIdByNickname($params['user']),'user');
 		$repository = $owner->getRepository($params['repository']);
 		$repo = new \Git\Repository("/home/git/repositories/{$owner->getKey()}/{$repository->getId()}");
 		$refm = new \Git\Reference\Manager($repo);
@@ -162,7 +162,7 @@ class RootController extends GitHQController
 	public function onTree($params)
 	{
 		$user = $this->getUser();
-		$owner = User::get(UserPointer::getIdByNickname($params['user']),'user');
+		$owner = User::get(User::getIdByNickname($params['user']),'user');
 		$repository = $owner->getRepository($params['repository']);
 			
 		
@@ -199,7 +199,7 @@ class RootController extends GitHQController
 	public function onSession()
 	{
 		if($this->getRequest()->isPost()) {
-			$user = User::get(UserPointer::getIdByNickname($_REQUEST['username']),"user");
+			$user = User::get(User::getIdByNickname($_REQUEST['username']),"user");
 			if ($user && $user->checkPassword($_REQUEST['password'])) {
 				$_SESSION['user'] = $user;
 				header("Location: http://githq.org/");
@@ -266,7 +266,7 @@ class RootController extends GitHQController
 	
 	public function onCommit($params)
 	{
-		$owner = User::get(UserPointer::getIdByNickname($params['user']),"user");
+		$owner = User::get(User::getIdByNickname($params['user']),"user");
 		$user = $this->getUser();
 		$repository = $owner->getRepository($params['repository']);
 		$repo = new \Git\Repository("/home/git/repositories/{$owner->getKey()}/{$repository->getId()}");
@@ -287,7 +287,7 @@ class RootController extends GitHQController
 	
 	public function onCommits($params)
 	{
-		$owner = User::get(UserPointer::getIdByNickname($params['user']),"user");
+		$owner = User::get(User::getIdByNickname($params['user']),"user");
 		$user = $this->getUser();
 		$repository = $owner->getRepository($params['repository']);
 		
@@ -333,7 +333,7 @@ class RootController extends GitHQController
 	
 	public function onUser($params)
 	{
-		$owner = User::get(UserPointer::getIdByNickname($params['user']),"user");
+		$owner = User::get(User::getIdByNickname($params['user']),"user");
 		$user = $this->getUser();
 		
 		$timeline = Activity::getTimelineByUserId($owner->getKey());
@@ -349,7 +349,7 @@ class RootController extends GitHQController
 	{
 		$user = $this->getUser();
 		
-		$owner = User::get(UserPointer::getIdByNickname($params['user']),'user');
+		$owner = User::get(User::getIdByNickname($params['user']),'user');
 		$repository = $owner->getRepository($params['repository']);
 		$repo = new \Git\Repository("/home/git/repositories/{$owner->getKey()}/{$repository->getId()}");
 		$refm = new \Git\Reference\Manager($repo);
@@ -397,7 +397,7 @@ class RootController extends GitHQController
 	public function onCommitsHisotry($params)
 	{
 		$path = $params['path'];
-		$owner = User::get(UserPointer::getIdByNickname($params['user']),"user");
+		$owner = User::get(User::getIdByNickname($params['user']),"user");
 
 		$user = $this->getUser();
 		$repository = $owner->getRepository($params['repository']);
@@ -429,7 +429,7 @@ class RootController extends GitHQController
 	public function onTags($params)
 	{
 		$user = $this->getUser();
-		$owner = User::get(UserPointer::getIdByNickname($params['user']),'user');
+		$owner = User::get(User::getIdByNickname($params['user']),'user');
 		$repository = $owner->getRepository($params['repository']);
 		
 		$repo = new \Git\Repository("/home/git/repositories/{$owner->getKey()}/{$repository->getId()}");
@@ -467,7 +467,7 @@ class RootController extends GitHQController
 		ini_set("max_memory","128M");
 		
 		$user = $this->getUser();
-		$owner = User::get(UserPointer::getIdByNickname($params['user']),'user');
+		$owner = User::get(User::getIdByNickname($params['user']),'user');
 		$repository = $owner->getRepository($params['repository']);
 	
 		$spec = array(

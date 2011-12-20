@@ -1,17 +1,38 @@
 {% extends "template.htm" %}
  {% block contents %}
-  <form action="/repositories/" method="POST">
-  <div>Project Name<input type="text" value="" name="project_name" /></div>
-  <div>Description(optional)<input type="text" value="" name="description" /></div>
-  <div>Homepage Url(optional)<input type="text" value="" name="homepage_url" /></div>
+ 
+  <h1>Create repository</h1>
+ 
+  <form action="/repositories/" method="POST" class="form-stacked">
+  <div class="clearfix">
+  	<label for="project_name">Project Name</label>
+  	<div class="input">
+  	<input type="text" value="" name="project_name" />
+  	</div>
+  </div>
+
+  <div class="clearfix">
+  	<label for="description">Description (optional)</label>
+  	<div class="input">
+  	<input type="text" value="" name="description" class="xlarge" />
+  	</div>
+  </div>
+
+  <div class="clearfix">
+  	<label for="homepage_url">Homepage Url (optional)</label>
+  	<div class="input">
+  	<input type="text" value="" name="homepage_url" class="xlarge"/>
+  	</div>
+  </div>
+
 
   <p>Who has access to this repository? (You can change this later)</p>
-  <div>
+  <div class="clearfix">
     <label><input type="radio" value="0" name="visibility" checked="checked" />Anyone</label>
     <label><input type="radio" value="1" name="visibility" />Only the people I specify</label>
   </div>
-  <div>
-    <input type="submit" value="Create repository" />
+  <div class="actions">
+    <button type="submit" class="btn primary">Create repository</button>
   </div>
   </form>
 {% endblock %}

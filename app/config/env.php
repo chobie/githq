@@ -15,7 +15,6 @@ require_once __DIR__ . '/../vendor/Git_Util/src/Git/Util/Blame/File.php';
 require_once __DIR__ . '/../vendor/Git_Util/src/Git/Util/Blame/Group.php';
 require_once __DIR__ . '/../vendor/Git_Util/src/Git/Util/Blame/Line.php';
 
-
 if (!defined("REDIS_PORT")) {
 	define("REDIS_PORT",6379);
 }
@@ -248,5 +247,16 @@ class VersionSorter
 }
 
 
+function inspect()
+{
+	$args = func_get_args();
+	echo "<pre>";
+	foreach($args as $arg) {
+		var_dump($arg);
+	}
+	echo "</pre>";
+}
+
 require "development.php";
+require_once __DIR__ . '/../controllers/GitHQController.php';
 

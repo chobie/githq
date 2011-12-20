@@ -12,6 +12,47 @@ class Repository
 	protected $labels = array();
 	protected $milestones;
 	protected $type = self::TYPE_PUBLIC;
+	protected $features = array(
+		"issue" => true,
+		"pull" => true,
+		"fork" => true,
+	);
+	
+	public function isIssueEnabled()
+	{
+		return $this->features['issue'];
+	}
+	
+	public function enableIssue()
+	{
+		$this->features['issue'] = true;
+	}
+	
+	public function disableIssue()
+	{
+		$this->features['issue'] = false;
+	}
+	
+	
+	public function enablePull()
+	{
+		$this->features['pull'] = true;
+	}
+	
+	public function disablePull()
+	{
+		$this->features['pull'] = false;
+	}
+	
+	public function enableFork()
+	{
+		$this->features['fork'] = true;
+	}
+	
+	public function disableFork()
+	{
+		$this->features['fork'] = false;
+	}
 	
 	public function setId($id)
 	{

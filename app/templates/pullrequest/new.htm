@@ -1,0 +1,34 @@
+{% extends "template.htm" %}
+{% block contents %}
+
+	<p>You're asking <a href="/{{origin.getNickname()}}">{{origin.getNickname()}}</a> to pull n commit into x from <span class="btn">{{user.getNickname()}}:{{repository.getName()}}</span></p>
+
+  <div class="row">
+<div class="span10">  
+  <form method="POST" action="/{{owner.getNickname()}}/{{repository.getName()}}/pull/new" class="form-stacked">
+  <input type="hidden" name="ref" value="{{ref}}" />
+  <input type="hidden" name="repository_owner" value="{{owner.getKey()}}" />
+  <input type="hidden" name="repository_name" value="{{repository.getName()}}" />
+  <fieldset>
+  <div class="clearfix">
+	<label for="title">Title</label>
+	<div class="input">
+  		<input type="text" value="" name="title" class="xlarge span10"/>
+  	</div>
+  </div>
+  <div class="clearfix">
+  	<label for="contents">Contents</label>
+  	<textarea name="contents" class="xlarge span10" style="height:20em;"></textarea>
+  </div>
+  
+    <div class="actions">
+    <button type="submit" class="btn primary">Send pull request</button>
+    </div>
+  </fieldset>
+  </form>
+  	</div>
+  	<div class="span6">
+  	People to be notified
+  	</div>
+  </div><!--  /row -->
+{% endblock %}
