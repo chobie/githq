@@ -136,6 +136,10 @@
     <default key="controller">RootController</default>
     <default key="action">onBlame</default>
   </route>
+  <route id="" pattern="/{user}/{repository}/raw/{refs}/{path,greed}">
+    <default key="controller">RootController</default>
+    <default key="action">onRaw</default>
+  </route>
 
   <route id="" pattern="/{user}/{repository}/blob/{refs}/{path,greed}">
     <default key="controller">RootController</default>

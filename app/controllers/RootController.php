@@ -131,8 +131,14 @@ class RootController extends GitHQ\Bundle\AbstractController
 			$tree = $this->resolve_filename($tree,dirname($params['path']));
 		}
 		
+		$img = false;
 		$ext = pathinfo($params['path'],\PATHINFO_EXTENSION);
 		switch ($ext) {
+			case 'jpg':
+			case 'gif':
+			case 'png':
+				$img = true;
+				break;
 			case 'mardkwon':
 			case 'md':
 				$sd = new \Sundown($blob->data);
@@ -167,6 +173,7 @@ class RootController extends GitHQ\Bundle\AbstractController
 						'path'         => $params['path'],
 						'path_parts'   => $path_parts,
 						'refs'         => $params['refs'],
+						'img'          => $img,
 			));
 				
 		} else {
@@ -183,7 +190,8 @@ class RootController extends GitHQ\Bundle\AbstractController
 			'path'         => $params['path'],
 			'path_parts'   => $path_parts,
 			'refs'         => $params['refs'],
-			));
+			'img'          => $img,
+		));
 		}
 	}
 
@@ -532,5 +540,33 @@ class RootController extends GitHQ\Bundle\AbstractController
 		echo $content;
 		exit;
 		
+	}
+
+	public function onRaw($params)
+	{
+		$user = $this->getUser();
+	
+		$owner = User::get(User::getIdByNickname($params['user']),'user');
+		$repository = $owner->getRepository($params['repository']);
+		$repo = new \Git\Repository("/home/git/repositories/{$owner->getKey()}/{$repository->getId()}");
+		$refm = new \Git\Reference\Manager($repo);
+		$branches = $refm->getList();
+	
+		$ref = $repo->lookupRef("refs/heads/master");
+		$commit = $repo->getCommit($ref->getId());
+		$current_path = '';
+		if ($params['path']) {
+			$paths = explode('/',$params['path']);
+			if(count($paths)> 1) {
+				$current_path = join('/',$paths) . '/';
+			} else{
+				$current_path = $params['path'] . '/';
+			}
+			$tree = $commit->getTree();
+			$blob = $this->resolve_filename($tree,$params['path']);
+			$tree = $this->resolve_filename($tree,dirname($params['path']));
+		}
+	
+		echo $blob->data;
 	}
 }

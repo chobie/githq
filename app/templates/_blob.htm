@@ -14,5 +14,9 @@
   </ul>
   {% endif %}
   
+  {% if img %}
+  <div><img src="/{{owner.getNickname()}}/{{repository.getName()}}/raw/{{refs}}/{{path}}"></div>
+  {% elseif data %}
   <div class="highlight" style="white-space:nowrap;font-family:'Bitstream Vera Sans Mono','Courier',monospace;">{{data|raw}}</div>
+  {% endif %}
   </div>
