@@ -159,7 +159,7 @@
     <default key="controller">RootController</default>
     <default key="action">onDefault</default>
   </route>
-  <route id="" pattern="/{user}/{repository}/tree/{ref}/">
+  <route id="" pattern="/{user}/{repository}/tree/{refs}/">
     <default key="controller">RootController</default>
     <default key="action">onTree</default>
   </route>

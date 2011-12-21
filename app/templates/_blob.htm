@@ -8,8 +8,8 @@
   {% if path_parts %}
   <ul class="breadcrumb">
   <li><img src="/assets/txt.png" /></li>
-  {% for parts in path_parts %}
-  <li><a href="#">{{parts}}</a>{% if not loop.last %}<span class="divider">/</span>{% endif %}
+  {% for key, parts in path_parts %}
+  <li><a href="/{{owner.getNickname()}}/{{repository.getName()}}/tree/{{refs}}/{{parts}}" data-pjax="#main">{{key}}</a>{% if not loop.last %}<span class="divider">/</span>{% endif %}
   {% endfor %}
   </ul>
   {% endif %}

@@ -144,6 +144,14 @@ class RootController extends GitHQ\Bundle\AbstractController
 		if (!$data) {
 			$data = "<pre>" . htmlspecialchars($blob->data) . "</pre>";
 		}
+		
+		$keys = explode("/",$params['path']);
+		$path_parts = array();
+		$stack = array();
+		foreach($keys as $key) {
+			$stack[] = $key;
+			$path_parts[$key] = join("/",$stack);
+		}
 
 		if (isset($_REQUEST['_pjax'])) {
 			$this->render("_blob.htm",array(
@@ -157,7 +165,8 @@ class RootController extends GitHQ\Bundle\AbstractController
 						'issue_count'  => IssueReferences::getOpenedIssueCount($owner->getKey(), $owner->getRepository($params['repository'])->getId()),
 						'current_path' => dirname($params['path']) . '/',
 						'path'         => $params['path'],
-						'path_parts'   => explode("/",$params['path']),
+						'path_parts'   => $path_parts,
+						'refs'         => $params['refs'],
 			));
 				
 		} else {
@@ -172,8 +181,9 @@ class RootController extends GitHQ\Bundle\AbstractController
 			'issue_count'  => IssueReferences::getOpenedIssueCount($owner->getKey(), $owner->getRepository($params['repository'])->getId()),
 			'current_path' => dirname($params['path']) . '/',
 			'path'         => $params['path'],
-			'path_parts'   => explode("/",$params['path']),
-		));
+			'path_parts'   => $path_parts,
+			'refs'         => $params['refs'],
+			));
 		}
 	}
 
