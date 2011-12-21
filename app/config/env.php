@@ -257,6 +257,5 @@ function inspect()
 	echo "</pre>";
 }
 
-require "development.php";
 require_once __DIR__ . '/../controllers/GitHQController.php';
 

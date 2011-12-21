@@ -64,7 +64,7 @@ class User extends UIKit\Framework\UIStoredObject
 	 */
 	public function getMembers()
 	{
-		if (!$this->isOrganizer()) {
+		if (!$this->isOrganization()) {
 			return array();
 		}
 		return $this->members;
@@ -77,7 +77,7 @@ class User extends UIKit\Framework\UIStoredObject
 	 * @throws \Exception
 	 */
 	public function addMember($user_id){
-		if (!$this->isOrganizer()) {
+		if (!$this->isOrganization()) {
 			throw new \Exception("this user could not add member");
 		}
 		
@@ -394,7 +394,8 @@ class User extends UIKit\Framework\UIStoredObject
 	 */
 	public static function getNextId()
 	{
-		return $this->getClient()->incr("sequence.user_id");
+		$redis = GitHQ\Bundle\AbstractController::getRedisClient();
+		return $redis->incr("sequence.user_id");
 	}
 	
 }

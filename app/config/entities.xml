@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<entities>
+  <entity id="user">
+    <strategy>UIKit\Framework\UIStoredRedisStrategy</strategy>
+    <serializer>UIKit\Framework\UIStoredPHPSerializer</serializer>
+    <cache>UIKit\Framework\UIStoredPHPArrayCache</cache>
+    <expiration>0</expiration>
+    <lock_timeout>5</lock_timeout>
+    <redis>
+    	<host>localhost</host>
+    	<port>6379</port>
+  	    <persistence>true</persistence>
+    </redis>
+  </entity>
+
+  <entity id="issue">
+    <strategy>UIKit\Framework\UIStoredRedisStrategy</strategy>
+    <serializer>UIKit\Framework\UIStoredPHPSerializer</serializer>
+    <cache>UIKit\Framework\UIStoredPHPArrayCache</cache>
+    <expiration>0</expiration>
+    <lock_timeout>5</lock_timeout>
+    <redis>
+    	<host>localhost</host>
+    	<port>6379</port>
+  	    <persistence>true</persistence>
+    </redis>
+  </entity>
+  
+  <entity id="activity">
+    <strategy>UIKit\Framework\UIStoredRedisStrategy</strategy>
+    <serializer>UIKit\Framework\UIStoredPHPSerializer</serializer>
+    <cache>UIKit\Framework\UIStoredPHPArrayCache</cache>
+    <expiration>0</expiration>
+    <lock_timeout>5</lock_timeout>
+    <redis>
+    	<host>localhost</host>
+    	<port>6379</port>
+  	    <persistence>true</persistence>
+    </redis>
+  </entity>
+</entities>
