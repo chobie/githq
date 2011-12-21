@@ -198,9 +198,11 @@ class RootController extends GitHQ\Bundle\AbstractController
 			}
 			$tree = $commit->getTree();
 			$tree = $this->resolve_filename($tree,$params['path']);
+		} else {
+			$tree = $commit->getTree();
 		}
 		$parent_dir = dirname($current_path);
-		error_log(print_r($_SERVER,true));
+		
 		if (isset($_REQUEST['_pjax'])) {
 			$this->render("_tree.htm",array(
 							'user'         => $user,

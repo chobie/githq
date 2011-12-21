@@ -159,6 +159,11 @@
     <default key="controller">RootController</default>
     <default key="action">onDefault</default>
   </route>
+  <route id="" pattern="/{user}/{repository}/tree/{ref}/">
+    <default key="controller">RootController</default>
+    <default key="action">onTree</default>
+  </route>
+
   <route id="" pattern="/{controller,vars,camel,append(Controller)}/{action,vars,camel,prepend(on),optional}">
     <default key="controller">RootController</default>
     <default key="action">default</default>
