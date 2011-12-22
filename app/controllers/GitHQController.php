@@ -10,8 +10,8 @@ abstract class AbstractController extends \UIKit\Framework\UIAppController
 	{
 		parent::__construct();
 		$this->snapi = new \Facebook(array(
-			'appId' => '308497302504262',
-			'secret'=> '3de91e2141352b58c08fb1c24b452a73'));
+			'appId' => \FACEBOOK_APPLICATION_ID,
+			'secret'=> \FACEBOOK_APPLICATION_SECRET));
 	}
 
 	protected function getUser()

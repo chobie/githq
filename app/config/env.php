@@ -15,6 +15,8 @@ require_once __DIR__ . '/../vendor/Git_Util/src/Git/Util/Blame/File.php';
 require_once __DIR__ . '/../vendor/Git_Util/src/Git/Util/Blame/Group.php';
 require_once __DIR__ . '/../vendor/Git_Util/src/Git/Util/Blame/Line.php';
 
+define('FACEBOOK_APPLICATION_ID','__YOU_MUST_DEFINE_YOUR_APP_ID');
+define('FACEBOOK_APPLICATION_SECRET','__YOU_MUST_DEFINE_YOUR_APP_SECRET');
 if (!defined("REDIS_PORT")) {
 	define("REDIS_PORT",6379);
 }
