@@ -1,7 +1,7 @@
 <?php
 namespace GitHQ\Bundle;
 
-abstract class AbstractController extends \UIKit\Framework\UIAppController
+abstract class AbstractController extends \UIKit\Framework\HTTPFoundation\Controller\ApplicationController
 {
 	protected static $redis;
 	protected $snapi;
