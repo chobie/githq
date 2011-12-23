@@ -4,7 +4,7 @@
   
   <div class="hero-unit">
   <h1>All your repositories are belong to us!</h1>
-  {% if not timeline %}
+  {% if timeline %}
   <h2>githq Timeline</h2>
   <div style="overflow:auto;max-height:300px;min-height:300px;">
   {% for activity in timeline %}
@@ -56,8 +56,8 @@
 	  {% for repository in user.getRepositories() %}
 	  <p><a href="/{{user.getNickname()}}/{{repository.getName()}}">{{user.getNickname()}}/{{repository.getName()}}</a></p>
 	  {% endfor %}
-	  <p><a href="/repositories/new" class="btn primary large">create repository</a></p>
 	  {% endif %}
+	  <p><a href="/repositories/new" class="btn primary large">create repository</a></p>
 
 	</div>
   	</div>
