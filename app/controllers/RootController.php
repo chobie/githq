@@ -325,7 +325,8 @@ class RootController extends GitHQ\Bundle\AbstractController
 		$user = $this->getUser();
 		$repository = $owner->getRepository($params['repository']);
 		$repo = new \Git\Repository("/home/git/repositories/{$owner->getKey()}/{$repository->getId()}");
-		$stat = `GIT_DIR=/home/git/repositories/{$owner->getKey()}/{$repository->getId()} git log -p {$params['commit']} -n1`;
+		$commit  = escapeshellarg($params['commit']);
+		$stat = `GIT_DIR=/home/git/repositories/{$owner->getKey()}/{$repository->getId()} git log -p {$commit} -n1`;
 		$struct = Git\Util\Diff\Parser::parse($stat);
 		
 		$ref = $repo->lookupRef("refs/heads/master");
@@ -424,8 +425,8 @@ class RootController extends GitHQ\Bundle\AbstractController
 			$tree = $this->resolve_filename($tree,dirname($params['path']));
 		}
 		
-
-		$stat = `GIT_DIR=/home/git/repositories/{$owner->getKey()}/{$repository->getId()} git blame -p master -- {$params['path']}`;
+		$p  = escapeshellarg($params['path']);
+		$stat = `GIT_DIR=/home/git/repositories/{$owner->getKey()}/{$repository->getId()} git blame -p master -- {$p}`;
 		$blame = Git\Util\Blame\Parser::parse($stat);
 		
 		$this->render("blame.htm",array(

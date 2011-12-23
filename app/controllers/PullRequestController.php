@@ -77,15 +77,15 @@ class PullRequestController extends GitHQ\Bundle\AbstractController
 		}
 		
 		/* merge: actually this implementation looks bad. but it's difficult to apply each commit by lib. for now, we choose this */
-		system("mkdir -p /home/git/workdir/{$owner->getNickname()}/{$repository->getId()}");
-		system("chmod 777 -R /home/git/workdir/{$owner->getNickname()}/{$repository->getId()}");
-		system("git clone -l /home/git/repositories/{$owner->getKey()}/{$repository->getId()} /home/git/workdir/{$owner->getNickname()}/{$repository->getId()}/{$issue->getId()}");
-		chdir("/home/git/workdir/{$owner->getNickname()}/{$repository->getId()}/{$issue->getId()}/");
+		system("mkdir -p /home/git/workdir/{$owner->getKey()}/{$repository->getId()}");
+		system("chmod 777 -R /home/git/workdir/{$owner->getKey()}/{$repository->getId()}");
+		system("git clone -l /home/git/repositories/{$owner->getKey()}/{$repository->getId()} /home/git/workdir/{$owner->getKey()}/{$repository->getId()}/{$issue->getId()}");
+		chdir("/home/git/workdir/{$owner->getKey()}/{$repository->getId()}/{$issue->getId()}/");
 		system("git pull /home/git/repositories/{$ref['owner']}/{$ref['repository']}",$ret);
 		if ($ret === 0) {
 			system("git push origin master",$ret);
 			chdir("/");
-			system("rm -rf /home/git/workdir/{$owner->getNickname()}/{$repository->getId()}/{$issue->getId()}");
+			system("rm -rf /home/git/workdir/{$owner->getKey()}/{$repository->getId()}/{$issue->getId()}");
 				
 			$issue = Issue::fetchLocked(join(':',array($owner->getKey(),$repository->getId(),$params['id'])),'issue');
 			$issue->setStatus(Issue::CLOSED);
@@ -137,10 +137,10 @@ class PullRequestController extends GitHQ\Bundle\AbstractController
 		}
 
 		/* merge: actually this implementation looks bad. but it's difficult to apply each commit by lib. for now, we choose this */
-		system("mkdir -p /tmp/{$owner->getNickname()}/{$repository->getId()}/{$issue->getId()}");
-		system("git clone -l /home/git/repositories/{$owner->getKey()}/{$repository->getId()} /tmp/{$owner->getNickname()}/{$repository->getId()}/{$issue->getId()} 2>");
-		system("GIT_DIR=/tmp/{$owner->getNickname()}/{$repository->getId()}/{$issue->getId()} git pull /home/git/repositories/{$ref['owner']}/{$ref['repository']} 2>",$ret);
-		system("rm -rf /tmp/{$owner->getNickname()}/{$repository->getId()}/{$issue->getId()}");
+		system("mkdir -p /tmp/{$owner->getKey()}/{$repository->getId()}/{$issue->getId()}");
+		system("git clone -l /home/git/repositories/{$owner->getKey()}/{$repository->getId()} /tmp/{$owner->getKey()}/{$repository->getId()}/{$issue->getId()} 2>");
+		system("GIT_DIR=/tmp/{$owner->getKey()}/{$repository->getId()}/{$issue->getId()} git pull /home/git/repositories/{$ref['owner']}/{$ref['repository']} 2>",$ret);
+		system("rm -rf /tmp/{$owner->getKey()}/{$repository->getId()}/{$issue->getId()}");
 		
 		$this->render("pullrequest.htm",array(
 					"user" => $user,
