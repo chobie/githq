@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <entities>
   <entity id="user">
-    <strategy>UIKit\Framework\UIStoredRedisStrategy</strategy>
-    <serializer>UIKit\Framework\UIStoredPHPSerializer</serializer>
-    <cache>UIKit\Framework\UIStoredPHPArrayCache</cache>
+    <strategy>UIKit\Framework\ObjectStore\Driver\Redis</strategy>
+    <serializer>UIKit\Framework\ObjectStore\Serializer\PHPSerializer</serializer>
+    <cache>UIKit\Framework\ObjectStore\Cache\PHPArray</cache>
     <expiration>0</expiration>
     <lock_timeout>5</lock_timeout>
     <redis>
@@ -14,9 +14,9 @@
   </entity>
 
   <entity id="issue">
-    <strategy>UIKit\Framework\UIStoredRedisStrategy</strategy>
-    <serializer>UIKit\Framework\UIStoredPHPSerializer</serializer>
-    <cache>UIKit\Framework\UIStoredPHPArrayCache</cache>
+    <strategy>UIKit\Framework\ObjectStore\Driver\Redis</strategy>
+    <serializer>UIKit\Framework\ObjectStore\Serializer\PHPSerializer</serializer>
+    <cache>UIKit\Framework\ObjectStore\Cache\PHPArray</cache>
     <expiration>0</expiration>
     <lock_timeout>5</lock_timeout>
     <redis>
@@ -27,9 +27,9 @@
   </entity>
   
   <entity id="activity">
-    <strategy>UIKit\Framework\UIStoredRedisStrategy</strategy>
-    <serializer>UIKit\Framework\UIStoredPHPSerializer</serializer>
-    <cache>UIKit\Framework\UIStoredPHPArrayCache</cache>
+    <strategy>UIKit\Framework\ObjectStore\Driver\Redis</strategy>
+    <serializer>UIKit\Framework\ObjectStore\Serializer\PHPSerializer</serializer>
+    <cache>UIKit\Framework\ObjectStore\Cache\PHPArray</cache>
     <expiration>0</expiration>
     <lock_timeout>5</lock_timeout>
     <redis>

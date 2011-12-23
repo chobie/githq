@@ -4,7 +4,7 @@
  * 
  * @author chobie
  */
-class User extends UIKit\Framework\UIStoredObject
+class User extends UIKit\Framework\ObjectStore
 {
 	const KEY_USER_EMAIL           = 'pointer.user_id.email';
 	const KEY_USER_NICKNAME        = 'pointer.user_id.nickname';

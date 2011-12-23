@@ -36,14 +36,14 @@ abstract class AbstractController extends \UIKit\Framework\UIAppController
 	{
 		if(!isset(self::$redis)) {
 			self::$redis = new \Redis();
-			$cfg = \UIKit\Framework\UIStoredConfig::getInstance();
+			$cfg = \UIKit\Framework\ObjectStore\Config::getInstance();
 			$func = "connect";
 			if ($cfg->get(join('.',array('user',"redis","persistence")))) {
 				$func = "pconnect";
 			}
 			call_user_func_array(array(self::$redis,$func),array(
-			$cfg->get(join('.',array('user',"redis","host")),\UIKit\Framework\UIStoredRedisStrategy::DEFAULT_HOST),
-			$cfg->get(join('.',array('user',"redis","port")),\UIKit\Framework\UIStoredRedisStrategy::DEFAULT_PORT)
+			$cfg->get(join('.',array('user',"redis","host")),\UIKit\Framework\ObjectStore\Driver\Redis::DEFAULT_HOST),
+			$cfg->get(join('.',array('user',"redis","port")),\UIKit\Framework\ObjectStore\Driver\Redis::DEFAULT_PORT)
 			));
 		}
 		return self::$redis;

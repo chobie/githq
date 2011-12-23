@@ -1,5 +1,5 @@
 <?php
-class Issue extends \UIKit\Framework\UIStoredObject
+class Issue extends \UIKit\Framework\ObjectStore
 {
 	const OPENED = 0;
 	const CLOSED = 1;

@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . "/../vendor/php-uikit/UIKit/Framework/UIAutoLoader.php";
+require_once __DIR__ . "/../vendor/php-uikit/UIKit/Framework/AutoLoader.php";
 require_once __DIR__ . '/../vendor/twig/lib/Twig/Autoloader.php';
 require_once __DIR__ . '/../vendor/php-sdk/src/facebook.php';
 
@@ -9,16 +9,16 @@ if (!defined("REDIS_PORT")) {
 	define("REDIS_PORT",6379);
 }
 
-UIKit\Framework\UIAutoLoader::add_include_path(dirname(__DIR__) . '/libs');
-UIKit\Framework\UIAutoLoader::add_include_path(dirname(__DIR__) . '/controllers');
-UIKit\Framework\UIAutoLoader::add_include_path(dirname(__DIR__) . '/models');
-UIKit\Framework\UIAutoLoader::registerNameSpaces(array(
+UIKit\Framework\AutoLoader::add_include_path(dirname(__DIR__) . '/libs');
+UIKit\Framework\AutoLoader::add_include_path(dirname(__DIR__) . '/controllers');
+UIKit\Framework\AutoLoader::add_include_path(dirname(__DIR__) . '/models');
+UIKit\Framework\AutoLoader::registerNameSpaces(array(
 	'Monolog' => dirname(__DIR__) .'/vendor/monolog/src',
 	'Git' => dirname(__DIR__) . '/vendor/Git_Util/src/',
 	'Albino' => dirname(__DIR__) . '/vendor/Albino/src/',
 	'chobie\\VersionSorter' => dirname(__DIR__) . '/vendor/VersionSorter/src/',
 ));
-UIKit\Framework\UIAutoLoader::register();
+UIKit\Framework\AutoLoader::register();
 Twig_Autoloader::register();
 
 function hash_diff($array1, $array2, $strict = false) {
@@ -154,12 +154,12 @@ foreach($xml->xpath("//entity") as $element) {
 	}
 }
 
-$conf= UIKit\Framework\UIStoredConfig::getInstance();
+$conf= UIKit\Framework\ObjectStore\Config::getInstance();
 foreach($result as $key => $config) {
 	$conf->set($key,$config);
 }
 
-$i = UIKit\Framework\UIStoredUnderlying::getInstance();
+$i = UIKit\Framework\ObjectStore\Underlying::getInstance();
 foreach ($conf->keys() as $key) {
 	$i->addStrategy($key, $conf->get($key . ".strategy"));
 	$i->addSerializer($key, $conf->get($key . ".serializer"));

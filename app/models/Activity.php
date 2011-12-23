@@ -4,7 +4,7 @@
  * 
  * @author chobie
  */
-class Activity extends \UIKit\Framework\UIStoredObject
+class Activity extends \UIKit\Framework\ObjectStore
 {
 	const VISIBILITY_PUBLIC       = 0x0;
 	const VISIBILITY_PRIVATE      = 0x01;
