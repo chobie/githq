@@ -26,7 +26,7 @@ class PullRequestController extends GitHQ\Bundle\AbstractController
 			proc_close($p);
 		}
 		
-		$struct = Text\Diff\Parser::parse($data);
+		$struct = \Git\Util\Diff\Parser::parse($data);
 						
 		$this->render("files.htm",array(
 			'user' => $user,

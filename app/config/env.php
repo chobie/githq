@@ -15,7 +15,6 @@ UIKit\Framework\UIAutoLoader::add_include_path(dirname(__DIR__) . '/models');
 UIKit\Framework\UIAutoLoader::registerNameSpaces(array(
 	'Monolog' => dirname(__DIR__) .'/vendor/monolog/src',
 	'Git' => dirname(__DIR__) . '/vendor/Git_Util/src/',
-	'Text' => dirname(__DIR__) . '/vendor/Text_Diff/src/',
 	'Albino' => dirname(__DIR__) . '/vendor/Albino/src/',
 ));
 UIKit\Framework\UIAutoLoader::register();

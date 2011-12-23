@@ -326,7 +326,7 @@ class RootController extends GitHQ\Bundle\AbstractController
 		$repository = $owner->getRepository($params['repository']);
 		$repo = new \Git\Repository("/home/git/repositories/{$owner->getKey()}/{$repository->getId()}");
 		$stat = `GIT_DIR=/home/git/repositories/{$owner->getKey()}/{$repository->getId()} git log -p {$params['commit']} -n1`;
-		$struct = Text\Diff\Parser::parse($stat);
+		$struct = Git\Util\Diff\Parser::parse($stat);
 		
 		$ref = $repo->lookupRef("refs/heads/master");
 		$commit = $repo->getCommit($params['commit']);
