@@ -36,5 +36,6 @@ class GitHQApplicationDelegate extends UIKit\Framework\UIWebApplicationDelegate
 	}	
 }
 
+
 session_start();
 UIKit\Framework\UIWebApplicationMain(null,null,'UIKit\Framework\UIWebApplication','GitHQApplicationDelegate');

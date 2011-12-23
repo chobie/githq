@@ -19,13 +19,15 @@
     {{commit.getAuthor().time.format('Y-m-d H:i:s')}}</div>
   </div>
 
-  {% if tree %}
-  {% include "_tree.htm" %}
-  {% endif %}
-
-  {% if data %}
-  {% include "_blob.htm" %}
-  {% endif %}
+  <div id="main">
+	  {% if tree %}
+	  {% include "_tree.htm" %}
+	  {% endif %}
+	
+	  {% if data %}
+	  {% include "_blob.htm" %}
+	  {% endif %}
+  </div>
   
   {% else %}
   {% if user %}
