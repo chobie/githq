@@ -500,7 +500,7 @@ class RootController extends GitHQ\Bundle\AbstractController
 			}
 		}
 		if($atags){
-		foreach(\VersionSorter::rsort($atags) as $id){
+		foreach(\chobie\VersionSorter::rsort($atags) as $id){
 			$tags[] = $ctags[$id];
 		}
 		}

@@ -16,3 +16,6 @@
 [submodule "app/vendor/monolog"]
 	path = app/vendor/monolog
 	url = https://github.com/Seldaek/monolog.git
+[submodule "app/vendor/VersionSorter"]
+	path = app/vendor/VersionSorter
+	url = git@github.com:chobie/VersionSorter.git
