@@ -16,3 +16,6 @@
 [submodule "app/vendor/Git_Util"]
 	path = app/vendor/Git_Util
 	url = git@github.com:chobie/Git_Util.git
+[submodule "app/vendor/monolog"]
+	path = app/vendor/monolog
+	url = https://github.com/Seldaek/monolog.git

@@ -9,9 +9,17 @@ abstract class AbstractController extends \UIKit\Framework\UIAppController
 	public function __construct()
 	{
 		parent::__construct();
+		$this->logger = new \Monolog\Logger('githq');
+		$this->logger->pushHandler(new \Monolog\Handler\FirePHPHandler(null,\Monolog\Logger::DEBUG));
+		
 		$this->snapi = new \Facebook(array(
 			'appId' => \FACEBOOK_APPLICATION_ID,
 			'secret'=> \FACEBOOK_APPLICATION_SECRET));
+	}
+	
+	public function getLogger()
+	{
+		return $this->logger;
 	}
 
 	protected function getUser()

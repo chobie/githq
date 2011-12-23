@@ -1,22 +1,10 @@
 <?php
 require_once __DIR__ . "/../vendor/php-uikit/UIKit/Framework/UIAutoLoader.php";
 require_once __DIR__ . '/../vendor/twig/lib/Twig/Autoloader.php';
-require_once __DIR__ . '/../vendor/Albino/src/Albino.php';
 require_once __DIR__ . '/../vendor/php-sdk/src/facebook.php';
-require_once __DIR__ . '/../vendor/Text_Diff/src/Text/Diff/Line.php';
-require_once __DIR__ . '/../vendor/Text_Diff/src/Text/Diff/Lines.php';
-require_once __DIR__ . '/../vendor/Text_Diff/src/Text/Diff/Parser.php';
-require_once __DIR__ . '/../vendor/Text_Diff/src/Text/Diff/Struct.php';
-require_once __DIR__ . '/../vendor/Text_Diff/src/Text/Diff/File.php';
-require_once __DIR__ . '/../vendor/Text_Diff/src/Text/Diff/Hunk.php';
-require_once __DIR__ . '/../vendor/Git_Util/src/Git/Util/Blame/Parser.php';
-require_once __DIR__ . '/../vendor/Git_Util/src/Git/Util/Blame/Commit.php';
-require_once __DIR__ . '/../vendor/Git_Util/src/Git/Util/Blame/File.php';
-require_once __DIR__ . '/../vendor/Git_Util/src/Git/Util/Blame/Group.php';
-require_once __DIR__ . '/../vendor/Git_Util/src/Git/Util/Blame/Line.php';
 
-define('FACEBOOK_APPLICATION_ID','__YOU_MUST_DEFINE_YOUR_APP_ID');
-define('FACEBOOK_APPLICATION_SECRET','__YOU_MUST_DEFINE_YOUR_APP_SECRET');
+define('FACEBOOK_APPLICATION_ID','');
+define('FACEBOOK_APPLICATION_SECRET','');
 if (!defined("REDIS_PORT")) {
 	define("REDIS_PORT",6379);
 }
@@ -24,6 +12,12 @@ if (!defined("REDIS_PORT")) {
 UIKit\Framework\UIAutoLoader::add_include_path(dirname(__DIR__) . '/libs');
 UIKit\Framework\UIAutoLoader::add_include_path(dirname(__DIR__) . '/controllers');
 UIKit\Framework\UIAutoLoader::add_include_path(dirname(__DIR__) . '/models');
+UIKit\Framework\UIAutoLoader::registerNameSpaces(array(
+	'Monolog' => dirname(__DIR__) .'/vendor/monolog/src',
+	'Git' => dirname(__DIR__) . '/vendor/Git_Util/src/',
+	'Text' => dirname(__DIR__) . '/vendor/Text_Diff/src/',
+	'Albino' => dirname(__DIR__) . '/vendor/Albino/src/',
+));
 UIKit\Framework\UIAutoLoader::register();
 Twig_Autoloader::register();
 

@@ -3,6 +3,8 @@ class RootController extends GitHQ\Bundle\AbstractController
 {	
 	public function onDefault($params =  array())
 	{
+		$this->getLogger()->addDebug("Hello World");
+		
 		$data = null;
 		$user = $this->getUser();
 		$organizations = null;
