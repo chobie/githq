@@ -1,0 +1,12 @@
+User-agent: *
+Disallow: /*/blame/
+Disallow: /*/watchers
+Disallow: /*/raw/
+Disallow: /*/compare/
+Disallow: /*/cache/
+Disallow: /*.git/
+Disallow: /login
+Disallow: /connect
+Disallow: /logout
+
+Allow: /

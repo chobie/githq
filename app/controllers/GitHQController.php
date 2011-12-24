@@ -4,17 +4,10 @@ namespace GitHQ\Bundle;
 abstract class AbstractController extends \UIKit\Framework\HTTPFoundation\Controller\ApplicationController
 {
 	protected static $redis;
-	protected $snapi;
 	
-	public function __construct()
+	public function __construct($container)
 	{
-		parent::__construct();
-		$this->logger = new \Monolog\Logger('githq');
-		$this->logger->pushHandler(new \Monolog\Handler\FirePHPHandler(null,\Monolog\Logger::DEBUG));
-		
-		$this->snapi = new \Facebook(array(
-			'appId' => \FACEBOOK_APPLICATION_ID,
-			'secret'=> \FACEBOOK_APPLICATION_SECRET));
+		parent::__construct($container);		
 	}
 	
 	public function getLogger()
@@ -30,7 +23,6 @@ abstract class AbstractController extends \UIKit\Framework\HTTPFoundation\Contro
 			return null;
 		}
 	}
-
 
 	public static function getRedisClient()
 	{

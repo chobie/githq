@@ -6,7 +6,7 @@ class UsersController extends GitHQ\Bundle\AbstractController
 		$request = $this->getRequest();
 		
 		if ($this->getRequest()->isPost()) {
-			if(!$user_id = $this->snapi->getUser()) {
+			if(!$user_id = $this->get('facebook')->getUser()) {
 				header("Location: /connect");
 				exit;
 			}

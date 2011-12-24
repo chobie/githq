@@ -3,7 +3,7 @@ class RootController extends GitHQ\Bundle\AbstractController
 {	
 	public function onDefault($params =  array())
 	{
-		$this->getLogger()->addDebug("Hello World");
+		$this->get("logger")->addDebug("Hey");
 		
 		$data = null;
 		$user = $this->getUser();
@@ -374,16 +374,16 @@ class RootController extends GitHQ\Bundle\AbstractController
 	
 	public function onConnect()
 	{
-		$user_id = $this->snapi->getUser();
+		$user_id = $this->get('facebook')->getUser();
 		if ($user_id) {
 			if ($user = User::get($user_id,'user')) {
 				$_SESSION['user'] = $user;
-				header("Location: http://githq.org/");
+				header("Location: " . $this->get('application.url'));
 			} else {
-				header("Location: http://githq.org/signup/free");
+				header("Location: {$this->get('application.url')}/signup/free");
 			}
 		} else {
-			header("Location: " . $this->snapi->getLoginUrl());
+			header("Location: " . $this->get('facebook')->getLoginUrl());
 		}
 	}
 	
@@ -435,7 +435,7 @@ class RootController extends GitHQ\Bundle\AbstractController
 					'repository'   => $owner->getRepository($params['repository']),
 					'commit'       => $commit,
 					'tree'         => $tree,
-					'blame'         => $blame,
+					'blame'        => $blame,
 					'issue_count'  => IssueReferences::getOpenedIssueCount($owner->getKey(), $owner->getRepository($params['repository'])->getId()),
 					'current_path' => dirname($params['path']) . '/',
 					'path'         => $params['path']

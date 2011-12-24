@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<config>
+	<facebook>
+		<appid></appid>
+		<secret></secret>
+	</facebook>
+	<application>
+		<domain>githq.org</domain>
+		<url>http://githq.org</url>
+		<git-storage>/home/git/repostiories</git-storage>
+		<tempdir>/tmp/git/</tempdir>
+	</application>
+	<templating>
+		<render>UIKit\Framework\Render\Twig</render>
+	</templating>
+	<logger>
+		<class>\Monolog\Logger</class>
+		<channel>githq</channel>
+		<handler>\Monolog\Handler\FirePHPHandler</handler>
+		<level>\Monolog\Logger::DEBUG</level>
+	</logger>  
+</config>

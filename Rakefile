@@ -8,5 +8,5 @@ task :sync do
 end
 
 task :copy_config do
-  `cp -f developer/env.php app/config/`
+  `cp -f developer/config.xml app/config/`
 end

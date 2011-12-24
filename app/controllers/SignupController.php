@@ -3,7 +3,7 @@ class SignupController extends GitHQ\Bundle\AbstractController
 {
 	public function onFree()
 	{
-		if(!$this->snapi->getUser()) {
+		if(!$this->get('facebook')->getUser()) {
 			header("Location: /connect");
 			exit;
 		}
