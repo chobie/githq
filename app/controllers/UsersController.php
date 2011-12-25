@@ -6,7 +6,6 @@ class UsersController extends GitHQ\Bundle\AbstractController
 	/**
 	 * (non-PHPdoc)
 	 * @see UIKit\Framework\HTTPFoundation\Controller.ApplicationController::onDefault()
-	 * @Controller(newtype=true)
 	 */
 	public function onDefault()
 	{
@@ -21,7 +20,9 @@ class UsersController extends GitHQ\Bundle\AbstractController
 			}
 
 			try {
-				if (!User::getIdByNickname($request->get('username')) && !User::getIdByEmail($request->get('email'))) {
+				if (!User::getIdByNickname($request->get('username')) &&
+					!User::getIdByEmail($request->get('email'))) {
+
 					$user = new User($user_id);
 					$user->setNickname($request->get('username'));
 					$user->setEmail($request->get('email'));

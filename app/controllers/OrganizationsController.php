@@ -6,27 +6,22 @@ class OrganizationsController extends GitHQ\Bundle\AbstractController
 	/**
 	* (non-PHPdoc)
 	* @see UIKit\Framework\HTTPFoundation\Controller.ApplicationController::onDefault()
-	* @Controller(newtype=true)
 	* @param string $organization organization name
 	*/
 	public function onDefault($organization)
 	{
-		$user = $this->getUser();
 		$organization = User::getByNickname($organization);
 		
 		$timeline = Activity::getGlobalTimeline();
 		$this->render("index.htm",array(
-						'user'          => $user,
 						'organization'  => $organization,
 						'timeline'      => $timeline,
-						'organizations' => $user->getJoinedOrganizations(),
 		));
 	}
 
 	/**
 	* (non-PHPdoc)
 	* @see UIKit\Framework\HTTPFoundation\Controller.ApplicationController::onDefault()
-	* @Controller(newtype=true)
 	* @param string $organization organization name
 	*/
 	public function onNew($organization)

@@ -1,4 +1,6 @@
 <?php
+use UIKit\Framework\HTTPFoundation\Response\RedirectResponse;
+
 class AdminController extends GitHQ\Bundle\AbstractController
 {
 	/**
@@ -6,15 +8,12 @@ class AdminController extends GitHQ\Bundle\AbstractController
 	 * 
 	 * @param string $nickname
 	 * @param string $repository
-	 * @Controller(newtype=true)
 	 */
 	public function onDefault($nickname, $repository)
 	{
-		$user  = $this->getUser();
 		$owner = User::getByNickname($nickname);
 		
 		$this->render("index.htm",array(
-					'user'         => $user,
 					'owner'        => $owner,
 					'repository'   => $owner->getRepository($repository),
 		));
@@ -25,7 +24,6 @@ class AdminController extends GitHQ\Bundle\AbstractController
 	*
 	* @param string $nickname
 	* @param string $repository
-	* @Controller(newtype=true)
 	*/
 	public function onUpdate($nickname, $repository)
 	{
@@ -44,7 +42,7 @@ class AdminController extends GitHQ\Bundle\AbstractController
 			}
 			
 			$owner->save();
-			header("Location: http://githq.org/{$owner->getNickname()}/{$repo->getName()}/admin");
+			return new RedirectResponse($this->get("application.url") . "/{$owner->getNickname()}/{$repo->getName()}/admin");
 		}
 	}
 
@@ -53,7 +51,6 @@ class AdminController extends GitHQ\Bundle\AbstractController
 	*
 	* @param string $nickname
 	* @param string $repository
-	* @Controller(newtype=true)
 	*/
 	public function onDelete($nickname, $repository_name)
 	{
@@ -79,7 +76,6 @@ class AdminController extends GitHQ\Bundle\AbstractController
 		
 		//@todo: considering organization repo.
 		$_SESSION['user'] = $owner;
-
-		return new UIKit\Framework\HTTPFoundation\Response\RedirectResponse($this->get("application.url"));
+		return new RedirectResponse($this->get("application.url"));
 	}
 }

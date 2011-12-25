@@ -3,9 +3,6 @@ use UIKit\Framework\HTTPFoundation\Response\RedirectResponse;
 
 class RepositoriesController extends GitHQ\Bundle\AbstractController
 {
-	/**
-	* @Controller(newtype=true)
-	*/
 	public function onTop($user, $repository)
 	{
 		$owner = User::getByNickname($user);
@@ -72,56 +69,49 @@ class RepositoriesController extends GitHQ\Bundle\AbstractController
 		));
 	}
 	
-	/**
-	* @Controller(newtype=true)
-	*/
 	public function onWatch($user, $repository)
 	{
 		$owner      = User::getByNickname($user);
 		$repository = $owner->getRepository($repository);
-
 		$user = $this->getUser();
 		$repository->watch($owner,$user);
 		
 		return new RedirectResponse($this->get('application.url') . "/{$owner->getNickname()}/{$repository->getName()}");
 	}
 
-	public function onCommit($params)
+	public function onCommit($user, $repository, $commit)
 	{
-		$owner = User::get(User::getIdByNickname($params['user']));
+		$owner = User::getByNickname($user);
 		if (!$owner) {
 			return $this->on404();
 		}
 	
-		$user = $this->getUser();
-		$repository = $owner->getRepository($params['repository']);
+		$repository = $owner->getRepository($repository);
 	
 		if (!$repository) {
 			return $this->on404();
 		}
 	
 		$repo = new \Git\Repository("/home/git/repositories/{$owner->getKey()}/{$repository->getId()}");
-		$commit  = escapeshellarg($params['commit']);
-		$stat = `GIT_DIR=/home/git/repositories/{$owner->getKey()}/{$repository->getId()} git log -p {$commit} -n1`;
+		$n_commit  = escapeshellarg($commit);
+		$stat = `GIT_DIR=/home/git/repositories/{$owner->getKey()}/{$repository->getId()} git log -p {$n_commit} -n1`;
 		$struct = Git\Util\Diff\Parser::parse($stat);
 	
 		$ref = $repo->lookupRef("refs/heads/master");
-		$commit = $repo->getCommit($params['commit']);
+		$commit = $repo->getCommit($commit);
 	
 		$this->render("commit.htm",array(
-						'user'=> $user,
 						'owner' => $owner,
-						'repository'=> $owner->getRepository($params['repository']),
+						'repository'=> $repository,
 						"commit" => $commit,
 						"diff" => $struct,
 		));
 	}
 	
-	public function onCommits($params)
+	public function onCommits($user, $repository)
 	{
-		$owner = User::get(User::getIdByNickname($params['user']));
-		$user = $this->getUser();
-		$repository = $owner->getRepository($params['repository']);
+		$owner = User::getByNickname($user);
+		$repository = $owner->getRepository($repository);
 	
 		$repo = new \Git\Repository("/home/git/repositories/{$owner->getKey()}/{$repository->getId()}");
 		try {
@@ -139,18 +129,14 @@ class RepositoriesController extends GitHQ\Bundle\AbstractController
 			$commits = array();
 		}
 		$this->render("commits.htm",array(
-				'user'=> $user,
 				'owner' => $owner,
 				'repository'=> $repository,
 				"commits" => $commits,
-				'issue_count'  => IssueReferences::getOpenedIssueCount($owner->getKey(), $owner->getRepository($params['repository'])->getId()),
+				'issue_count'  => IssueReferences::getOpenedIssueCount($owner->getKey(), $repository->getId()),
 	
 		));
 	}
 	
-	/**
-	* @Controller(newtype=true)
-	*/
 	public function onDefault()
 	{
 		$request = $this->get('request');
@@ -191,14 +177,9 @@ class RepositoriesController extends GitHQ\Bundle\AbstractController
 	public function onNew()
 	{
 		$user = $this->getUser();
-		$this->render("new.htm",array(
-			'user' => $user,
-		));
+		$this->render("new.htm",array());
 	}
 
-	/**
-	* @Controller(newtype=true)
-	*/
 	public function onRaw($user, $repository, $refs, $path)
 	{	
 		$owner = User::getByNickname($user);
@@ -206,7 +187,6 @@ class RepositoriesController extends GitHQ\Bundle\AbstractController
 		$repo = new \Git\Repository("/home/git/repositories/{$owner->getKey()}/{$repository->getId()}");
 		$refm = new \Git\Reference\Manager($repo);
 		$branches = $refm->getList();
-		$user = $this->getUser();
 		
 		$ref = $repo->lookupRef("refs/heads/{$refs}");
 		$commit = $repo->getCommit($ref->getId());
@@ -228,9 +208,6 @@ class RepositoriesController extends GitHQ\Bundle\AbstractController
 		echo $blob->data;
 	}
 
-	/**
-	* @Controller(newtype=true)
-	*/
 	public function onBlob($user, $repository, $refs, $path)
 	{
 	
@@ -238,9 +215,7 @@ class RepositoriesController extends GitHQ\Bundle\AbstractController
 		$repository = $owner->getRepository($repository);
 		$repo = new \Git\Repository("/home/git/repositories/{$owner->getKey()}/{$repository->getId()}");
 		$refm = new \Git\Reference\Manager($repo);
-		$branches = $refm->getList();
-		
-		$user = $this->getUser();
+		$branches = $refm->getList();		
 		
 		$ref = $repo->lookupRef("refs/heads/{$refs}");
 		$commit = $repo->getCommit($ref->getId());
@@ -287,7 +262,6 @@ class RepositoriesController extends GitHQ\Bundle\AbstractController
 	
 		if (isset($_REQUEST['_pjax'])) {
 			$this->render("_blob.htm",array(
-							'user'         => $user,
 							'owner'        => $owner,
 							'repository'   => $repository,
 							'commit'       => $commit,
@@ -304,7 +278,6 @@ class RepositoriesController extends GitHQ\Bundle\AbstractController
 	
 		} else {
 			$this->render("repository.htm",array(
-				'user'         => $user,
 				'owner'        => $owner,
 				'repository'   => $repository,
 				'commit'       => $commit,
@@ -321,16 +294,14 @@ class RepositoriesController extends GitHQ\Bundle\AbstractController
 		}
 	}
 
-	/**
-	* @Controller(newtype=true)
-	*/
 	public function onTree($user, $repository, $refs, $path)
 	{
 		$owner = User::getByNickname($user);
 		$repository = $owner->getRepository($repository);
-		$user = $this->getUser();
+		if (!$repository) {
+			return false;
+		}
 		
-	
 		$repo = new \Git\Repository("/home/git/repositories/{$owner->getKey()}/{$repository->getId()}");
 	
 		$ref = $repo->lookupRef("refs/heads/{$refs}");
@@ -352,7 +323,6 @@ class RepositoriesController extends GitHQ\Bundle\AbstractController
 	
 		if (isset($_REQUEST['_pjax'])) {
 			$this->render("_tree.htm",array(
-								'user'         => $user,
 								'owner'        => $owner,
 								'repository'   => $repository,
 								'commit'       => $commit,
@@ -364,7 +334,6 @@ class RepositoriesController extends GitHQ\Bundle\AbstractController
 			));
 		} else {
 			$this->render("repository.htm",array(
-					'user'         => $user,
 					'owner'        => $owner,
 					'repository'   => $repository,
 					'commit'       => $commit,
@@ -377,9 +346,6 @@ class RepositoriesController extends GitHQ\Bundle\AbstractController
 		}
 	}
 
-	/**
-	* @Controller(newtype=true)
-	*/
 	public function onBlame($user, $repository, $refs, $path)
 	{
 	
@@ -388,7 +354,6 @@ class RepositoriesController extends GitHQ\Bundle\AbstractController
 		$repo = new \Git\Repository("/home/git/repositories/{$owner->getKey()}/{$repository->getId()}");
 		$refm = new \Git\Reference\Manager($repo);
 		$branches = $refm->getList();
-		$user = $this->getUser();
 		
 		$ref = $repo->lookupRef("refs/heads/{$refs}");
 		$commit = $repo->getCommit($ref->getId());
@@ -409,7 +374,6 @@ class RepositoriesController extends GitHQ\Bundle\AbstractController
 		$blame = Git\Util\Blame\Parser::parse($stat);
 	
 		$this->render("blame.htm",array(
-						'user'         => $user,
 						'owner'        => $owner,
 						'repository'   => $repository,
 						'commit'       => $commit,
@@ -421,19 +385,16 @@ class RepositoriesController extends GitHQ\Bundle\AbstractController
 		));
 	}
 
-	/**
-	 * @Controller(newtype=true)
-	 */
 	public function onCommitsHisotry($user, $repository, $refs, $path)
 	{
 		$owner = User::getByNickname($user);		
-		$user = $this->getUser();
 		$repository = $owner->getRepository($repository);
 		$repo = new \Git\Repository("/home/git/repositories/{$owner->getKey()}/{$repository->getId()}");
 		$ref = $repo->lookupRef("refs/heads/{$refs}");
 		$commit = $repo->getCommit($ref->getId());
 		$walker = $repo->getWalker();
 		$walker->push($commit->getId());
+
 		$i=0;
 		$commits = array();
 		$last = null;
@@ -448,21 +409,16 @@ class RepositoriesController extends GitHQ\Bundle\AbstractController
 		}
 		
 		$this->render("commits.htm",array(
-			'user'       => $user,
 			'owner'      => $owner,
 			'repository' => $repository,
 			"commits"    => $commits
 		));
 	}
 
-	/**
-	* @Controller(newtype=true)
-	*/
 	public function onTags($user, $repository)
 	{
 		$owner = User::getByNickname($user);
 		$repository = $owner->getRepository($repository);
-		$user = $this->getUser();
 		
 		$repo = new \Git\Repository("/home/git/repositories/{$owner->getKey()}/{$repository->getId()}");
 		$tags = array();
@@ -484,24 +440,20 @@ class RepositoriesController extends GitHQ\Bundle\AbstractController
 
 		
 		$this->render("tags.htm",array(
-		'user'         => $user,
-		'owner'        => $owner,
-		'repository'   => $repository,
-		'commit'       => $commit,
-		'tree'         => $tree,
-		'issue_count'  => IssueReferences::getOpenedIssueCount($owner->getKey(), $repository->getId()),
-		'tags'         => $tags,
+			'owner'        => $owner,
+			'repository'   => $repository,
+			'commit'       => $commit,
+			'tree'         => $tree,
+			'issue_count'  => IssueReferences::getOpenedIssueCount($owner->getKey(), $repository->getId()),
+			'tags'         => $tags,
 		));
 
 	}
 
-	/**
-	* @Controller(newtype=true)
-	*/
 	public function onZipBall($user, $repository, $zipball, $tag)
 	{
 		ini_set("max_memory","128M");
-	
+		
 		$owner = User::getByNickname($user);
 		$repository = $owner->getRepository($repository);
 		$user = $this->getUser();
@@ -517,6 +469,7 @@ class RepositoriesController extends GitHQ\Bundle\AbstractController
 			fclose($pipes[1]);
 			proc_close($proc);
 		}
+		
 		header("Content-Disposition: inline; filename=\"{$owner->getNickname()}-{$repository->getName()}-{$tag}.zip\"");
 		header("Content-type: application/zip");
 		header("Content-Length: " . strlen($content));

@@ -10,6 +10,7 @@ class AccountController extends GitHQ\Bundle\AbstractController
 		
 		if ($request->isPost()) {
 			if (!User::getIdByEmail($request->get("email")) && !User::getIdByNickname($request->get("name")) ) {
+
 				/** for now, organization uses `org` as prefix */
 				$organization = new User("org." . User::getNextId());
 				$organization->setNickname($request->get("name"));
@@ -25,10 +26,6 @@ class AccountController extends GitHQ\Bundle\AbstractController
 	
 	public function onOrganizations()
 	{
-		$user = $this->getUser();
-		
-		return $this->render("organizations.htm",array(
-			'user' => $user, 
-		));
+		return $this->render("organizations.htm");
 	}
 }

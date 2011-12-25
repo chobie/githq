@@ -8,11 +8,9 @@ class IssuesController extends GitHQ\Bundle\AbstractController
 	*
 	* @param string $nickname
 	* @param string $repository
-	* @Controller(newtype=true)
 	*/
 	public function onDefault($nickname, $repository_name)
 	{
-		$user       = $this->getUser();
 		$owner      = User::getByNickname($nickname);
 		$repository = $owner->getRepository($repository_name);
 		$request    = $this->get('request');
@@ -33,7 +31,6 @@ class IssuesController extends GitHQ\Bundle\AbstractController
 		}
 		
 		$this->render("index.htm",array(
-			'user'        => $user,
 			'owner'       => $owner,
 			'issues'      => $issues,
 			'repository'  => $owner->getRepository($repository_name),
@@ -41,14 +38,10 @@ class IssuesController extends GitHQ\Bundle\AbstractController
 		));
 	}
 
-	/**
-	* @Controller(newtype=true)
-	*/
 	public function onNew($user, $repository)
 	{
 		$owner = User::get(User::getIdByNickname($user),'user');
 		$repository = $owner->getRepository($repository);
-		$user = $this->getUser();
 		
 		if($this->get('request')->isPost()) {
 			$id = IssueReferences::getNextId($owner->getKey(),$repository->getId());
@@ -69,21 +62,16 @@ class IssuesController extends GitHQ\Bundle\AbstractController
 			return new RedirectResponse($this->get('appilcation.url') ."/{$owner->getNickname()}/{$repository->getName()}/issues");
 		} else {
 			$this->render("new.htm",array(
-				'user' => $user,
 				'owner' => $owner,
 				'repository' => $repository,
 			));
 		}
 	}
 
-	/**
-	* @Controller(newtype=true)
-	*/
 	public function onIssue($user, $repository,$id)
 	{
 		$owner      = User::getByNickname($user);
 		$repository = $owner->getRepository($repository);
-		$user       = $this->getUser();
 		
 		$issue = Issue::get(join(':',array($owner->getKey(),$repository->getId(),$id)));
 
@@ -92,7 +80,6 @@ class IssuesController extends GitHQ\Bundle\AbstractController
 		}
 
 		$this->render("issue.htm",array(
-			"user"        => $user,
 			"issue"       => $issue,
 			"owner"       => $owner,
 			"repository"  => $repository,
@@ -101,9 +88,6 @@ class IssuesController extends GitHQ\Bundle\AbstractController
 		));
 	}
 	
-	/**
-	* @Controller(newtype=true)
-	*/
 	public function onUpdate($user, $repository)
 	{
 		$request    = $this->get('request');
@@ -111,8 +95,6 @@ class IssuesController extends GitHQ\Bundle\AbstractController
 		$repository = $owner->getRepository($repository);
 		$issue      = Issue::fetchLocked(join(':',array($owner->getKey(),$repository->getId(),$request->get('id'))));
 
-		$user = $this->getUser();
-		
 		if ($request->has('label_delete')) {
 			$issue->removeLabelId($request->get('label'));			
 		}
@@ -122,9 +104,6 @@ class IssuesController extends GitHQ\Bundle\AbstractController
 		return new RedirectResponse($this->get('appilcation.url') ."/{$user->getNickname()}/{$repository->getName()}/issues/{$issue->getId()}");
 	}
 
-	/**
-	* @Controller(newtype=true)
-	*/
 	public function onIssueComments($user, $repository)
 	{
 		$owner = User::get(User::getIdByNickname($user));
@@ -135,7 +114,6 @@ class IssuesController extends GitHQ\Bundle\AbstractController
 		$repository = $owner->getRepository($repository);
 		$issue = Issue::fetchLocked(join(':',array($owner->getKey(),$repository->getId(),$request->get('issue'))));
 		$issue->addComment($user->getKey(), $request->get('comment'));
-		$user = $this->getUser();
 		
 		if ($request->has('close')) {
 			$issue->closeIssue();
@@ -176,9 +154,6 @@ class IssuesController extends GitHQ\Bundle\AbstractController
 		}
 	}
 
-	/**
-	* @Controller(newtype=true)
-	*/
 	public function onEdit($user, $repository, $id)
 	{
 		$nickname = $user;
@@ -187,7 +162,6 @@ class IssuesController extends GitHQ\Bundle\AbstractController
 		$repository = $owner->getRepository($repository);
 		$request = $this->get('request');
 		$issue = Issue::get(join(':',array($owner->getKey(),$repository->getId(),$id)));
-		$user = $this->getUser();
 		
 		if (isset($_REQUEST['update'])) {
 			$issue = Issue::fetchLocked(join(':',array($owner->getKey(),$repository->getId(),$id)));
@@ -224,11 +198,10 @@ class IssuesController extends GitHQ\Bundle\AbstractController
 				$owner->save();
 			}
 			
-			return new RedirectResponse($this->get('application.url') . "/{$user->getNickname()}/{$repository->getName()}/issues/{$issue->getId()}");
+			return new RedirectResponse($this->get('application.url') . "/{$owner->getNickname()}/{$repository->getName()}/issues/{$issue->getId()}");
 		}
 		
 		$this->render("edit.htm",array(
-					"user"       => $user,
 					"issue"      => $issue,
 					"owner"      => $owner,
 					"repository" => $repository,

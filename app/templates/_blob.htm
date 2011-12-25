@@ -1,0 +1,22 @@
+  <div>
+  
+  <div style="text-align:right">
+  <span class="span1 btn secondary"><a href="/{{owner.getNickname()}}/{{repository.getName()}}/blame/master/{{path}}">blame</a></span>
+  <span class="span1 btn secondary"><a href="/{{owner.getNickname()}}/{{repository.getName()}}/commits/master/{{path}}">history</a></span>
+  </div>
+
+  {% if path_parts %}
+  <ul class="breadcrumb">
+  <li><img src="/assets/txt.png" /></li>
+  {% for key, parts in path_parts %}
+  <li><a href="/{{owner.getNickname()}}/{{repository.getName()}}/tree/{{refs}}/{{parts}}" data-pjax="#main">{{key}}</a>{% if not loop.last %}<span class="divider">/</span>{% endif %}
+  {% endfor %}
+  </ul>
+  {% endif %}
+  
+  {% if img %}
+  <div><img src="/{{owner.getNickname()}}/{{repository.getName()}}/raw/{{refs}}/{{path}}"></div>
+  {% elseif data %}
+  <div class="highlight" style="white-space:nowrap;font-family:'Bitstream Vera Sans Mono','Courier',monospace;">{{data|raw}}</div>
+  {% endif %}
+  </div>

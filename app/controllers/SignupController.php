@@ -6,7 +6,6 @@ class SignupController extends GitHQ\Bundle\AbstractController
 	/**
 	 * (non-PHPdoc)
 	 * @see UIKit\Framework\HTTPFoundation\Controller.ApplicationController::onDefault()
-	 * @Controller(newtype=true)
 	 */
 	public function onFree()
 	{

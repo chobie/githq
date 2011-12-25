@@ -4,6 +4,15 @@ namespace GitHQ\Bundle;
 abstract class AbstractController extends \UIKit\Framework\HTTPFoundation\Controller\ApplicationController
 {
 	protected static $redis;
+	
+	public function render($template, $args = array())
+	{
+		if (!isset($args['user'])) {
+			$args['user'] = $this->getUser();
+		}
+
+		return parent::render($template, $args);
+	}
 
 	/**
 	* resolve file name of inside git repository.

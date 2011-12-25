@@ -3,18 +3,12 @@ use UIKit\Framework\HTTPFoundation\Response\RedirectResponse;
 
 class PullRequestController extends GitHQ\Bundle\AbstractController
 {
-	
-	/**
-	* @Controller(newtype=true)
-	*/
 	public function onFiles($user, $repository, $id)
 	{
 		$owner = User::get(User::getIdByNickname($user));
 		$repository = $owner->getRepository($repository);
 		$issue = Issue::get(join(':',array($owner->getKey(),$repository->getId(),$id)));
-		$ref = $issue->getRef();
-		$user = $this->getUser();
-		
+		$ref = $issue->getRef();		
 		
 		$requestor = User::get($ref['owner']);
 		$req_repo = $requestor->getRepositoryById($ref['repository']);
@@ -34,7 +28,6 @@ class PullRequestController extends GitHQ\Bundle\AbstractController
 		
 		$struct = \Git\Util\Diff\Parser::parse($data);
 		$this->render("files.htm",array(
-			'user'       => $user,
 			'owner'      => $owner,
 			'repository' => $repository,
 			'issue'      => $issue,
@@ -43,9 +36,6 @@ class PullRequestController extends GitHQ\Bundle\AbstractController
 	}
 
 
-	/**
-	 * @Controller(newtype=true)
-	 */	
 	public function onClose($user, $repository, $id)
 	{
 		$repository_name = $repository;
@@ -53,7 +43,6 @@ class PullRequestController extends GitHQ\Bundle\AbstractController
 		$repository = $owner->getRepository($repository);
 		$issue = Issue::get(join(':',array($owner->getKey(),$repository->getId(),$id)));
 		$ref = $issue->getRef();
-		$user = $this->getUser();
 		
 		$requestor = User::get($ref['owner']);
 		$req_repo = $requestor->getRepositoryById($ref['repository']);
@@ -108,9 +97,6 @@ class PullRequestController extends GitHQ\Bundle\AbstractController
 		
 	}
 
-	/**
-	* @Controller(newtype=true)
-	*/
 	public function onPullRequest($user, $repository, $id)
 	{
 		$owner = User::get(User::getIdByNickname($user));
@@ -118,7 +104,6 @@ class PullRequestController extends GitHQ\Bundle\AbstractController
 		$repository = $owner->getRepository($repository);
 		$issue = Issue::get(join(':',array($owner->getKey(),$repository->getId(),$id)));
 		$ref = $issue->getRef();
-		$user = $this->getUser();
 		
 		$requestor = User::get($ref['owner']);
 		$req_repo = $requestor->getRepositoryById($ref['repository']);
@@ -158,7 +143,6 @@ class PullRequestController extends GitHQ\Bundle\AbstractController
 		system("rm -rf /tmp/{$owner->getKey()}/{$repository->getId()}/{$issue->getId()}");
 		
 		$this->render("pullrequest.htm",array(
-					"user"         => $user,
 					"issue"        => $issue,
 					"owner"        => $owner,
 					"repository"   => $repository,
@@ -170,15 +154,11 @@ class PullRequestController extends GitHQ\Bundle\AbstractController
 		));
 	}
 	
-	/**
-	* @Controller(newtype=true)
-	*/
 	public function onNew($user, $repository, $ref)
 	{
 		$owner = User::getByNickname($user);
 		$repository_name = $repository;
 		$repository = $owner->getRepository($repository);
-		$user = $this->getUser();
 		$request = $this->get('request');
 		
 		
@@ -209,7 +189,6 @@ class PullRequestController extends GitHQ\Bundle\AbstractController
 		} else {
 			
 			$this->render("new.htm",array(
-						'user'       => $user,
 						'owner'      => $owner,
 						'origin'     => $origin,
 						'ref'        => $ref,
