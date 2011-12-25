@@ -22,7 +22,6 @@
     });
     </script>
     <link rel="stylesheet" href="/assets/bootstrap.min.css">
-    <link rel="stylesheet" href="/assets/bootstrap-tabs.css">
     <link rel="stylesheet" href="/assets/pygments.css" />
     <link rel="stylesheet" href="/assets/style.css" />
   </head>
@@ -35,8 +34,8 @@
 		{% if user %}
   		<ul class="nav secondary-nav">
 			<li><a href="#"><img src="{{user.getImageUrl()}}?s=20" />{{user.getNickname()}}</a></li>
-			<li><a href="/account">Account Settings</a></li>
-			<li><a href="/logout">logout</a></li>
+			<li><a href="{{ path('account_setting') }}">Account Settings</a></li>
+			<li><a href="{{ path('logout') }}">logout</a></li>
   		</ul>
 		{% endif %}
   		</div>
@@ -85,7 +84,7 @@
   {% block contents %}{% endblock %}
   <footer>
   	<div>
-	  <a href="/about">about</a>&nbsp;|
+	  <a href="{{ path('about')}}">about</a>&nbsp;|
   	</div>
     <div>GitHQ - Yet Another Social Coding for you - </div>
     <div>&copy;2011 Shuhei Tanuma all rights reserved.</div>

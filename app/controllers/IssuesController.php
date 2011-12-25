@@ -1,42 +1,56 @@
 <?php
+use UIKit\Framework\HTTPFoundation\Response\RedirectResponse;
+
 class IssuesController extends GitHQ\Bundle\AbstractController
 {
-	public function onDefault($params)
+	/**
+	* show repsoitory admin page.
+	*
+	* @param string $nickname
+	* @param string $repository
+	* @Controller(newtype=true)
+	*/
+	public function onDefault($nickname, $repository_name)
 	{
-		$user = $this->getUser();
-		$owner = User::get(User::getIdByNickname($params['user']),'user');
-		$repository = $owner->getRepository($params['repository']);
+		$user       = $this->getUser();
+		$owner      = User::getByNickname($nickname);
+		$repository = $owner->getRepository($repository_name);
+		$request    = $this->get('request');
 		
-		if (isset($_REQUEST['milestone'])) {
-			$milestone = $repository->getMilestones()->getMilestoneByName($_REQUEST['milestone']);
-			$list = IssueReferences::getListWithMilestone($milestone->getId(), $owner->getKey(), $repository->getId(),Issue::OPENED);
-		} else if (isset($_REQUEST['label'])) {
-			$label = $repository->getLabels()->getLabelByName($_REQUEST['label']);
-			$list = IssueReferences::getListWithLabel($label->getId(), $owner->getKey(), $repository->getId(),Issue::OPENED);
+		if ($request->has('milestone')) {
+			$milestone = $repository->getMilestones()->getMilestoneByName($request->get('milestone'));
+			$list      = IssueReferences::getListWithMilestone($milestone->getId(), $owner->getKey(), $repository->getId(),Issue::OPENED);
+		} else if ($request->has('label')) {
+			$label = $repository->getLabels()->getLabelByName($request->get('label'));
+			$list  = IssueReferences::getListWithLabel($label->getId(), $owner->getKey(), $repository->getId(),Issue::OPENED);
 		} else {
-			$list = IssueReferences::getList($owner->getKey(),$repository->getId(),Issue::OPENED);
+			$list  = IssueReferences::getList($owner->getKey(),$repository->getId(),Issue::OPENED);
 		}
+		
 		$issues = array();
 		foreach ($list as $id) {
-			$issues[] = Issue::get(join(':',array($owner->getKey(),$repository->getId(),$id)),'issue');
+			$issues[] = Issue::get(join(':',array($owner->getKey(),$repository->getId(),$id)));
 		}
 		
 		$this->render("index.htm",array(
-			'user' => $user,
-			'owner' => $owner,
-			'issues' => $issues,
-			'repository' => $owner->getRepository($params['repository']),
-			'issue_count'  => IssueReferences::getOpenedIssueCount($owner->getKey(), $owner->getRepository($params['repository'])->getId()),
-		
+			'user'        => $user,
+			'owner'       => $owner,
+			'issues'      => $issues,
+			'repository'  => $owner->getRepository($repository_name),
+			'issue_count' => IssueReferences::getOpenedIssueCount($owner->getKey(), $owner->getRepository($repository_name)->getId()),
 		));
 	}
 
-	public function onNew($params)
+	/**
+	* @Controller(newtype=true)
+	*/
+	public function onNew($user, $repository)
 	{
+		$owner = User::get(User::getIdByNickname($user),'user');
+		$repository = $owner->getRepository($repository);
 		$user = $this->getUser();
-		$owner = User::get(User::getIdByNickname($params['user']),'user');
-		$repository = $owner->getRepository($params['repository']);
-		if($this->getRequest()->isPost()) {
+		
+		if($this->get('request')->isPost()) {
 			$id = IssueReferences::getNextId($owner->getKey(),$repository->getId());
 			$issue = new Issue(join(':',array($owner->getKey(),$repository->getId(),$id)));
 			$issue->setId($id);
@@ -52,7 +66,7 @@ class IssuesController extends GitHQ\Bundle\AbstractController
 				$a->setSenderId($user->getKey());
 				$a->create();
 			}
-			header("Location: /{$owner->getNickname()}/{$repository->getName()}/issues");
+			return new RedirectResponse($this->get('appilcation.url') ."/{$owner->getNickname()}/{$repository->getName()}/issues");
 		} else {
 			$this->render("new.htm",array(
 				'user' => $user,
@@ -61,68 +75,85 @@ class IssuesController extends GitHQ\Bundle\AbstractController
 			));
 		}
 	}
-	
-	public function onIssue($params)
+
+	/**
+	* @Controller(newtype=true)
+	*/
+	public function onIssue($user, $repository,$id)
 	{
-		$user = $this->getUser();
-		$owner = User::get(User::getIdByNickname($params['user']),'user');
-		$repository = $owner->getRepository($params['repository']);
+		$owner      = User::getByNickname($user);
+		$repository = $owner->getRepository($repository);
+		$user       = $this->getUser();
 		
-		$issue = Issue::get(join(':',array($owner->getKey(),$repository->getId(),$params['id'])),'issue');
+		$issue = Issue::get(join(':',array($owner->getKey(),$repository->getId(),$id)));
+
 		if ($issue->isPullrequest()) {
-			header("Location: /{$owner->getNickname()}/{$repository->getName()}/pull/{$issue->getId()}");
-			exit;
+			return new RedirectResponse($this->get('application.url') . "/{$owner->getNickname()}/{$repository->getName()}/pull/{$issue->getId()}");
 		}
 
 		$this->render("issue.htm",array(
-			"user" => $user,
-			"issue" => $issue,
-			"owner" => $owner,
-			"repository" => $repository,
-			'issue_count'  => IssueReferences::getOpenedIssueCount($owner->getKey(), $owner->getRepository($params['repository'])->getId()),
+			"user"        => $user,
+			"issue"       => $issue,
+			"owner"       => $owner,
+			"repository"  => $repository,
+			'issue_count' => IssueReferences::getOpenedIssueCount($owner->getKey(), $repository->getId()),
 		
 		));
 	}
 	
-	public function onUpdate($params)
+	/**
+	* @Controller(newtype=true)
+	*/
+	public function onUpdate($user, $repository)
 	{
-		$user = $this->getUser();
-		$owner = User::get(User::getIdByNickname($params['user']),'user');
-		$repository = $owner->getRepository($params['repository']);
-		$issue = Issue::fetchLocked(join(':',array($owner->getKey(),$repository->getId(),$_REQUEST['id'])),'issue');
+		$request    = $this->get('request');
+		$owner      = User::get(User::getIdByNickname($user));
+		$repository = $owner->getRepository($repository);
+		$issue      = Issue::fetchLocked(join(':',array($owner->getKey(),$repository->getId(),$request->get('id'))));
 
-		if (isset($_REQUEST['label_delete'])) {
-			$issue->removeLabelId($_REQUEST['label']);			
+		$user = $this->getUser();
+		
+		if ($request->has('label_delete')) {
+			$issue->removeLabelId($request->get('label'));			
 		}
 
 		$issue->save();
-		header("Location: /{$user->getNickname()}/{$repository->getId()}/issues/{$issue->getId()}");
+		
+		return new RedirectResponse($this->get('appilcation.url') ."/{$user->getNickname()}/{$repository->getName()}/issues/{$issue->getId()}");
 	}
-	
-	public function onIssueComments($params)
+
+	/**
+	* @Controller(newtype=true)
+	*/
+	public function onIssueComments($user, $repository)
 	{
+		$owner = User::get(User::getIdByNickname($user));
+		$user_name = $user;
+		$repository_name = $repository;
+		
+		$request = $this->get('request');
+		$repository = $owner->getRepository($repository);
+		$issue = Issue::fetchLocked(join(':',array($owner->getKey(),$repository->getId(),$request->get('issue'))));
+		$issue->addComment($user->getKey(), $request->get('comment'));
 		$user = $this->getUser();
-		$owner = User::get(User::getIdByNickname($params['user']),'user');
-		$repository = $owner->getRepository($params['repository']);
-		$issue = Issue::fetchLocked(join(':',array($owner->getKey(),$repository->getId(),$_REQUEST['issue'])),'issue');
-		$issue->addComment($user->getKey(), $_REQUEST['comment']);
-		if (isset($_REQUEST['close'])) {
+		
+		if ($request->has('close')) {
 			$issue->closeIssue();
 		}
-		if (isset($_REQUEST['open'])) {
+		if ($request->has('open')) {
 			$issue->openIssue();
 		}
-		if (isset($_REQUEST['label']) && !empty($_REQUEST['label'])) {
+		if ($request->has('label') && !$request->get('label')) {
 			$labels = $repository->getLabels();
-			$label = $labels->getLabelByName($_REQUEST['label']);
+			$label = $labels->getLabelByName($request->get('label'));
 			if($label == false) {
-				$owner = User::fetchLocked(User::getIdByNickname($params['user']),'user');
-				$repository = $owner->getRepository($params['repository']);
+				$owner = User::fetchLocked(User::getIdByNickname($user_name));
+				$repository = $owner->getRepository($repository_name);
 				$labels = $repository->getLabels();
 				$next = $labels->getNextId();
 				$label = new Label();
 				$label->setId($next);
-				$label->setName($_REQUEST['label']);
+				$label->setName($request->get('label'));
 
 				$labels->addLabel($label);
 				$owner->save();
@@ -137,34 +168,41 @@ class IssuesController extends GitHQ\Bundle\AbstractController
 			$a->setSenderId($user->getKey());
 			$a->create();
 		}
+		
 		if ($issue->isPullrequest()) {
 			header("Location: /{$owner->getNickname()}/{$repository->getName()}/pull/{$issue->getId()}");
 		} else {
 			header("Location: /{$owner->getNickname()}/{$repository->getName()}/issues/{$issue->getId()}");
 		}
 	}
-	
-	public function onEdit($params)
+
+	/**
+	* @Controller(newtype=true)
+	*/
+	public function onEdit($user, $repository, $id)
 	{
+		$nickname = $user;
+		$repository_name = $repository;
+		$owner = User::get(User::getIdByNickname($user));
+		$repository = $owner->getRepository($repository);
+		$request = $this->get('request');
+		$issue = Issue::get(join(':',array($owner->getKey(),$repository->getId(),$id)));
 		$user = $this->getUser();
-		$owner = User::get(User::getIdByNickname($params['user']),'user');
-		$repository = $owner->getRepository($params['repository']);
-		$issue = Issue::get(join(':',array($owner->getKey(),$repository->getId(),$params['id'])),'issue');
 		
 		if (isset($_REQUEST['update'])) {
-			$issue = Issue::fetchLocked(join(':',array($owner->getKey(),$repository->getId(),$params['id'])),'issue');
-			$issue->setTitle($_REQUEST['title']);
-			$issue->setBody($_REQUEST['contents']);
-			if (!empty($_REQUEST['milestone'])) {
+			$issue = Issue::fetchLocked(join(':',array($owner->getKey(),$repository->getId(),$id)));
+			$issue->setTitle($request->get('title'));
+			$issue->setBody($request->get('contents'));
+			if (!$request->get('milestone')) {
 				$milestones = $repository->getMilestones();
-				if (($milestone = $milestones->getMilestoneByName($_REQUEST['milestone'])) == false) {
+				if (($milestone = $milestones->getMilestoneByName($request->get('milestone'))) == false) {
 					
-					$owner = User::fetchLocked(User::getIdByNickname($params['user']),'user');
-					$repository = $owner->getRepository($params['repository']);
+					$owner = User::fetchLocked(User::getIdByNickname($user));
+					$repository = $owner->getRepository($repository_name);
 					$id = $repository->getMilestones()->getNextId();
 					$milestone = new Milestone();
 					$milestone->setId($id);
-					$milestone->setName($_REQUEST['milestone']);
+					$milestone->setName($request->get('milestone'));
 					$repository->getMilestones()->addMilestone($milestone);
 					$owner->save();
 						
@@ -175,24 +213,24 @@ class IssuesController extends GitHQ\Bundle\AbstractController
 			}
 			$issue->save();
 
-			if (!empty($_REQUEST['milestone']) && !$repository->getMilestones()->getMilestoneByName($_REQUEST['milestone'])) {
-				$owner = User::fetchLocked(User::getIdByNickname($params['user']),'user');
-				$repository = $owner->getRepository($params['repository']);
+			if (!$request->get('milestone') && !$repository->getMilestones()->getMilestoneByName($request->get('milestone'))) {
+				$owner = User::fetchLocked(User::getIdByNickname($nickname));
+				$repository = $owner->getRepository($repository_name);
 				
 				$milestone = new Milestone();
 				$milestone->setId($repository->getMilestones()->getNextId());
-				$milestone->setName($_REQUEST['milestone']);
+				$milestone->setName($request->get('milestone'));
 				$repository->getMilestones()->addMilestone($milestone);
 				$owner->save();
 			}
 			
-			header("Location: /{$user->getNickname()}/{$repository->getName()}/issues/{$issue->getId()}");
+			return new RedirectResponse($this->get('application.url') . "/{$user->getNickname()}/{$repository->getName()}/issues/{$issue->getId()}");
 		}
 		
 		$this->render("edit.htm",array(
-					"user" => $user,
-					"issue" => $issue,
-					"owner" => $owner,
+					"user"       => $user,
+					"issue"      => $issue,
+					"owner"      => $owner,
 					"repository" => $repository,
 		));
 	}

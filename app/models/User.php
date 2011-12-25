@@ -31,6 +31,13 @@ class User extends UIKit\Framework\ObjectStore
 	protected $public_keys  = array();
 	protected $members = array();
 	
+	public static function getByNickname($nickname)
+	{
+		$redis = GitHQ\Bundle\AbstractController::getRedisClient();
+		$id = $redis->get("pointer.user_id.nickname.{$nickname}");
+		return self::get($id);
+	}
+
 	public static function getIdByNickname($nickname)
 	{
 		$redis = GitHQ\Bundle\AbstractController::getRedisClient();

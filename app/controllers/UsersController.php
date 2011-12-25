@@ -1,14 +1,23 @@
 <?php
+use UIKit\Framework\HTTPFoundation\Response\RedirectResponse;
+
 class UsersController extends GitHQ\Bundle\AbstractController
 {
+	/**
+	 * (non-PHPdoc)
+	 * @see UIKit\Framework\HTTPFoundation\Controller.ApplicationController::onDefault()
+	 * @Controller(newtype=true)
+	 */
 	public function onDefault()
 	{
 		$request = $this->getRequest();
 		
+		$reponse = new RedirectResponse();
+		
 		if ($this->getRequest()->isPost()) {
 			if(!$user_id = $this->get('facebook')->getUser()) {
-				header("Location: /connect");
-				exit;
+				$response->setLocation($this->get('application.url') . "/connect");
+				return $response;
 			}
 
 			try {
@@ -19,8 +28,9 @@ class UsersController extends GitHQ\Bundle\AbstractController
 					$user->setPassword($request->get('password'));
 
 					if ($user->create()) {
-						header("Location: http://githq.org/");
-						return;
+						$response->setLocation($this->get('application.url'));
+						
+						return $response;
 					} else {
 						throw new \Exception("could not create user.");
 					}

@@ -1,24 +1,39 @@
 <?php
 class AdminController extends GitHQ\Bundle\AbstractController
 {
-	public function onDefault($params)
+	/**
+	 * show repsoitory admin page.
+	 * 
+	 * @param string $nickname
+	 * @param string $repository
+	 * @Controller(newtype=true)
+	 */
+	public function onDefault($nickname, $repository)
 	{
-		$user = $this->getUser();
-		$owner = User::get(User::getIdByNickname($params['user']),'user');
+		$user  = $this->getUser();
+		$owner = User::getByNickname($nickname);
+		
 		$this->render("index.htm",array(
 					'user'         => $user,
 					'owner'        => $owner,
-					'repository'   => $owner->getRepository($params['repository']),
+					'repository'   => $owner->getRepository($repository),
 		));
 	}
-	
-	public function onUpdate($params)
+
+	/**
+	* update specified repository settings
+	*
+	* @param string $nickname
+	* @param string $repository
+	* @Controller(newtype=true)
+	*/
+	public function onUpdate($nickname, $repository)
 	{
 		if ($this->getRequest()->isPost()){
-			$owner = User::fetchLocked(User::getIdByNickname($params['user']),'user');
-			$repo = $owner->getRepository($params['repository']);
+			$owner = User::fetchLocked(User::getIdByNickname($nicknmae));
+			$repo = $owner->getRepository($repository);
+			
 			if (isset($_REQUEST['features'])) {
-				
 				if ($this->getRequest()->get('issues') == 1) {
 					$repo->enableIssue();
 				} else {
@@ -27,29 +42,44 @@ class AdminController extends GitHQ\Bundle\AbstractController
 			} else {
 				$repo->setStatus($_REQUEST['visibility']);
 			}
+			
 			$owner->save();
 			header("Location: http://githq.org/{$owner->getNickname()}/{$repo->getName()}/admin");
 		}
 	}
-	
-	public function onDelete($params)
+
+	/**
+	* update specified repository settings
+	*
+	* @param string $nickname
+	* @param string $repository
+	* @Controller(newtype=true)
+	*/
+	public function onDelete($nickname, $repository_name)
 	{
 		$user = $this->getUser();
-		$owner = User::fetchLocked(User::getIdByNickname($params['user']),'user');
-		$repository = $owner->getRepository($params['repository']);
+		
+		$owner = User::fetchLocked(User::getIdByNickname($nickname));
+		$repository = $owner->getRepository($repository_name);
 		$owner->removeRepository($params['repository']);
 		
 		foreach($this->getRedisClient()->keys("issue_list.{$owner->getKey()}.{$repository->getName()}*") as $key) {
 			$this->getRedisClient()->delete($key);
 		}
+		
 		foreach($this->getRedisClient()->keys("issue_labels.{$owner->getKey()}.{$repository->getName()}*") as $key) {
 			$this->getRedisClient()->delete($key);
 		}
+		
 		foreach($this->getRedisClient()->keys("issue_milestone.{$owner->getKey()}.{$repository->getName()}*") as $key) {
 			$this->getRedisClient()->delete($key);
 		}
+		
 		$owner->save();
+		
+		//@todo: considering organization repo.
 		$_SESSION['user'] = $owner;
-		header("Location: http://githq.org/");
+
+		return new UIKit\Framework\HTTPFoundation\Response\RedirectResponse($this->get("application.url"));
 	}
 }

@@ -1,25 +1,40 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <routes>
+<!--  issues  -->
   <route id="" pattern="/{user}/{repository}/issue_comments">
     <default key="controller">IssuesController</default>
     <default key="action">onIssueComments</default>
   </route>
-  <route id="" pattern="/{user}/{repository}/issues">
+
+  <route id="" pattern="/{nickname}/{repository_name}/issues">
     <default key="controller">IssuesController</default>
     <default key="action">onDefault</default>
-  </route>
-  <route id="" pattern="/{user}/{repository}/watch">
-    <default key="controller">RepositoriesController</default>
-    <default key="action">onWatch</default>
   </route>
 
   <route id="" pattern="/{user}/{repository}/issues/update">
     <default key="controller">IssuesController</default>
     <default key="action">onUpdate</default>
   </route>
+
+  <route id="" pattern="/{user}/{repository}/issues/new">
+    <default key="controller">IssuesController</default>
+    <default key="action">onNew</default>
+
+  </route>
+  <route id="" pattern="/{user}/{repository}/issues/edit/{id,digit}">
+    <default key="controller">IssuesController</default>
+    <default key="action">onEdit</default>
+  </route>
+  
+  <route id="show_issue" pattern="/{user}/{repository}/issues/{id,digit}">
+    <default key="controller">IssuesController</default>
+    <default key="action">onIssue</default>
+  </route>
+
+<!--  /issues -->
+<!--  pull requests -->
   <route id="" pattern="/{user}/{repository}/pull/new">
     <default key="controller">PullRequestController</default>
-
     <default key="action">onNew</default>
   </route>
   <route id="" pattern="/{user}/{repository}/pull/new/{ref}">
@@ -40,136 +55,148 @@
     <default key="controller">PullRequestController</default>
     <default key="action">onClose</default>
   </route>
-  <route id="" pattern="/{user}/{repository}/issues/new">
-    <default key="controller">IssuesController</default>
-    <default key="action">onNew</default>
+<!--  /pull requests -->
 
+  <route id="" pattern="/{user}/{repository}/watch">
+    <default key="controller">RepositoriesController</default>
+    <default key="action">onWatch</default>
   </route>
-  <route id="" pattern="/{user}/{repository}/issues/edit/{id,digit}">
-    <default key="controller">IssuesController</default>
-    <default key="action">onEdit</default>
-  </route>
-  <route id="" pattern="/{user}/{repository}/issues/{id,digit}">
-    <default key="controller">IssuesController</default>
-
-    <default key="action">onIssue</default>
-  </route>
+  
   <route id="" pattern="/{user}/{repository}/zipball/{tag}">
-    <default key="controller">RootController</default>
+    <default key="controller">RepositoriesController</default>
     <default key="action">onZipBall</default>
   </route>
-  <route id="" pattern="/logout">
 
+  <route id="logout" pattern="/logout">
     <default key="controller">RootController</default>
     <default key="action">onLogout</default>
   </route>
+  
   <route id="" pattern="/session">
     <default key="controller">RootController</default>
     <default key="action">onSession</default>
   </route>
 
-  <route id="" pattern="/about">
-    <default key="controller">RootController</default>
-    <default key="action">onAbout</default>
-  </route>
-  <route id="" pattern="/account">
-    <default key="controller">RootController</default>
-    <default key="action">onAccount</default>
-
-  </route>
-  <route id="" pattern="/organizations/{organization,vars}">
-    <default key="controller">OrganizationsController</default>
-    <default key="action">onDefault</default>
-  </route>
-  <route id="" pattern="/organizations/{organization,vars}/repositories/new">
-    <default key="controller">OrganizationsController</default>
-
-    <default key="action">onNew</default>
-  </route>
-  <route id="" pattern="/account/organizations/{action,alpha,camel,prepend(on)}">
-    <default key="controller">AccountController</default>
-    <default key="action">onDefault</default>
-  </route>
-  <route id="" pattern="/account/{action,alpha,camel,prepend(on)}">
-
-    <default key="controller">AccountController</default>
-    <default key="action">onDefault</default>
-  </route>
   <route id="" pattern="/connect">
     <default key="controller">RootController</default>
     <default key="action">onConnect</default>
   </route>
 
-  <route id="" pattern="/{user}/{repository}/tags">
-    <default key="controller">RootController</default>
-    <default key="action">onTags</default>
-  </route>
-  <route id="" pattern="/{user}/{repository}/commits/{refs}/{path,greed}">
-    <default key="controller">RootController</default>
-    <default key="action">onCommitsHisotry</default>
 
-  </route>
-  <route id="" pattern="/{user}/{repository}/commits/{refs}">
+  <route id="about" pattern="/about">
     <default key="controller">RootController</default>
-    <default key="action">onCommits</default>
+    <default key="action">onAbout</default>
   </route>
-  <route id="" pattern="/{user}/{repository}/commit/{commit}">
+  
+  <route id="account_setting" pattern="/account">
     <default key="controller">RootController</default>
+    <default key="action">onAccount</default>
+  </route>
 
-    <default key="action">onCommit</default>
+  <route id="" pattern="/organizations/{organization,vars}">
+    <default key="controller">OrganizationsController</default>
+    <default key="action">onDefault</default>
   </route>
-  <route id="" pattern="/{user}/{repository}/admin">
+  
+  <route id="" pattern="/organizations/{organization,vars}/repositories/new">
+    <default key="controller">OrganizationsController</default>
+    <default key="action">onNew</default>
+  </route>
+  
+  <route id="" pattern="/account/organizations/{action,alpha,camel,prepend(on)}">
+    <default key="controller">AccountController</default>
+    <default key="action">onDefault</default>
+  </route>
+  
+  <route id="" pattern="/account/{action,alpha,camel,prepend(on)}">
+    <default key="controller">AccountController</default>
+    <default key="action">onDefault</default>
+  </route>
+  
+  <route id="" pattern="/{nickname}/{repository}/admin">
     <default key="controller">AdminController</default>
     <default key="action">onDefault</default>
   </route>
-  <route id="" pattern="/{user}/{repository}/admin/delete">
-
+ 
+<!--  repository admin -->
+  <route id="delete_repository" pattern="/{nickname}/{repository_name}/admin/delete">
     <default key="controller">AdminController</default>
     <default key="action">onDelete</default>
   </route>
-  <route id="" pattern="/{user}/{repository}/admin/update">
+  
+  <route id="update_repository" pattern="/{nickname}/{repository}/admin/update">
     <default key="controller">AdminController</default>
     <default key="action">onUpdate</default>
   </route>
+<!--  /repository admin -->
+
+<!--  repository -->
+  <route id="" pattern="/{user}/{repository}/tags">
+    <default key="controller">RepositoriesController</default>
+    <default key="action">onTags</default>
+  </route>
+  <route id="" pattern="/{user}/{repository}/commits/{refs}/{path,greed}">
+    <default key="controller">RepositoriesController</default>
+    <default key="action">onCommitsHisotry</default>
+  </route>
+  <route id="" pattern="/{user}/{repository}/commits/{refs}">
+    <default key="controller">RepositoriesController</default>
+    <default key="action">onCommits</default>
+  </route>
+  <route id="" pattern="/{user}/{repository}/commit/{commit}">
+    <default key="controller">RepositoriesController</default>
+    <default key="action">onCommit</default>
+  </route>
 
   <route id="" pattern="/{user}/{repository}/blame/{refs}/{path,greed}">
-    <default key="controller">RootController</default>
+    <default key="controller">RepositoriesController</default>
     <default key="action">onBlame</default>
   </route>
   <route id="" pattern="/{user}/{repository}/raw/{refs}/{path,greed}">
-    <default key="controller">RootController</default>
+    <default key="controller">RepositoriesController</default>
     <default key="action">onRaw</default>
   </route>
 
   <route id="" pattern="/{user}/{repository}/blob/{refs}/{path,greed}">
-    <default key="controller">RootController</default>
+    <default key="controller">RepositoriesController</default>
     <default key="action">onBlob</default>
   </route>
-  <route id="" pattern="/{user}/{repository}/tree/{refs}/{path,greed}">
-    <default key="controller">RootController</default>
+
+  <route id="" pattern="/{user}/{repository}/tree/{refs}/">
+    <default key="controller">RepositoriesController</default>
     <default key="action">onTree</default>
   </route>
+  
+  <route id="" pattern="/{user}/{repository}/tree/{refs}/{path,greed}">
+    <default key="controller">RepositoriesController</default>
+    <default key="action">onTree</default>
+  </route>
+
+  <route id="" pattern="/{user}/{repository}">
+    <default key="controller">RepositoriesController</default>
+    <default key="action">onTop</default>
+  </route>
+
+<!-- /repository -->
+
+<!--  upload-pack -->
   <route id="" pattern="/{user}/{repository}.git/{path,greed}">
     <default key="controller">RootController</default>
 
     <default key="action">onDefault</default>
   </route>
-  <route id="" pattern="/{user,vars}">
-    <default key="controller">RootController</default>
-    <default key="action">onUser</default>
-  </route>
-  <route id="" pattern="/">
+<!--  /upload-pack -->
 
+<!--  misc  -->  
+  <route id="top" pattern="/">
     <default key="controller">RootController</default>
     <default key="action">onDefault</default>
   </route>
-  <route id="" pattern="/{user}/{repository}/tree/{refs}/">
-    <default key="controller">RootController</default>
-    <default key="action">onTree</default>
-  </route>
 
-  <route id="" pattern="/{controller,vars,camel,append(Controller)}/{action,vars,camel,prepend(on),optional}">
+  <route id="show_user" pattern="/{user,vars}">
     <default key="controller">RootController</default>
-    <default key="action">default</default>
+    <default key="action">onUser</default>
   </route>
+<!-- /misc -->
+
 </routes>

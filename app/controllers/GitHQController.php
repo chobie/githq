@@ -4,12 +4,45 @@ namespace GitHQ\Bundle;
 abstract class AbstractController extends \UIKit\Framework\HTTPFoundation\Controller\ApplicationController
 {
 	protected static $redis;
+
+	/**
+	* resolve file name of inside git repository.
+	*
+	* @param \Git\Tree $tree
+	* @param string $name filename or path
+	* @return \Git\Object $object
+	*/
+	protected function resolve_filename($tree,$name)
+	{
+		$list = explode("/",$name);
+		$cnt = count($list);
+	
+		$i = 1;
+		while ($fname = array_shift($list)) {
+			foreach ($tree->getIterator() as $entry) {
+				if ($entry->name == $fname) {
+					if ($i < $cnt && $entry->isTree()) {
+						return $this->resolve_filename($entry->toObject(),join("/",$list));
+					} else {
+						return $entry->toObject();
+					}
+				}
+			}
+			$i++;
+		}
+	
+		return null;
+	}
+	
 	
 	public function __construct($container)
 	{
-		parent::__construct($container);		
+		parent::__construct($container);
 	}
 	
+	/**
+	 * @deprecated
+	 */
 	public function getLogger()
 	{
 		return $this->logger;
@@ -39,5 +72,10 @@ abstract class AbstractController extends \UIKit\Framework\HTTPFoundation\Contro
 			));
 		}
 		return self::$redis;
+	}
+
+	public function on404()
+	{
+		$this->render("404.htm");
 	}
 }

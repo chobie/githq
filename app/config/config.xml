@@ -18,5 +18,6 @@
 		<channel>githq</channel>
 		<handler>\Monolog\Handler\FirePHPHandler</handler>
 		<level>\Monolog\Logger::DEBUG</level>
-	</logger>  
+	</logger>
+	<request></request>  
 </config>

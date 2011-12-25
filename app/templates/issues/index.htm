@@ -37,7 +37,12 @@
   {% for issue in issues %}
   <div style="border:1px solid #7f7f7f;border-radius:5px;margin-bottom:1em;padding:0.5em;background:#FFF;">
   
-    <div>{% if issue.hasMilestone()%}<span class="label">{{repository.getMilestones().getMilestoneById(issue.getMilestoneId())}}</span>{% endif %}<a href="/{{owner.getNickname()}}/{{repository.getName()}}/{% if issue.isPullrequest()%}pull{%else%}issues{% endif %}/{{issue.getId()}}">#{{issue.getId()}} {{issue.getTitle()}}</a>
+    <div>{% if issue.hasMilestone()%}<span class="label">{{repository.getMilestones().getMilestoneById(issue.getMilestoneId())}}</span>{% endif %}
+    <a href="{{ path('show_issue', {
+    	'user': owner.getNickname(),
+    	'repository': repository.getName(),
+    	'id': issue.getId }
+    ) }}">#{{issue.getId()}} {{issue.getTitle()}}</a>
     
     {% if issue.hasLabel() %}
     {% for label_id in issue.getLabelIds() %}

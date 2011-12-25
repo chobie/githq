@@ -18,7 +18,7 @@
     	</div>
     	<div class="span12">
 	    	<div class="issue_container">
-	    	<div><a href="/{{issue.getAuthor().getNickname()}}">{{issue.getAuthor().getNickname()}}</a> opened this issue at {{issue.getRegisteredAt()}}</div>
+	    	<div><a href="{{ path('show_user', {'user': issue.getAuthor().getNickname() }) }}">{{issue.getAuthor().getNickname()}}</a> opened this issue at {{issue.getRegisteredAt()}}</div>
 	    	
 		    <div><h2>{{issue.getTitle()}}</h2></div>
 		    {% if issue.hasMilestone() %}
@@ -56,7 +56,7 @@
 	    </div>
 	    <div class="span12">
 	      <div class="issue_container">
-	      <div ><a href="/{{item.getCommenter().getNickname()}}">{{item.getCommenter().getNickname()}}</a> commented {{item.getRegisteredAt()}}</div>
+	      <div ><a href="{{ path('show_user', {'user': item.getCommenter().getNickname()}) }}">{{item.getCommenter().getNickname()}}</a> commented {{item.getRegisteredAt()}}</div>
 	      <div style="margin-left:2em;">{{item.getCommentAsMd()|raw}}</div>
 	      </div> 
 	    </div>
