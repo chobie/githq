@@ -9,7 +9,8 @@ class AccountController extends GitHQ\Bundle\AbstractController
 		$request = $this->get('request');
 		
 		if ($request->isPost()) {
-			if (!User::getIdByEmail($request->get("email")) && !User::getIdByNickname($request->get("name")) ) {
+			if (!User::getIdByEmail($request->get("email")) &&
+				!User::getIdByNickname($request->get("name")) ) {
 
 				/** for now, organization uses `org` as prefix */
 				$organization = new User("org." . User::getNextId());

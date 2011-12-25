@@ -12,10 +12,9 @@ class AdminController extends GitHQ\Bundle\AbstractController
 	public function onDefault($nickname, $repository)
 	{
 		$owner = User::getByNickname($nickname);
-		
 		$this->render("index.htm",array(
-					'owner'        => $owner,
-					'repository'   => $owner->getRepository($repository),
+					'owner'      => $owner,
+					'repository' => $owner->getRepository($repository),
 		));
 	}
 
@@ -27,21 +26,21 @@ class AdminController extends GitHQ\Bundle\AbstractController
 	*/
 	public function onUpdate($nickname, $repository)
 	{
-		if ($this->getRequest()->isPost()){
+		$request = $this->get('request');
+		if ($request->isPost()){
 			$owner = User::fetchLocked(User::getIdByNickname($nicknmae));
 			$repo = $owner->getRepository($repository);
 			
-			if (isset($_REQUEST['features'])) {
-				if ($this->getRequest()->get('issues') == 1) {
+			if ($request->has('features')) {
+				if ($request->get('issues') == 1) {
 					$repo->enableIssue();
 				} else {
 					$repo->disableIssue();
 				}
-			} else {
-				$repo->setStatus($_REQUEST['visibility']);
 			}
-			
+			$repo->setStatus($request->get('visibility'));			
 			$owner->save();
+			
 			return new RedirectResponse($this->get("application.url") . "/{$owner->getNickname()}/{$repo->getName()}/admin");
 		}
 	}

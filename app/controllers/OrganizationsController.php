@@ -11,8 +11,8 @@ class OrganizationsController extends GitHQ\Bundle\AbstractController
 	public function onDefault($organization)
 	{
 		$organization = User::getByNickname($organization);
-		
 		$timeline = Activity::getGlobalTimeline();
+
 		$this->render("index.htm",array(
 						'organization'  => $organization,
 						'timeline'      => $timeline,

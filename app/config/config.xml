@@ -19,5 +19,6 @@
 		<handler>\Monolog\Handler\FirePHPHandler</handler>
 		<level>\Monolog\Logger::DEBUG</level>
 	</logger>
-	<request></request>  
+	<request></request>
+	<event></event>
 </config>

@@ -33,8 +33,8 @@ class IssuesController extends GitHQ\Bundle\AbstractController
 		$this->render("index.htm",array(
 			'owner'       => $owner,
 			'issues'      => $issues,
-			'repository'  => $owner->getRepository($repository_name),
-			'issue_count' => IssueReferences::getOpenedIssueCount($owner->getKey(), $owner->getRepository($repository_name)->getId()),
+			'repository'  => $repository,
+			'issue_count' => IssueReferences::getOpenedIssueCount($owner->getKey(), $repository->getId()),
 		));
 	}
 
@@ -42,6 +42,7 @@ class IssuesController extends GitHQ\Bundle\AbstractController
 	{
 		$owner = User::get(User::getIdByNickname($user),'user');
 		$repository = $owner->getRepository($repository);
+		$user = $this->getUser();
 		
 		if($this->get('request')->isPost()) {
 			$id = IssueReferences::getNextId($owner->getKey(),$repository->getId());
@@ -53,16 +54,12 @@ class IssuesController extends GitHQ\Bundle\AbstractController
 			$issue->setTitle($_REQUEST['title']);
 			$issue->setBody($_REQUEST['contents']);
 			if ($issue->create()) {
-				$a = new Activity(Activity::getNextId(),'activity');
-				$a->setImageUrl("http://www.gravatar.com/avatar/" . md5($user->getEmail()));
-				$a->setDescription("{$user->getNickname()} opened <a href=\"/{$owner->getNickname()}/{$repository->getName()}/issues/{$id}\">issue {$id}</a> on {$owner->getNickname()}/{$repository->getName()}");
-				$a->setSenderId($user->getKey());
-				$a->create();
+				$this->get('event')->emit(new UIKit\Framework\Event('issue.create',array($issue,$user,$owner,$repository)));
 			}
 			return new RedirectResponse($this->get('appilcation.url') ."/{$owner->getNickname()}/{$repository->getName()}/issues");
 		} else {
 			$this->render("new.htm",array(
-				'owner' => $owner,
+				'owner'      => $owner,
 				'repository' => $repository,
 			));
 		}
@@ -91,7 +88,7 @@ class IssuesController extends GitHQ\Bundle\AbstractController
 	public function onUpdate($user, $repository)
 	{
 		$request    = $this->get('request');
-		$owner      = User::get(User::getIdByNickname($user));
+		$owner      = User::getByNickname($user);
 		$repository = $owner->getRepository($repository);
 		$issue      = Issue::fetchLocked(join(':',array($owner->getKey(),$repository->getId(),$request->get('id'))));
 
@@ -108,6 +105,7 @@ class IssuesController extends GitHQ\Bundle\AbstractController
 	{
 		$owner = User::get(User::getIdByNickname($user));
 		$user_name = $user;
+		$user = $this->getUser();
 		$repository_name = $repository;
 		
 		$request = $this->get('request');
@@ -117,10 +115,10 @@ class IssuesController extends GitHQ\Bundle\AbstractController
 		
 		if ($request->has('close')) {
 			$issue->closeIssue();
-		}
-		if ($request->has('open')) {
+		} else if ($request->has('open')) {
 			$issue->openIssue();
 		}
+		
 		if ($request->has('label') && !$request->get('label')) {
 			$labels = $repository->getLabels();
 			$label = $labels->getLabelByName($request->get('label'));
@@ -140,17 +138,13 @@ class IssuesController extends GitHQ\Bundle\AbstractController
 		}
 
 		if($issue->save()) {
-			$a = new Activity(Activity::getNextId(),'activity');
-			$a->setImageUrl("http://www.gravatar.com/avatar/" . md5($user->getEmail()));
-			$a->setDescription("{$user->getNickname()} commented <a href=\"/{$owner->getNickname()}/{$repository->getName()}/issues/{$_REQUEST['issue']}\">issue {$_REQUEST['issue']}</a> on {$owner->getNickname()}/{$repository->getName()}");
-			$a->setSenderId($user->getKey());
-			$a->create();
+			$this->get('event')->emit(new UIKit\Framework\Event('issue.comment.add',array($issue,$user,$owner,$repository)));
 		}
 		
 		if ($issue->isPullrequest()) {
-			header("Location: /{$owner->getNickname()}/{$repository->getName()}/pull/{$issue->getId()}");
+			return new RedirectResponse($this->get('application.url') . "/{$owner->getNickname()}/{$repository->getName()}/pull/{$issue->getId()}");
 		} else {
-			header("Location: /{$owner->getNickname()}/{$repository->getName()}/issues/{$issue->getId()}");
+			return new RedirectResponse($this->get('application.url') . "/{$owner->getNickname()}/{$repository->getName()}/issue/{$issue->getId()}");
 		}
 	}
 
@@ -163,7 +157,7 @@ class IssuesController extends GitHQ\Bundle\AbstractController
 		$request = $this->get('request');
 		$issue = Issue::get(join(':',array($owner->getKey(),$repository->getId(),$id)));
 		
-		if (isset($_REQUEST['update'])) {
+		if ($request->has('update')) {
 			$issue = Issue::fetchLocked(join(':',array($owner->getKey(),$repository->getId(),$id)));
 			$issue->setTitle($request->get('title'));
 			$issue->setBody($request->get('contents'));

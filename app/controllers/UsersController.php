@@ -15,6 +15,7 @@ class UsersController extends GitHQ\Bundle\AbstractController
 		
 		if ($this->getRequest()->isPost()) {
 			if(!$user_id = $this->get('facebook')->getUser()) {
+				/* could not obtain the user id. redirect fb. */
 				$response->setLocation($this->get('application.url') . "/connect");
 				return $response;
 			}

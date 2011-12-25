@@ -48,5 +48,33 @@ class githqApplicationDelegate extends UIKit\Framework\HTTPFoundation\WebApplica
 		} else {
 			return false;
 		}
-	}	
+	}
+
+	public function didReciveEvent($event)
+	{
+		if ($event->getName() == 'issue.comment.add') {
+			list($issue, $user,$owner, $repository) = $event->getArgs();
+			$a = new Activity(Activity::getNextId());
+			$a->setImageUrl("https://www.gravatar.com/avatar/" . md5($user->getEmail()));
+			$a->setDescription("{$user->getNickname()} commented <a href=\"/{$owner->getNickname()}/{$repository->getName()}/issues/{$issue->getId()}\">issue {$issue->getId()}</a> on {$owner->getNickname()}/{$repository->getName()}");
+			$a->setSenderId($user->getKey());
+			$a->create();
+		} else if ($event->getName() == 'issue.create'){
+			list($issue, $user,$owner, $repository) = $event->getArgs();
+			$a = new Activity(Activity::getNextId());
+			$a->setImageUrl("https://www.gravatar.com/avatar/" . md5($user->getEmail()));
+			$a->setDescription("{$user->getNickname()} opened <a href=\"/{$owner->getNickname()}/{$repository->getName()}/issues/{$issue->getId()}\">issue {$issue->getId()}</a> on {$owner->getNickname()}/{$repository->getName()}");
+			$a->setSenderId($user->getKey());
+			$a->create();
+		} else if ($event->getName() == 'repository.new') {
+			list($user,$repo) = $event->getArgs();
+			$a = new Activity(Activity::getNextId());
+			$a->setImageUrl("https://www.gravatar.com/avatar/" . md5($user->getEmail()));
+			$a->setDescription("{$user->getNickname()} created <a href=\"/{$user->getNickname()}/{$repo->getName()}\">{$user->getNickname()}/{$repo->getName()}</a>");
+			$a->setSenderId($user->getKey());
+			$a->create();
+		} else {
+			inspect($event);
+		}
+	}
 }

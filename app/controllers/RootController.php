@@ -6,6 +6,7 @@ class RootController extends GitHQ\Bundle\AbstractController
 	public function onDefault()
 	{
 		$this->get("logger")->addDebug("Hey");
+		
 		$organizations = null;
 				
 		$timeline = Activity::getGlobalTimeline();
@@ -108,9 +109,11 @@ class RootController extends GitHQ\Bundle\AbstractController
 		
 		if ($user_id) {
 			if ($user = User::get($user_id)) {
+				/* login succeeded */
 				$_SESSION['user'] = $user;
 				$response->setLocation($this->get('application.url'));
 			} else {
+				/* first time. redirect registration page */
 				$response->setLocation($this->get('application.url') . '/signup/free');
 			}
 		} else {
@@ -126,7 +129,7 @@ class RootController extends GitHQ\Bundle\AbstractController
 	 */
 	public function onUser($user)
 	{
-		$owner    = User::getByNickname($user);
+		$owner = User::getByNickname($user);
 		if (!$owner) {
 			return $this->on404();
 		}

@@ -15,19 +15,18 @@ class RepositoriesController extends GitHQ\Bundle\AbstractController
 		
 		if ($this->getRequest()->isPost()) {
 			/* fork */
-			$owner = User::get(User::getIdByNickname($_REQUEST['user']));
+			$owner = User::getByNickname($this->get('request')->get('user'));
 			if (!$user->getRepository($_REQUEST['repository'])) {
 				$origin = $owner->getRepository($_REQUEST['repository']);
 		
-				$user = User::fetchLocked($_SESSION['user']->getKey());
+				$user = User::fetchLocked($user->getKey());
 				if ($repo = $origin->fork($owner, $user)) {
 					$user->addRepository($repo);
 					$user->save();
 		
 					$_SESSION['user'] = $user;
 				}
-				$this->render("fork.htm");
-				exit;
+				return $this->render("fork.htm");
 			} else {
 				throw new \Exception("could not fork repository.");
 			}
@@ -58,17 +57,26 @@ class RepositoriesController extends GitHQ\Bundle\AbstractController
 		}
 		
 		$this->render("repository.htm",array(
-						'user' => $user,
-						'owner'=> $owner,
-						'issue_count'  => IssueReferences::getOpenedIssueCount($owner->getKey(),$repository->getId()),	
-						'repository'=> $repository,
-						'commit' => $commit,
-						'tree' => $tree,
-						'data' => $data,
-						'watcher'      => Repository::getWatchedCount($owner, $repository),
+						'user'        => $user,
+						'owner'       => $owner,
+						'issue_count' => IssueReferences::getOpenedIssueCount($owner->getKey(),$repository->getId()),	
+						'repository'  => $repository,
+						'commit'      => $commit,
+						'tree'        => $tree,
+						'data'        => $data,
+						'watcher'     => Repository::getWatchedCount($owner, $repository),
 		));
 	}
 	
+	/**
+	 * increment watcher
+	 * 
+	 * @todo considering ajax request.
+	 *  
+	 * @param string $user nickname
+	 * @param string $repository repository name
+	 * @return RedirectResponse
+	 */
 	public function onWatch($user, $repository)
 	{
 		$owner      = User::getByNickname($user);
@@ -101,10 +109,10 @@ class RepositoriesController extends GitHQ\Bundle\AbstractController
 		$commit = $repo->getCommit($commit);
 	
 		$this->render("commit.htm",array(
-						'owner' => $owner,
-						'repository'=> $repository,
-						"commit" => $commit,
-						"diff" => $struct,
+						'owner'      => $owner,
+						'repository' => $repository,
+						"commit"     => $commit,
+						"diff"       => $struct,
 		));
 	}
 	
@@ -129,10 +137,10 @@ class RepositoriesController extends GitHQ\Bundle\AbstractController
 			$commits = array();
 		}
 		$this->render("commits.htm",array(
-				'owner' => $owner,
-				'repository'=> $repository,
-				"commits" => $commits,
-				'issue_count'  => IssueReferences::getOpenedIssueCount($owner->getKey(), $repository->getId()),
+				'owner'       => $owner,
+				'repository'  => $repository,
+				"commits"     => $commits,
+				'issue_count' => IssueReferences::getOpenedIssueCount($owner->getKey(), $repository->getId()),
 	
 		));
 	}
@@ -159,11 +167,7 @@ class RepositoriesController extends GitHQ\Bundle\AbstractController
 				if ($request->get('visibility') == 1) {
 					$repo->setPrivate();
 				} else {
-					$a = new Activity(Activity::getNextId());
-					$a->setImageUrl("http://www.gravatar.com/avatar/" . md5($user->getEmail()));
-					$a->setDescription("{$user->getNickname()} created <a href=\"/{$user->getNickname()}/{$repo->getName()}\">{$user->getNickname()}/{$repo->getName()}</a>");
-					$a->setSenderId($user->getKey());
-					$a->create();
+					$this->get('event')->emit(new UIKit\Framework\Event('repository.new',array($user,$repo)));
 				}
 				$_SESSION['user'] = $user;
 				$repo->watch($user,$user);
@@ -176,7 +180,6 @@ class RepositoriesController extends GitHQ\Bundle\AbstractController
 
 	public function onNew()
 	{
-		$user = $this->getUser();
 		$this->render("new.htm",array());
 	}
 
