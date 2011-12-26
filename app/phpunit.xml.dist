@@ -16,6 +16,8 @@
          verbose="true">
   <php>
     <ini name="date.timezone" value="Asia/Tokyo" />
+    <ini name="session.use_cookies" value="0" />
+    <ini name="session.cache_limiter" value="" />
   </php>
   <testsuites>
     <testsuite name="githq Test Suite">

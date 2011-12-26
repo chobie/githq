@@ -33,7 +33,16 @@ class githqApplicationDelegate extends UIKit\Framework\HTTPFoundation\WebApplica
 	{
 		$container = new UIKit\Framework\DependencyInjection\Container();
 		$container->setLoader(new UIKit\Framework\DependencyInjection\Loader\XMLFileLoader());
-		$container->load(__DIR__ . "/../config/config.xml");
+		if (isset($options['config'])) {	
+			$container->load($options['config']);
+		} else {
+			$container->load(__DIR__ . "/../config/config.xml");
+		}
+		if (isset($options['root'])) {
+			$container->set('root',$options['root']);
+		} else {
+			$container->set('root',dirname(__DIR__));
+		}
 		$this->registerContainer($container);
 		
 		$dispatcher = new UIKit\Framework\HTTPFoundation\RoutingResolver($this->getRouting());

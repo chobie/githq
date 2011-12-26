@@ -110,6 +110,7 @@ function inspect()
 }
 
 
+function load(){
 $data = file_get_contents("/home/chobie/githq.org/app/config/entities.xml");
 $xml = simplexml_load_string($data);
 	
@@ -143,3 +144,6 @@ foreach ($conf->keys() as $key) {
 	$i->addCache($key,$conf->get($key . '.cache'));
 }
 
+}
+
+load();
