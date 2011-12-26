@@ -179,11 +179,7 @@ class PullRequestController extends GitHQ\Bundle\AbstractController
 			$issue->attachRef($user->getKey(), $request->get('ref'),$repository->getId());
 			
 			if ($issue->create()) {
-				$a = new Activity(Activity::getNextId(),'activity');
-				$a->setImageUrl("https://www.gravatar.com/avatar/" . md5($user->getEmail()));
-				$a->setDescription("{$user->getNickname()} sent <a href=\"/{$owner->getNickname()}/{$origin_repo->getName()}/issues/{$id}\">pull request #{$id}</a> on {$origin->getNickname()}/{$repository->getName()}");
-				$a->setSenderId($user->getKey());
-				$a->create();
+				$this->get('event')->emit(new UIKit\Framework\Event('pull.create',array($issue,$user,$owner,$repository)));
 			}
 			return new RedirectResponse($this->get('application.url') . "/{$origin->getNickname()}/{$repository->getName()}/pulls");
 		} else {

@@ -73,6 +73,13 @@ class githqApplicationDelegate extends UIKit\Framework\HTTPFoundation\WebApplica
 			$a->setDescription("{$user->getNickname()} created <a href=\"/{$user->getNickname()}/{$repo->getName()}\">{$user->getNickname()}/{$repo->getName()}</a>");
 			$a->setSenderId($user->getKey());
 			$a->create();
+		} else if ($event->getName() == 'pull.create') {
+			list($issue, $user,$owner, $repository) = $event->getArgs();
+			$a = new Activity(Activity::getNextId(),'activity');
+			$a->setImageUrl("https://www.gravatar.com/avatar/" . md5($user->getEmail()));
+			$a->setDescription("{$user->getNickname()} sent <a href=\"/{$owner->getNickname()}/{$origin_repo->getName()}/issues/{$id}\">pull request #{$id}</a> on {$origin->getNickname()}/{$repository->getName()}");
+			$a->setSenderId($user->getKey());
+			$a->create();
 		} else {
 			inspect($event);
 		}

@@ -100,11 +100,9 @@ class RepositoriesController extends GitHQ\Bundle\AbstractController
 			return $this->on404();
 		}
 	
+		$struct = Git_Util::CommitLog($owner,$repository,$commit);
+		
 		$repo = new \Git\Repository("/home/git/repositories/{$owner->getKey()}/{$repository->getId()}");
-		$n_commit  = escapeshellarg($commit);
-		$stat = `GIT_DIR=/home/git/repositories/{$owner->getKey()}/{$repository->getId()} git log -p {$n_commit} -n1`;
-		$struct = Git\Util\Diff\Parser::parse($stat);
-	
 		$ref = $repo->lookupRef("refs/heads/master");
 		$commit = $repo->getCommit($commit);
 	
@@ -372,9 +370,7 @@ class RepositoriesController extends GitHQ\Bundle\AbstractController
 			$tree = $this->resolve_filename($tree,dirname($path));
 		}
 	
-		$p  = escapeshellarg($path);
-		$stat = `GIT_DIR=/home/git/repositories/{$owner->getKey()}/{$repository->getId()} git blame -p master -- {$p}`;
-		$blame = Git\Util\Blame\Parser::parse($stat);
+		$blame = Git_Util::Blame($owner,$repository, $path);
 	
 		$this->render("blame.htm",array(
 						'owner'        => $owner,
@@ -416,6 +412,11 @@ class RepositoriesController extends GitHQ\Bundle\AbstractController
 			'repository' => $repository,
 			"commits"    => $commits
 		));
+	}
+	
+	protected function getTags($repo)
+	{
+		
 	}
 
 	public function onTags($user, $repository)
@@ -461,17 +462,7 @@ class RepositoriesController extends GitHQ\Bundle\AbstractController
 		$repository = $owner->getRepository($repository);
 		$user = $this->getUser();
 		
-		$spec = array(
-			0 => array("pipe","r"),
-			1 => array("pipe","w")
-		);
-		$proc = proc_open("git archive --format zip {$tag}",$spec,$pipes,"/home/git/repositories/{$owner->getKey()}/{$repository->getId()}");
-		if(is_resource($proc)) {
-			fclose($pipes[0]);
-			$content = stream_get_contents($pipes[1]);
-			fclose($pipes[1]);
-			proc_close($proc);
-		}
+		$content = Git_Util::Archive($owner, $repository, $tag);
 		
 		header("Content-Disposition: inline; filename=\"{$owner->getNickname()}-{$repository->getName()}-{$tag}.zip\"");
 		header("Content-type: application/zip");

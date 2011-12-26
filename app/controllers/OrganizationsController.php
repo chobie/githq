@@ -47,12 +47,7 @@ class OrganizationsController extends GitHQ\Bundle\AbstractController
 				if ($request->get('visibility') == 1) {
 					$repo->setPrivate();
 				} else {
-					$a = new Activity(Activity::getNextId());
-
-					$a->setImageUrl("https://www.gravatar.com/avatar/" . md5($user->getEmail()));
-					$a->setDescription("{$user->getNickname()} created <a href=\"/{$user->getNickname()}/{$repo->getName()}\">{$user->getNickname()}/{$repo->getName()}</a>");
-					$a->setSenderId($user->getKey());
-					$a->create();
+					$this->get('event')->emit(new UIKit\Framework\Event('repository.new',array($repo,$user)));						
 				}
 			}
 			$user->save();

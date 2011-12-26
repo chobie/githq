@@ -43,16 +43,17 @@ class IssuesController extends GitHQ\Bundle\AbstractController
 		$owner = User::get(User::getIdByNickname($user),'user');
 		$repository = $owner->getRepository($repository);
 		$user = $this->getUser();
+		$request = $this->get('request');
 		
-		if($this->get('request')->isPost()) {
+		if($request->isPost()) {
 			$id = IssueReferences::getNextId($owner->getKey(),$repository->getId());
 			$issue = new Issue(join(':',array($owner->getKey(),$repository->getId(),$id)));
 			$issue->setId($id);
 			$issue->setOwner($owner->getKey());
 			$issue->setRepositoryId($repository->getId());
 			$issue->setAuthor($user->getKey());
-			$issue->setTitle($_REQUEST['title']);
-			$issue->setBody($_REQUEST['contents']);
+			$issue->setTitle($request->get('title'));
+			$issue->setBody($request->get('contents'));
 			if ($issue->create()) {
 				$this->get('event')->emit(new UIKit\Framework\Event('issue.create',array($issue,$user,$owner,$repository)));
 			}

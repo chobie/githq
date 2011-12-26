@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <config>
 	<facebook>
-		<appid></appid>
-		<secret></secret>
+		<appid>308497302504262</appid>
+		<secret>2e9f5662995ac38b2e3bc5866d6740c8</secret>
 	</facebook>
 	<application>
 		<domain>githq.org</domain>
@@ -18,7 +18,8 @@
 		<channel>githq</channel>
 		<handler>\Monolog\Handler\FirePHPHandler</handler>
 		<level>\Monolog\Logger::DEBUG</level>
-	</logger>
-	<request></request>
+	</logger>  
+	<request>
+	</request>
 	<event></event>
 </config>
