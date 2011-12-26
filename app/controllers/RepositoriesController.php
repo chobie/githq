@@ -378,7 +378,7 @@ class RepositoriesController extends GitHQ\Bundle\AbstractController
 						'commit'       => $commit,
 						'tree'         => $tree,
 						'blame'        => $blame,
-						'issue_count'  => IssueReferences::getOpenedIssueCount($owner->getKey(), $reposiotry->getId()),
+						'issue_count'  => IssueReferences::getOpenedIssueCount($owner->getKey(), $repository->getId()),
 						'current_path' => dirname($path) . '/',
 						'path'         => $path
 		));
