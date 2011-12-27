@@ -38,7 +38,7 @@ class RootView
 		$vars['user'] = $this->user;
 		$organizations = null;
 		if ($this->user) {
-			$vars['user'] = $this->user->getJoinedOrganizations();
+			$vars['user'] = $this->user;
 		}
 		
 		return new UIKit\Framework\HTTPFoundation\Response\HTTPResponse($this->render->render2($this->template, $vars));

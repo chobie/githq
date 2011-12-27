@@ -19,8 +19,14 @@ class RootController extends GitHQ\Bundle\AbstractController
 	 */
 	public function onDefault()
 	{
+		$organizations = null;
+		if ($this->getUser()) {
+			$organizations = $this->getUser()->getJoinedOrganizations();
+		}
+		
 		return $this->getDefaultView()->prepareResponse(array(
-			'timeline' => Activity::getGlobalTimeline(),
+			'timeline'      => Activity::getGlobalTimeline(),
+			'organizations' => $organizations,
 		));
 	}
 		
