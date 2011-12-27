@@ -3,20 +3,24 @@ use UIKit\Framework\HTTPFoundation\Response\RedirectResponse;
 
 class RootController extends GitHQ\Bundle\AbstractController
 {	
+	public $view = "RootView";
+	
+	protected function getDefaultView()
+	{
+		$view = new $this->view($this->container);
+		$view->setUser($this->getUser());
+		return $view;
+	}
+	
+	/**
+	 * show githq landing page.
+	 * 
+	 * @return HTTPResponse $response
+	 */
 	public function onDefault()
 	{
-		$this->get("logger")->addDebug("Hey");
-		
-		$organizations = null;
-				
-		$timeline = Activity::getGlobalTimeline();
-		if ($this->getUser()) {
-			$organizations = $this->getUser()->getJoinedOrganizations();
-		}
-		
-		$this->render("index.htm",array(
-			'timeline'      => $timeline,
-			'organizations' => $organizations,
+		return $this->getDefaultView()->prepareResponse(array(
+			'timeline' => Activity::getGlobalTimeline(),
 		));
 	}
 		
@@ -38,6 +42,11 @@ class RootController extends GitHQ\Bundle\AbstractController
 		return new RedirectResponse($this->get('application.url'));
 	}
 	
+	/**
+	 * logout githq.
+	 * 
+	 * @return RedirectResponse $response 
+	 */
 	public function onLogout()
 	{
 		$_SESSION = array();
@@ -134,10 +143,11 @@ class RootController extends GitHQ\Bundle\AbstractController
 			return $this->on404();
 		}
 		
-		$timeline = Activity::getTimelineByUserId($owner->getKey());
-		$this->render("user.htm",array(
+		$view = $this->getDefaultView();
+		$view->setTemplate("user.htm");
+		return $view->prepareResponse(array(
 			'owner'    => $owner,
-			'timeline' => $timeline,
+			'timeline' => Activity::getTimelineByUserId($owner->getKey()),
 		));
 	}
 
@@ -146,8 +156,7 @@ class RootController extends GitHQ\Bundle\AbstractController
 	 */
 	public function onAbout()
 	{
-		$user = $this->getUser();
-		$this->render('about.htm',array());
+		return $this->getDefaultView()->setTemplate("about.htm")->prepareResponse();
 	}
 
 }
