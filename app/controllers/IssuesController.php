@@ -35,6 +35,7 @@ class IssuesController extends GitHQ\Bundle\AbstractController
 			'issues'      => $issues,
 			'repository'  => $repository,
 			'issue_count' => IssueReferences::getOpenedIssueCount($owner->getKey(), $repository->getId()),
+			'watcher'     => Repository::getWatchedCount($owner, $repository),
 		));
 	}
 
@@ -120,7 +121,7 @@ class IssuesController extends GitHQ\Bundle\AbstractController
 			$issue->openIssue();
 		}
 		
-		if ($request->has('label') && !$request->get('label')) {
+		if ($request->has('label') && $request->get('label')) {
 			$labels = $repository->getLabels();
 			$label = $labels->getLabelByName($request->get('label'));
 			if($label == false) {

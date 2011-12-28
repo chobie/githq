@@ -111,6 +111,7 @@ class RepositoriesController extends GitHQ\Bundle\AbstractController
 						'repository' => $repository,
 						"commit"     => $commit,
 						"diff"       => $struct,
+						'watcher'     => Repository::getWatchedCount($owner, $repository),
 		));
 	}
 	
@@ -139,7 +140,7 @@ class RepositoriesController extends GitHQ\Bundle\AbstractController
 				'repository'  => $repository,
 				"commits"     => $commits,
 				'issue_count' => IssueReferences::getOpenedIssueCount($owner->getKey(), $repository->getId()),
-	
+				'watcher'     => Repository::getWatchedCount($owner, $repository),
 		));
 	}
 	
@@ -450,6 +451,7 @@ class RepositoriesController extends GitHQ\Bundle\AbstractController
 			'tree'         => $tree,
 			'issue_count'  => IssueReferences::getOpenedIssueCount($owner->getKey(), $repository->getId()),
 			'tags'         => $tags,
+			'watcher'     => Repository::getWatchedCount($owner, $repository),
 		));
 
 	}
