@@ -14,11 +14,11 @@
 	{% if entry.isBlob() %}
 	<td><img src="/assets/txt.png" /><a href="/{{owner.getNickname()}}/{{repository.getName()}}/blob/master/{{current_path}}{{entry.name}}" data-pjax="#main">{{entry.name}}</a></td>
 	<td></td>
-	<td>{% if commits[entry.name]%}{{commits[entry.name].getMessage()}}{% endif%}</td>
+	<td>{{latests[entry.name].getMessage()|truncate(70)}}</td>
 	{% else %}
 	<td><img src="/assets/dir.png" /><a href="/{{owner.getNickname()}}/{{repository.getName()}}/tree/master/{{current_path}}{{entry.name}}" data-pjax="#main">{{entry.name}}</a></td>
 	<td></td>
-	<td></td>
+	<td>{{latests[entry.name].getMessage()|truncate(70)}}</td>
 	{% endif %}
 	</tr>
 	{% endfor %}

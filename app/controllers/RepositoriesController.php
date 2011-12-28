@@ -55,6 +55,26 @@ class RepositoriesController extends GitHQ\Bundle\AbstractController
 			$commit = null;
 			$tree = null;
 		}
+
+		$latest = array();
+		
+		/**
+		 * obtaining each latest commits. it's very hard for me to looking correct history.
+		 * so i choose easy solution at this time.
+		 **/
+		$redis = GitHQ\Bundle\AbstractController::getRedisClient();
+		$cache = $redis->get("scache.{$owner->getKey()}.{$repository->getId()}.{$tree->getId()}");
+		if (true) {
+			foreach($tree->getIterator() as $entry) {
+				$commit_id = trim(`GIT_DIR=/home/git/repositories/{$owner->getKey()}/{$repository->getId()} git log --format=%H -n1 -- {$entry->name}`);
+				$latest[$entry->name] = $repo->getCommit($commit_id);
+			}
+			$redis->set("scache.{$owner->getKey()}.{$repository->getId()}.{$tree->getId()}",serialize($latest));
+			$redis->expire("scache.{$owner->getKey()}.{$repository->getId()}.{$tree->getId()}",86400);
+		} else {
+			$latest = unserialize($cache);
+		}
+		
 		
 		$this->render("repository.htm",array(
 						'user'        => $user,
@@ -65,6 +85,7 @@ class RepositoriesController extends GitHQ\Bundle\AbstractController
 						'tree'        => $tree,
 						'data'        => $data,
 						'watcher'     => Repository::getWatchedCount($owner, $repository),
+						'latests'      => $latest,
 		));
 	}
 	
@@ -321,8 +342,27 @@ class RepositoriesController extends GitHQ\Bundle\AbstractController
 		} else {
 			$tree = $commit->getTree();
 		}
+		
+		$latest = array();
+		
+		/**
+		 * obtaining each latest commits. it's very hard for me to looking correct history.
+		 * so i choose easy solution at this time.
+		 **/
+		$redis = GitHQ\Bundle\AbstractController::getRedisClient();
+		$cache = $redis->get("scache.{$owner->getKey()}.{$repository->getId()}.{$tree->getId()}");
+		if (true) {
+			foreach($tree->getIterator() as $entry) {
+				$commit_id = trim(`GIT_DIR=/home/git/repositories/{$owner->getKey()}/{$repository->getId()} git log --format=%H -n1 -- {$path}/{$entry->name}`);
+				$latest[$entry->name] = $repo->getCommit($commit_id);
+			}
+			$redis->set("scache.{$owner->getKey()}.{$repository->getId()}.{$tree->getId()}",serialize($latest));
+			$redis->expire("scache.{$owner->getKey()}.{$repository->getId()}.{$tree->getId()}",86400);
+		} else {
+			$latest = unserialize($cache);
+		}
+		
 		$parent_dir = dirname($current_path);
-	
 		if (isset($_REQUEST['_pjax'])) {
 			$this->render("_tree.htm",array(
 								'owner'        => $owner,
@@ -333,6 +373,7 @@ class RepositoriesController extends GitHQ\Bundle\AbstractController
 								'current_path' => $current_path,
 								'parent_dir'   => $parent_dir,
 								'watcher'      => Repository::getWatchedCount($owner, $repository),
+								'latests'      => $latest,
 			));
 		} else {
 			$this->render("repository.htm",array(
@@ -344,6 +385,7 @@ class RepositoriesController extends GitHQ\Bundle\AbstractController
 					'current_path' => $current_path,
 					'parent_dir'   => $parent_dir,
 					'watcher'      => Repository::getWatchedCount($owner, $repository),
+					'latests'      => $latest,
 			));
 		}
 	}

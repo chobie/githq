@@ -44,7 +44,7 @@
 		    </div>
 		    {% endif %}
 		    
-		    <div>{{issue.getBodyAsMd()|raw}}</div>
+		    <div>{{issue.getBodyAsMd()|default('no descrpition')|raw}}</div>
 		    </div>
     </div><!-- /span12 -->
     </div><!-- /row -->
