@@ -226,9 +226,9 @@ class RepositoriesController extends GitHQ\Bundle\AbstractController
 			$blob = $this->resolve_filename($tree,$path);
 			$tree = $this->resolve_filename($tree,dirname($path));
 		}
-		
-		header("Content-type: text/plain");
-		echo $blob->data;
+
+		$response = new UIKit\Framework\HTTPFoundation\Response\HTTPResponse($blob->data);
+		return $response;
 	}
 
 	public function onBlob($user, $repository, $refs, $path)
@@ -238,7 +238,8 @@ class RepositoriesController extends GitHQ\Bundle\AbstractController
 		$repository = $owner->getRepository($repository);
 		$repo = new \Git\Repository("/home/git/repositories/{$owner->getKey()}/{$repository->getId()}");
 		$refm = new \Git\Reference\Manager($repo);
-		$branches = $refm->getList();		
+		$branches = $refm->getList();
+		$data = null;		
 		
 		$ref = $repo->lookupRef("refs/heads/{$refs}");
 		$commit = $repo->getCommit($ref->getId());
@@ -469,6 +470,7 @@ class RepositoriesController extends GitHQ\Bundle\AbstractController
 		
 		$repo = new \Git\Repository("/home/git/repositories/{$owner->getKey()}/{$repository->getId()}");
 		$tags = array();
+		$atags = array();
 		$branches = array();
 		foreach($repo->getReferences() as $ref) {
 			if(preg_match("/refs\/tags/",$ref->name)) {
@@ -489,8 +491,6 @@ class RepositoriesController extends GitHQ\Bundle\AbstractController
 		$this->render("tags.htm",array(
 			'owner'        => $owner,
 			'repository'   => $repository,
-			'commit'       => $commit,
-			'tree'         => $tree,
 			'issue_count'  => IssueReferences::getOpenedIssueCount($owner->getKey(), $repository->getId()),
 			'tags'         => $tags,
 			'watcher'     => Repository::getWatchedCount($owner, $repository),

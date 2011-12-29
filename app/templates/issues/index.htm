@@ -12,6 +12,8 @@
 
   {% if user %}
   <p><a href="/{{owner.getNickname()}}/{{repository.getName()}}/issues/new" class="btn primary">create new issue</a></p>
+  <p><a href="/{{owner.getNickname()}}/{{repository.getName()}}/issues/admin" class="btn secondary">admin</a></p>
+
   {% endif %}
  
   <div class="container-fluid">

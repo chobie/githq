@@ -1,9 +1,11 @@
   <div>
   
+  {% if path %}
   <div style="text-align:right">
   <span class="span1 btn secondary"><a href="/{{owner.getNickname()}}/{{repository.getName()}}/blame/master/{{path}}">blame</a></span>
   <span class="span1 btn secondary"><a href="/{{owner.getNickname()}}/{{repository.getName()}}/commits/master/{{path}}">history</a></span>
   </div>
+  {% endif %}
 
   {% if path_parts %}
   <ul class="breadcrumb">

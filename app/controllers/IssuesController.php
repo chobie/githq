@@ -83,7 +83,7 @@ class IssuesController extends GitHQ\Bundle\AbstractController
 			"owner"       => $owner,
 			"repository"  => $repository,
 			'issue_count' => IssueReferences::getOpenedIssueCount($owner->getKey(), $repository->getId()),
-		
+			'watcher'     => Repository::getWatchedCount($owner, $repository),
 		));
 	}
 	
@@ -201,6 +201,32 @@ class IssuesController extends GitHQ\Bundle\AbstractController
 					"issue"      => $issue,
 					"owner"      => $owner,
 					"repository" => $repository,
+		));
+	}
+	
+	public function onAdmin($user, $repository)
+	{
+		$nickname = $user;
+		$repository_name = $repository;
+		$owner = User::get(User::getIdByNickname($user));
+		$repository = $owner->getRepository($repository);
+		$request = $this->get('request');
+		$issue = Issue::get(join(':',array($owner->getKey(),$repository->getId(),$id)));
+		
+		if ($request->isPost()) {
+			$l_user = User::fetchLocked(User::getIdByNickname($nickname));
+			$repository = $l_user->getRepository($repository_name);
+			
+			foreach ($repository->getLabels() as $label) {
+				$label->setName($_REQUEST['name'][$label->getId()]);
+			}
+			$l_user->save();
+		}
+		
+		$this->render("admin.htm",array(
+							"issue"      => $issue,
+							"owner"      => $owner,
+							"repository" => $repository,
 		));
 	}
 }

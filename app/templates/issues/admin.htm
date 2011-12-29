@@ -1,0 +1,24 @@
+{% extends "template.htm" %}
+{% block contents %}
+
+<h1>Settings</h1>
+<form method="POST" action="/{{owner.getNickname()}}/{{repository.getName()}}/issues/admin" class="form-stacked">
+<fieldset>
+<legend>Labels</legend>
+{% for label in repository.getLabels() %}
+<div class="clearfix">
+	<label for="name">name</label>
+	<div class="input">
+		<input type="text" value="{{label.getName()}}" name="name[{{label.getId()}}]" />
+	</div>
+</div>
+<hr />
+{% endfor %}
+
+<div class="actions">
+	<button type="submit" name="update" class="btn primary" />update repository</button>
+</div>
+</fieldset>
+</form>
+
+{% endblock %}

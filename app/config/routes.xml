@@ -11,6 +11,11 @@
     <default key="action">onDefault</default>
   </route>
 
+  <route id="" pattern="/{user}/{repository}/issues/admin">
+    <default key="controller">IssuesController</default>
+    <default key="action">onAdmin</default>
+  </route>
+
   <route id="" pattern="/{user}/{repository}/issues/update">
     <default key="controller">IssuesController</default>
     <default key="action">onUpdate</default>
