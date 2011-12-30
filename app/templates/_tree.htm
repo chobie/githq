@@ -12,7 +12,7 @@
 	{% for entry in tree %}
 	<tr>
 	{% if entry.isSubmodule() %}
-	<td><img src="/assets/submodule.png" /><a href="/{{owner.getNickname()}}/{{repository.getName()}}/tree/master/{{current_path}}{{entry.name}}" data-pjax="#main">{{entry.name}}</a></td>
+	<td><img src="/assets/submodule.png" />{{entry.name}}</td>
 	<td>{{latests[entry.name].getAuthor().time.format('Y-m-d H:i:s')}}</td>
 	<td>{{latests[entry.name].getMessage()|truncate(70)}}</td>
 	{% elseif entry.isTree() %}

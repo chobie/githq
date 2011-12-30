@@ -139,7 +139,7 @@ class IssuesController extends GitHQ\Bundle\AbstractController
 			$issue->addLabelId($label->getId());
 		}
 		
-		if ($request->has("assign")) {
+		if ($request->has("assign") && strlen($request->get("assign"))) {
 			$issue->setAssignee(User::getIdByNickname($request->get("assign")));
 		}
 
