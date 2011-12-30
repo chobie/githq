@@ -477,11 +477,11 @@ class Issue extends \UIKit\Framework\ObjectStore
 			if ($old->getAssigneeId() !== $issue->getAssigneeId()) {
 				$id = $old->getAssigneeId();
 				if($id !== false){
-					$stmt->delete("issue_assignee.{$issue->getOwner()}.{$issue->getRepositoryId()}.{$old->getStatus()}");
+					$stmt->delete("issue_assignee.{$issue->getOwner()}.{$issue->getRepositoryId()}.{$issue->getId()}.{$old->getStatus()}");
 				}
 				$id = $issue->getAssigneeId();
 				if($id !== false){
-					$stmt->set("issue_assignee.{$issue->getOwner()}.{$issue->getRepositoryId()}.{$issue->getStatus()}", $id);
+					$stmt->set("issue_assignee.{$issue->getOwner()}.{$issue->getRepositoryId()}.{$issue->getId()}.{$issue->getStatus()}", $id);
  				}
 			}
 		});		
