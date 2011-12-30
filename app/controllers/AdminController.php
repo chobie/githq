@@ -28,7 +28,7 @@ class AdminController extends GitHQ\Bundle\AbstractController
 	{
 		$request = $this->get('request');
 		if ($request->isPost()){
-			$owner = User::fetchLocked(User::getIdByNickname($nicknmae));
+			$owner = User::fetchLocked(User::getIdByNickname($nickname));
 			$repo = $owner->getRepository($repository);
 			
 			if ($request->has('features')) {
@@ -38,6 +38,10 @@ class AdminController extends GitHQ\Bundle\AbstractController
 					$repo->disableIssue();
 				}
 			}
+			if (strlen($request->get('default_branch'))) {
+				$repo->setDefaultBranch($request->get("default_branch"));
+			}
+
 			$repo->setStatus($request->get('visibility'));			
 			$owner->save();
 			

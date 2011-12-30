@@ -17,7 +17,17 @@ class Repository
 		"pull" => true,
 		"fork" => true,
 	);
+	protected $branch = 'master';
 	
+	public function getDefaultBranch()
+	{
+		return $this->branch;
+	}
+	
+	public function setDefaultBranch($branch)
+	{
+		$this->branch = $branch;
+	}
 	
 	public function watch(User $owner,$watcher)
 	{

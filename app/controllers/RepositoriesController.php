@@ -41,7 +41,7 @@ class RepositoriesController extends GitHQ\Bundle\AbstractController
 			
 		try{
 			$repo = new \Git\Repository("/home/git/repositories/{$owner->getKey()}/{$repository->getId()}");
-			$ref = $repo->lookupRef("refs/heads/master");
+			$ref = $repo->lookupRef("refs/heads/{$repository->getDefaultBranch()}");
 			$commit = $repo->getCommit($ref->getId());
 			$tree = $commit->getTree();
 			$blob = $this->resolve_filename($tree,"README.md");
@@ -77,7 +77,6 @@ class RepositoriesController extends GitHQ\Bundle\AbstractController
 				$latest = unserialize($cache);
 			}
 		}
-		
 		
 		$this->render("repository.htm",array(
 						'user'        => $user,
@@ -192,6 +191,7 @@ class RepositoriesController extends GitHQ\Bundle\AbstractController
 				} else {
 					$this->get('event')->emit(new UIKit\Framework\Event('repository.new',array($user,$repo)));
 				}
+				
 				$_SESSION['user'] = $user;
 				$repo->watch($user,$user);
 			}
