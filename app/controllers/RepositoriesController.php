@@ -518,7 +518,7 @@ class RepositoriesController extends GitHQ\Bundle\AbstractController
 			} else if (preg_match("/refs\/heads/",$ref->name)) {
 				$branches[] = $ref;
 			}
-		}	
+		}
 	
 		$this->render("branches.htm",array(
 				'owner'        => $owner,

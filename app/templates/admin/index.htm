@@ -11,6 +11,13 @@
 	</div>
 </div>
 <div class="clearfix">
+	<label for="name">Description</label>
+	<div class="input">
+		<input type="text" value="{{repository.getDescription()}}" name="description" />
+	</div>
+</div>
+
+<div class="clearfix">
 	<label for="visibility">Visibility</label>
 	<div class="input">
 		<input type="radio" name="visibility" value="0" {% if repository.isPublic() %}checked{% endif %} />Public

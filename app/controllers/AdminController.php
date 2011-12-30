@@ -41,7 +41,8 @@ class AdminController extends GitHQ\Bundle\AbstractController
 			if (strlen($request->get('default_branch'))) {
 				$repo->setDefaultBranch($request->get("default_branch"));
 			}
-
+			$repo->setDescription($request->get("description"));
+				
 			$repo->setStatus($request->get('visibility'));			
 			$owner->save();
 			
