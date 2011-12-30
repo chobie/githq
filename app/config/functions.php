@@ -95,7 +95,7 @@ class Twig_Filter_Sundown extends \Twig_Extension
 function twig_sundown_filter($string)
 {
 	$sundown = new Sundown($string);
-	return $sundonw->to_html();
+	return $sundown->to_html();
 
 }
 

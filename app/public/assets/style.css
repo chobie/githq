@@ -37,28 +37,56 @@ body {
 	*/
 	border-collapse: separate;
 	border-spacing: 0px;
-
+	max-width: 800px;
+	font-size:12px;
+	line-height:1.4;
 }
 
-
+.numbers{
+	font-size:12px;
+	line-height:16px;
+	padding:0;
+	margin:0;
+	white-space: pre;
+	font-family:'Bitstream Vera Sans Mono','Courier',monospace;
+}
+.line{
+	font-size:12px;
+	line-height:16px;
+	padding:0;
+	margin:0;
+	height:16px;
+	white-space: pre;
+	font-family:'Bitstream Vera Sans Mono','Courier',monospace;
+}
+pre {
+	line-height:16px;
+}
 .diff td {
 	background: #ECECEC;
 	text-align:center;
 	color:#AAA;
+	padding:0;
+	margin:0;
 }
 
 .diff .code{
 	background: #FFF;
 	text-align:left;
 	color:#000;
-	width:1024px;
 	overflow:auto
+}
+.diff tr{
+	line-height:16px;
+	height: 16px;
+	padding:0;
+	margin:0;
 }
 
 .diff div{
 	white-space:pre;
 }
-code {
+.code {
 	font-family:'Bitstream Vera Sans Mono','Courier',monospace;
 	white-space:pre;
 }

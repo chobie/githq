@@ -1,6 +1,37 @@
 <?php
 use UIKit\Framework\HTTPFoundation\Response\RedirectResponse;
 
+class PusedoCommit
+{
+	protected $message;
+	protected $author;
+	protected $committer;
+	
+	public function getAuthor()
+	{
+		return $this->author;
+	}
+	
+	public function getCommitter()
+	{
+		return $this->committer;
+	}
+	
+	public function getMessage()
+	{
+		return $this->message;
+	}
+
+	public function __construct($commit)
+	{
+		if($commit instanceof \Git\Commit){
+			$this->message = $commit->getMessage();
+			$this->author = $commit->getAuthor();
+			$this->committer = $commit->getCommitter();
+		}
+	}
+}
+
 class RepositoriesController extends GitHQ\Bundle\AbstractController
 {
 	public function onTop($user, $repository)
@@ -39,6 +70,7 @@ class RepositoriesController extends GitHQ\Bundle\AbstractController
 			return $this->render("403.htm",array());
 		}
 			
+		
 		try{
 			$repo = new \Git\Repository("/home/git/repositories/{$owner->getKey()}/{$repository->getId()}");
 			$ref = $repo->lookupRef("refs/heads/{$repository->getDefaultBranch()}");
@@ -65,14 +97,14 @@ class RepositoriesController extends GitHQ\Bundle\AbstractController
 			 * so i choose easy solution at this time.
 			 **/
 			$redis = GitHQ\Bundle\AbstractController::getRedisClient();
-			$cache = $redis->get("scache.{$owner->getKey()}.{$repository->getId()}.{$tree->getId()}");
-			if (true) {
+			$cache = $redis->get("ccache.{$owner->getKey()}.{$repository->getId()}.{$tree->getId()}");
+			if (!$cache) {
 				foreach($tree->getIterator() as $entry) {
 					$commit_id = trim(`GIT_DIR=/home/git/repositories/{$owner->getKey()}/{$repository->getId()} git log --format=%H -n1 -- {$entry->name}`);
-					$latest[$entry->name] = $repo->getCommit($commit_id);
+					$latest[$entry->name] = new PusedoCommit($repo->getCommit($commit_id));
 				}
-				$redis->set("scache.{$owner->getKey()}.{$repository->getId()}.{$tree->getId()}",serialize($latest));
-				$redis->expire("scache.{$owner->getKey()}.{$repository->getId()}.{$tree->getId()}",86400);
+				$redis->set("ccache.{$owner->getKey()}.{$repository->getId()}.{$tree->getId()}",serialize($latest));
+				$redis->expire("ccache.{$owner->getKey()}.{$repository->getId()}.{$tree->getId()}",86400);
 			} else {
 				$latest = unserialize($cache);
 			}
@@ -126,26 +158,33 @@ class RepositoriesController extends GitHQ\Bundle\AbstractController
 		$struct = Git_Util::CommitLog($owner,$repository,$commit);
 		
 		$repo = new \Git\Repository("/home/git/repositories/{$owner->getKey()}/{$repository->getId()}");
-		$ref = $repo->lookupRef("refs/heads/master");
+		$ref = $repo->lookupRef("refs/heads/{$repository->getDefaultBranch()}");
 		$commit = $repo->getCommit($commit);
+		
+		$message = $commit->getMessage();
+		$lines = explode("\n",$message);
+		$first = array_shift($lines);
+		$message = join("\n",$lines);
 	
 		$this->render("commit.htm",array(
 						'owner'      => $owner,
 						'repository' => $repository,
 						"commit"     => $commit,
 						"diff"       => $struct,
+						"first"      => $first,
+						"message"    => $message,
 						'watcher'     => Repository::getWatchedCount($owner, $repository),
 		));
 	}
 	
-	public function onCommits($user, $repository)
+	public function onCommits($user, $repository, $refs)
 	{
 		$owner = User::getByNickname($user);
 		$repository = $owner->getRepository($repository);
 	
 		$repo = new \Git\Repository("/home/git/repositories/{$owner->getKey()}/{$repository->getId()}");
 		try {
-			$ref = $repo->lookupRef("refs/heads/master");
+			$ref = $repo->lookupRef("refs/heads/{$refs}");
 			$commit = $repo->getCommit($ref->getId());
 			$walker = $repo->getWalker();
 			$walker->push($commit->getId());
@@ -273,10 +312,28 @@ class RepositoriesController extends GitHQ\Bundle\AbstractController
 				$data = $sd->to_html();
 				break;
 			default:
+				if ($ext == "htm"){
+					$ext = "html+jinja";
+				}
 				$data = Albino::colorize($blob->data,$ext);
+				if ($data){
+					$data = preg_replace("|</div>|","",preg_replace("|<div class=\"highlight\">|","",preg_replace("|</?pre>|m","",$data)));
+					$lines = explode("\n",$data);
+					foreach ($lines as $o => $line) {
+						$lines[$o] = "<div class=\"line\">" . $line . "</div>";
+					}
+					$data = "<div class=\"highlight\"><pre>" . join("",$lines) . "</pre></div>";
+				}
+				break;
 		}
+		
 		if (!$data) {
-			$data = "<pre>" . htmlspecialchars($blob->data) . "</pre>";
+			$data = htmlspecialchars($blob->data);
+			$lines = explode("\n",$data);
+			foreach ($lines as $o => $line) {
+				$lines[$o] = "<div class=\"line\">" . $line . "</div>";
+			}
+			$data = "<pre>" . join("",$lines) . "</pre>";
 		}
 	
 		$keys = explode("/",$path);
@@ -302,6 +359,7 @@ class RepositoriesController extends GitHQ\Bundle\AbstractController
 							'path_parts'   => $path_parts,
 							'refs'         => $refs,
 							'img'          => $img,
+							'lines'        => $lines,
 			));
 	
 		} else {
@@ -318,6 +376,7 @@ class RepositoriesController extends GitHQ\Bundle\AbstractController
 				'path_parts'   => $path_parts,
 				'refs'         => $refs,
 				'img'          => $img,
+				'lines'        => $lines,
 			));
 		}
 	}
@@ -330,6 +389,7 @@ class RepositoriesController extends GitHQ\Bundle\AbstractController
 			return false;
 		}
 		
+	
 		$repo = new \Git\Repository("/home/git/repositories/{$owner->getKey()}/{$repository->getId()}");
 		$ref = $repo->lookupRef("refs/heads/{$refs}");
 		$commit = $repo->getCommit($ref->getId());
@@ -354,14 +414,16 @@ class RepositoriesController extends GitHQ\Bundle\AbstractController
 		 * so i choose easy solution at this time.
 		 **/
 		$redis = GitHQ\Bundle\AbstractController::getRedisClient();
-		$cache = $redis->get("scache.{$owner->getKey()}.{$repository->getId()}.{$tree->getId()}");
-		if (true) {
+		$cache = $redis->get("ccache.{$owner->getKey()}.{$repository->getId()}.{$tree->getId()}");
+		if (!$cache) {
 			foreach($tree->getIterator() as $entry) {
-				$commit_id = trim(`GIT_DIR=/home/git/repositories/{$owner->getKey()}/{$repository->getId()} git log --format=%H -n1 -- {$path}/{$entry->name}`);
-				$latest[$entry->name] = $repo->getCommit($commit_id);
+				$p = ltrim("{$path}/{$entry->name}","/");
+				$commit_id = trim(`GIT_DIR=/home/git/repositories/{$owner->getKey()}/{$repository->getId()} git log --format=%H -n1 -- {$p}`);
+				error_log($commit_id);
+				$latest[$entry->name] = new PusedoCommit($repo->getCommit($commit_id));
 			}
-			$redis->set("scache.{$owner->getKey()}.{$repository->getId()}.{$tree->getId()}",serialize($latest));
-			$redis->expire("scache.{$owner->getKey()}.{$repository->getId()}.{$tree->getId()}",86400);
+			$redis->set("ccache.{$owner->getKey()}.{$repository->getId()}.{$tree->getId()}",serialize($latest));
+			$redis->expire("ccache.{$owner->getKey()}.{$repository->getId()}.{$tree->getId()}",86400);
 		} else {
 			$latest = unserialize($cache);
 		}

@@ -1,20 +1,14 @@
 {% extends "template.htm" %}
 {% block contents %}
 
-  <ul class="tabs">
-    <li><a href="/{{owner.getNickname()}}/{{repository.getName}}">Files</a></li>
-    <li><a href="/{{owner.getNickname()}}/{{repository.getName()}}/commits/master">Commits</a></li>
-    <li><a href="#">Branches</a></li>
-    <li><a href="/{{owner.getNickname()}}/{{repository.getName()}}/tags">Tags</a></li>
-    <li class="active"><a href="/{{owner.getNickname()}}/{{repository.getName()}}/issues">Issues ({{issue_count}})</a></li>
-  </ul>
+  {% include "_tab.htm" %}
 
 
   <div class="row">
     <div class="span13">
 	  <div class="row">
     	<div class="span1">
-      	<img src="{{user.getImageUrl()}}" height="40"/>
+      	<img src="{{issue.getAuthor().getImageUrl()}}" height="40"/>
     	</div>
     	<div class="span12">
 	    	<div class="issue_container">

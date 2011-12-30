@@ -47,7 +47,7 @@ class OrganizationsController extends GitHQ\Bundle\AbstractController
 				if ($request->get('visibility') == 1) {
 					$repo->setPrivate();
 				} else {
-					$this->get('event')->emit(new UIKit\Framework\Event('repository.new',array($repo,$user)));						
+					$this->get('event')->emit(new UIKit\Framework\Event('repository.new',array($user,$repo)));						
 				}
 			}
 			$user->save();
@@ -55,7 +55,7 @@ class OrganizationsController extends GitHQ\Bundle\AbstractController
 			return new RedirectResponse($this->get('application.url'));
 		} else {
 			$this->render("new.htm",array(
-						'organization' => $params['organization']
+						'organization' => $organization
 			));
 		}
 	}

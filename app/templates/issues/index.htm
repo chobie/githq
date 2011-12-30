@@ -5,8 +5,10 @@
 
 
   {% if user %}
-  <p><a href="/{{owner.getNickname()}}/{{repository.getName()}}/issues/new" class="btn primary">create new issue</a></p>
-  <p><a href="/{{owner.getNickname()}}/{{repository.getName()}}/issues/admin" class="btn secondary">admin</a></p>
+  <div class="row">
+	  <p class="span3"><a href="/{{owner.getNickname()}}/{{repository.getName()}}/issues/new" class="btn primary">create new issue</a></p>
+	  <p class="span3"><a href="/{{owner.getNickname()}}/{{repository.getName()}}/issues/admin" class="btn secondary">admin</a></p>
+  </div>
 
   {% endif %}
  

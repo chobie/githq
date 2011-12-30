@@ -1,8 +1,11 @@
 {% extends "template.htm" %}
 {% block contents %}
 
-	<div style="background-color:#E6F1F6;width:1024px;-moz-border-radius:5px;-webkit-border-radius:5px;border:1px solid #C5D5DD;">
-		<div><h2>{{commit.getMessage()}}</h2></div>
+	<div style="background-color:#E6F1F6;-moz-border-radius:5px;-webkit-border-radius:5px;border:1px solid #C5D5DD;width:915px;">
+		<div>
+			<h2>{{first}}</h2>
+			<p>{{message|sundown|raw}}</p>	
+		</div>
 		<div style="background-color:#FFFFFF;">{{commit.getAuthor().name}} {{commit.getAuthor().time.format('Y-m-d H:i:s')}}</div>
 	</div>
 	
@@ -13,26 +16,26 @@
 
 	{% if diff %}
 	{% for file in diff.getFiles() %}
-	
-	<table style="max-width:1024px;min-width:1024px;" class="diff">
+	<div style="width:915px;overflow:auto">
+	<table class="diff">
 		<tr>
 		<th style="text-align:left" colspan="3">{{file.getName()}}</th>
 		</tr>
 		{% for hunk in file.getHunks() %}
 		<tr>
-		<td>...</td>
-		<td>...</td>
+		<td style="min-width:3em;">...</td>
+		<td style="min-width:3em;">...</td>
 		<td>
 		<div style="background:#CCC;text-align:left;">{{hunk.getSummary()}}</div>
 		</td>
 		</tr>
 
 		{% set lines = hunk.getLines() %}
-		{%for line in lines %}
+		{% for line in lines %}
 		<tr>
 		<td>{{line.getOldNumber()}}</td>
 		<td>{{line.getNewNumber()}}</td>
-		<td class="code" style="{% if line.isRemoved()%}background-color:#FFDDDD{% elseif line.isAdded()%}background-color:#D7FFDF{% endif %}">
+		<td class="code" style="{% if line.isRemoved()%}background-color:#FFDDDD{% elseif line.isAdded()%}background-color:#D7FFDF{% else %}background-color:#F8F8FF{% endif %}">
 		<div style="white-space:pre;font-family:'Bitstream Vera Sans Mono','Courier',monospace;">{% spaceless %}
 		
 			{%if line.isRemoved() %}
@@ -57,7 +60,7 @@
 					<span>{{line.getLine()}}</span>
 			  	{% endif %}
 			  {% else %}
-					</span>{{line.getLine()}}</span>
+					<span>{{line.getLine()}}</span>
 			  {% endif %}
 			{% else %}
 			<span>{{line.getLine()}}</span>
@@ -70,8 +73,18 @@
 		{% endfor %}
 		
 	</table>
+	</div>
 	{% endfor %}
 	{% endif %}
 	
-	<div>0 notes on Commit {{commit.getId()}}</div>
+	<div>n notes on Commit {{commit.getId()}}</div>
+	
+	<form method="POST" action="/{{owner.getNickname()}}/{{repository.getName()}}/commit/{{commit.getId()}}" class="form-stacked">
+	<fieldset>
+		<textarea name="comment" class="span10"></textarea>
+		<div class="actions">
+			<button type="submit" class="btn primary">add comment</button>
+		</div>
+	</fieldset>
+	</form>
 {% endblock %}

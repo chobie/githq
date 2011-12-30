@@ -5,7 +5,8 @@
   <div>{{repository.getDescription()}}</div>
 
   {% if user %}
-  <div><span class="btn secondary">ssh</span><input type="text" value="git@githq.org:{{owner.getNickname()}}/{{repository.getName()}}.git" style="width:20em;"/></div>
+  <div><span class="btn secondary
+  ">ssh</span><input type="text" value="git@githq.org:{{owner.getNickname()}}/{{repository.getName()}}.git" style="width:20em;"/></div>
   {% endif %}
   
   {% if commit %}

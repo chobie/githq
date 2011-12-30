@@ -18,7 +18,17 @@
   
   {% if img %}
   <div><img src="/{{owner.getNickname()}}/{{repository.getName()}}/raw/{{refs}}/{{path}}"></div>
+  {% elseif lines %}
+  <div class="highlight" style="white-space:nowrap;font-family:'Bitstream Vera Sans Mono','Courier',monospace;overflow:auto;">
+  <table class="lines">
+  <td>
+  <pre>{% for line in lines %}<span class="numbers">{{loop.index}}</span>
+{% endfor %}</pre>
+  </td>
+  <td>{{data|raw}}</td>
+  </table>
+  </div>
   {% elseif data %}
-  <div class="highlight" style="white-space:nowrap;font-family:'Bitstream Vera Sans Mono','Courier',monospace;">{{data|raw}}</div>
+  <div>{{data|raw}}</div>
   {% endif %}
   </div>

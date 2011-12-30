@@ -1,6 +1,6 @@
   <ul class="tabs">
     <li class="active"><a href="/{{owner.getNickname()}}/{{repository.getName()}}">Files</a></li>
-    <li><a href="/{{owner.getNickname()}}/{{repository.getName()}}/commits/master">Commits</a></li>
+    <li><a href="/{{owner.getNickname()}}/{{repository.getName()}}/commits/{{refs|default(repository.getDefaultBranch())}}">Commits</a></li>
     <li><a href="/{{owner.getNickname()}}/{{repository.getName()}}/branches">Branches</a></li>
     <li><a href="/{{owner.getNickname()}}/{{repository.getName()}}/tags">Tags</a></li>
     {% if repository.isIssueEnabled() %}
