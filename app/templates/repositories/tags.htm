@@ -4,11 +4,15 @@
   {% include "_tab.htm" %}
 
 <div>
+{% if tags %}
 {% for tag in tags %}
 <div>
 <a href="/{{owner.getNickname()}}/{{repository.getName()}}/zipball/{{tag.name}}">{{tag.name}}.zip</a><br />
 * <a href="/{{owner.getNickname()}}/{{repository.getName()}}/commit/{{tag.oid}}">{{tag.oid}}</a>
 </div>
 {% endfor %}
+{% else %}
+there are no tags.
+{% endif %}
 </div>
 {% endblock %}

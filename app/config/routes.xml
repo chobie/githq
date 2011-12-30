@@ -136,9 +136,23 @@
 <!--  /repository admin -->
 
 <!--  repository -->
+  <route id="" pattern="/repositories/">
+    <default key="controller">RepositoriesController</default>
+    <default key="action">onDefault</default>
+  </route>
+
+  <route id="" pattern="/repositories/new">
+    <default key="controller">RepositoriesController</default>
+    <default key="action">onNew</default>
+  </route>
+
   <route id="" pattern="/{user}/{repository}/tags">
     <default key="controller">RepositoriesController</default>
     <default key="action">onTags</default>
+  </route>
+  <route id="" pattern="/{user}/{repository}/branches">
+    <default key="controller">RepositoriesController</default>
+    <default key="action">onBranches</default>
   </route>
   <route id="" pattern="/{user}/{repository}/commits/{refs}/{path,greed}">
     <default key="controller">RepositoriesController</default>
@@ -180,8 +194,7 @@
   <route id="" pattern="/{user}/{repository}">
     <default key="controller">RepositoriesController</default>
     <default key="action">onTop</default>
-  </route>
-
+  </route>  
 <!-- /repository -->
 
 <!--  upload-pack -->

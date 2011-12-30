@@ -58,21 +58,24 @@ class RepositoriesController extends GitHQ\Bundle\AbstractController
 
 		$latest = array();
 		
-		/**
-		 * obtaining each latest commits. it's very hard for me to looking correct history.
-		 * so i choose easy solution at this time.
-		 **/
-		$redis = GitHQ\Bundle\AbstractController::getRedisClient();
-		$cache = $redis->get("scache.{$owner->getKey()}.{$repository->getId()}.{$tree->getId()}");
-		if (true) {
-			foreach($tree->getIterator() as $entry) {
-				$commit_id = trim(`GIT_DIR=/home/git/repositories/{$owner->getKey()}/{$repository->getId()} git log --format=%H -n1 -- {$entry->name}`);
-				$latest[$entry->name] = $repo->getCommit($commit_id);
+		
+		if ($tree){
+			/**
+			 * obtaining each latest commits. it's very hard for me to looking correct history.
+			 * so i choose easy solution at this time.
+			 **/
+			$redis = GitHQ\Bundle\AbstractController::getRedisClient();
+			$cache = $redis->get("scache.{$owner->getKey()}.{$repository->getId()}.{$tree->getId()}");
+			if (true) {
+				foreach($tree->getIterator() as $entry) {
+					$commit_id = trim(`GIT_DIR=/home/git/repositories/{$owner->getKey()}/{$repository->getId()} git log --format=%H -n1 -- {$entry->name}`);
+					$latest[$entry->name] = $repo->getCommit($commit_id);
+				}
+				$redis->set("scache.{$owner->getKey()}.{$repository->getId()}.{$tree->getId()}",serialize($latest));
+				$redis->expire("scache.{$owner->getKey()}.{$repository->getId()}.{$tree->getId()}",86400);
+			} else {
+				$latest = unserialize($cache);
 			}
-			$redis->set("scache.{$owner->getKey()}.{$repository->getId()}.{$tree->getId()}",serialize($latest));
-			$redis->expire("scache.{$owner->getKey()}.{$repository->getId()}.{$tree->getId()}",86400);
-		} else {
-			$latest = unserialize($cache);
 		}
 		
 		
@@ -498,6 +501,36 @@ class RepositoriesController extends GitHQ\Bundle\AbstractController
 
 	}
 
+	public function onBranches($user, $repository)
+	{
+		$owner = User::getByNickname($user);
+		$repository = $owner->getRepository($repository);
+	
+		$repo = new \Git\Repository("/home/git/repositories/{$owner->getKey()}/{$repository->getId()}");
+		$tags = array();
+		$atags = array();
+		$branches = array();
+		foreach($repo->getReferences() as $ref) {
+			if(preg_match("/refs\/tags/",$ref->name)) {
+				$ref->name = basename($ref->name);
+				$ctags[$ref->name] = $ref;
+				$atags[] = $ref->name;
+			} else if (preg_match("/refs\/heads/",$ref->name)) {
+				$branches[] = $ref;
+			}
+		}	
+	
+		$this->render("branches.htm",array(
+				'owner'        => $owner,
+				'repository'   => $repository,
+				'issue_count'  => IssueReferences::getOpenedIssueCount($owner->getKey(), $repository->getId()),
+				'branches'         => $branches,
+				'watcher'     => Repository::getWatchedCount($owner, $repository),
+		));
+	
+	}
+	
+	
 	public function onZipBall($user, $repository, $zipball, $tag)
 	{
 		ini_set("max_memory","128M");

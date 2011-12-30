@@ -1,0 +1,17 @@
+{% extends "template.htm" %}
+{% block contents %}
+
+  {% include "_tab.htm" %}
+
+<div>
+{% if branches %}
+{% for branch in branches %}
+<div>
+* <a href="/{{owner.getNickname()}}/{{repository.getName()}}/">{{branche.name}}</a>
+</div>
+{% endfor %}
+{% else %}
+there are no tags.
+{% endif %}
+</div>
+{% endblock %}
