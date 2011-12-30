@@ -20,6 +20,31 @@ class Issue extends \UIKit\Framework\ObjectStore
 	protected $labels = array();
 	protected $milestone;
 	protected $ref = array();
+	protected $assigned;
+	
+	public function getAssigneeId()
+	{
+		return $this->assigned;
+	}
+	
+	public function getAssignee()
+	{
+		return User::get($this->assigned);
+	}
+	
+	public function setAssignee($user_id)
+	{
+		$this->assigned = $user_id;
+	}
+	
+	public function isAssigned()
+	{
+		if (!empty($this->assigned)) {
+			return true;
+		} else {
+			return false;
+		}
+	}
 	
 	/**
 	 * get current issue key
@@ -449,6 +474,16 @@ class Issue extends \UIKit\Framework\ObjectStore
 				}
 			}
 
+			if ($old->getAssigneeId() !== $issue->getAssigneeId()) {
+				$id = $old->getAssigneeId();
+				if($id !== false){
+					$stmt->delete("issue_assignee.{$issue->getOwner()}.{$issue->getRepositoryId()}.{$old->getStatus()}");
+				}
+				$id = $issue->getAssigneeId();
+				if($id !== false){
+					$stmt->set("issue_assignee.{$issue->getOwner()}.{$issue->getRepositoryId()}.{$issue->getStatus()}", $id);
+ 				}
+			}
 		});		
 	}
 }

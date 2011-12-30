@@ -138,6 +138,10 @@ class IssuesController extends GitHQ\Bundle\AbstractController
 			}
 			$issue->addLabelId($label->getId());
 		}
+		
+		if ($request->has("assign")) {
+			$issue->setAssignee(User::getIdByNickname($request->get("assign")));
+		}
 
 		if($issue->save()) {
 			$this->get('event')->emit(new UIKit\Framework\Event('issue.comment.add',array($issue,$user,$owner,$repository)));

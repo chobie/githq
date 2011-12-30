@@ -13,15 +13,15 @@
 	<tr>
 	{% if entry.isSubmodule() %}
 	<td><img src="/assets/submodule.png" /><a href="/{{owner.getNickname()}}/{{repository.getName()}}/tree/master/{{current_path}}{{entry.name}}" data-pjax="#main">{{entry.name}}</a></td>
-	<td></td>
+	<td>{{latests[entry.name].getAuthor().time.format('Y-m-d H:i:s')}}</td>
 	<td>{{latests[entry.name].getMessage()|truncate(70)}}</td>
 	{% elseif entry.isTree() %}
 	<td><img src="/assets/dir.png" /><a href="/{{owner.getNickname()}}/{{repository.getName()}}/tree/master/{{current_path}}{{entry.name}}" data-pjax="#main">{{entry.name}}</a></td>
-	<td></td>
+	<td>{{latests[entry.name].getAuthor().time.format('Y-m-d H:i:s')}}</td>
 	<td>{{latests[entry.name].getMessage()|truncate(70)}}</td>
 	{% elseif entry.isBlob() %}
 	<td><img src="/assets/txt.png" /><a href="/{{owner.getNickname()}}/{{repository.getName()}}/blob/master/{{current_path}}{{entry.name}}" data-pjax="#main">{{entry.name}}</a></td>
-	<td></td>
+	<td>{{latests[entry.name].getAuthor().time.format('Y-m-d H:i:s')}}</td>
 	<td>{{latests[entry.name].getMessage()|truncate(70)}}</td>
 	{% endif %}
 	</tr>
