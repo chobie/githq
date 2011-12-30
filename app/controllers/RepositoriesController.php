@@ -281,7 +281,8 @@ class RepositoriesController extends GitHQ\Bundle\AbstractController
 		$stack = array();
 		foreach($keys as $key) {
 			$stack[] = $key;
-			$path_parts[$key] = join("/",$stack);
+			$p = join("/",$stack);
+			$path_parts[$key] = $p;
 		}
 	
 		if (isset($_REQUEST['_pjax'])) {
@@ -296,7 +297,7 @@ class RepositoriesController extends GitHQ\Bundle\AbstractController
 							'current_path' => dirname($path) . '/',
 							'path'         => $path,
 							'path_parts'   => $path_parts,
-							'refs'         => $path,
+							'refs'         => $refs,
 							'img'          => $img,
 			));
 	
@@ -327,7 +328,6 @@ class RepositoriesController extends GitHQ\Bundle\AbstractController
 		}
 		
 		$repo = new \Git\Repository("/home/git/repositories/{$owner->getKey()}/{$repository->getId()}");
-	
 		$ref = $repo->lookupRef("refs/heads/{$refs}");
 		$commit = $repo->getCommit($ref->getId());
 		$current_path = '';
