@@ -25,7 +25,14 @@
   	{% for label in repository.getLabels() %}
 	  <a href="/{{owner.getNickname()}}/{{repository.getName()}}/issues?label={{label.getName()}}" class="label">{{label.getName()}}</a>
   	{% endfor %}
+
+  	<h3>Stats</h3>
+  	<p>Everyone's issues</p>
+  	<p>Assigned to you</p>
+  	<p>Mentioning you</p>
   	</div>
+  	
+  	
   </div><!--  /sidebar -->
   
 

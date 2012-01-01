@@ -67,6 +67,7 @@ pre {
 	text-align:center;
 	color:#AAA;
 	padding:0;
+	height: 16px !important;
 	margin:0;
 }
 
@@ -78,7 +79,7 @@ pre {
 }
 .diff tr{
 	line-height:16px;
-	height: 16px;
+	height: 16px !important;
 	padding:0;
 	margin:0;
 }

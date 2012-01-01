@@ -79,6 +79,7 @@
 	
 	<div>n notes on Commit {{commit.getId()}}</div>
 	
+	{% if user %}
 	<form method="POST" action="/{{owner.getNickname()}}/{{repository.getName()}}/commit/{{commit.getId()}}" class="form-stacked">
 	<fieldset>
 		<textarea name="comment" class="span10"></textarea>
@@ -87,4 +88,5 @@
 		</div>
 	</fieldset>
 	</form>
+	{% endif %}
 {% endblock %}

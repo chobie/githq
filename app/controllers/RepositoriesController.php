@@ -137,7 +137,9 @@ class RepositoriesController extends GitHQ\Bundle\AbstractController
 		$owner      = User::getByNickname($user);
 		$repository = $owner->getRepository($repository);
 		$user = $this->getUser();
-		$repository->watch($owner,$user);
+		if ($user) {
+			$repository->watch($owner,$user);
+		}
 		
 		return new RedirectResponse($this->get('application.url') . "/{$owner->getNickname()}/{$repository->getName()}");
 	}
