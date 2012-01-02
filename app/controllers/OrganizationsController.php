@@ -49,6 +49,7 @@ class OrganizationsController extends GitHQ\Bundle\AbstractController
 				} else {
 					$this->get('event')->emit(new UIKit\Framework\Event('repository.new',array($user,$repo)));						
 				}
+				$repo->watch($user,$user);
 			}
 			$user->save();
 			

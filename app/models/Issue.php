@@ -477,13 +477,26 @@ class Issue extends \UIKit\Framework\ObjectStore
 			if ($old->getAssigneeId() !== $issue->getAssigneeId()) {
 				$id = $old->getAssigneeId();
 				if($id !== false){
-					$stmt->delete("issue_assignee.{$issue->getOwner()}.{$issue->getRepositoryId()}.{$issue->getId()}.{$old->getStatus()}");
+					$stmt->zDelete("issue_assigned.{$issue->getOwner()}.{$issue->getRepositoryId()}.{$id}.{$old->getStatus()}",$issue->getId());
 				}
 				$id = $issue->getAssigneeId();
 				if($id !== false){
-					$stmt->set("issue_assignee.{$issue->getOwner()}.{$issue->getRepositoryId()}.{$issue->getId()}.{$issue->getStatus()}", $id);
+					$stmt->zAdd("issue_assigned.{$issue->getOwner()}.{$issue->getRepositoryId()}.{$id}.{$issue->getStatus()}", $issue->getRegisteredAtAsTimestamp(), $issue->getId());
  				}
 			}
 		});		
 	}
+	
+	public function vote(User $user)
+	{
+		$redis = GitHQ\Bundle\AbstractController::getRedisClient();
+		$redis->sadd("issue_votes.{$this->getOwner()}.{$this->getRepositoryId()}.{$this->getId()}",$user->getKey());
+	}
+	
+	public function unvote(User $user)
+	{
+		$redis = GitHQ\Bundle\AbstractController::getRedisClient();
+		$redis->srem("issue_votes.{$this->getOwner()}.{$this->getRepositoryId()}.{$this->getId()}",$user->getKey());
+	}
+	
 }

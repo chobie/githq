@@ -54,7 +54,8 @@ class RepositoriesController extends GitHQ\Bundle\AbstractController
 				if ($repo = $origin->fork($owner, $user)) {
 					$user->addRepository($repo);
 					$user->save();
-		
+					$repo->watch($user,$user);
+					
 					$_SESSION['user'] = $user;
 				}
 				return $this->render("fork.htm");
@@ -119,7 +120,8 @@ class RepositoriesController extends GitHQ\Bundle\AbstractController
 						'tree'        => $tree,
 						'data'        => $data,
 						'watcher'     => Repository::getWatchedCount($owner, $repository),
-						'latests'      => $latest,
+						'latests'     => $latest,
+						'tab'         => 'file',
 		));
 	}
 	
@@ -205,6 +207,7 @@ class RepositoriesController extends GitHQ\Bundle\AbstractController
 				"commits"     => $commits,
 				'issue_count' => IssueReferences::getOpenedIssueCount($owner->getKey(), $repository->getId()),
 				'watcher'     => Repository::getWatchedCount($owner, $repository),
+				'tab'         => 'commit',
 		));
 	}
 	
@@ -233,8 +236,8 @@ class RepositoriesController extends GitHQ\Bundle\AbstractController
 					$this->get('event')->emit(new UIKit\Framework\Event('repository.new',array($user,$repo)));
 				}
 				
-				$_SESSION['user'] = $user;
 				$repo->watch($user,$user);
+				$_SESSION['user'] = $user;
 			}
 			$user->save();
 			
@@ -362,6 +365,7 @@ class RepositoriesController extends GitHQ\Bundle\AbstractController
 							'refs'         => $refs,
 							'img'          => $img,
 							'lines'        => $lines,
+							'tab'          => 'file',
 			));
 	
 		} else {
@@ -379,6 +383,7 @@ class RepositoriesController extends GitHQ\Bundle\AbstractController
 				'refs'         => $refs,
 				'img'          => $img,
 				'lines'        => $lines,
+				'tab'          => 'file',
 			));
 		}
 	}
@@ -442,6 +447,7 @@ class RepositoriesController extends GitHQ\Bundle\AbstractController
 								'parent_dir'   => $parent_dir,
 								'watcher'      => Repository::getWatchedCount($owner, $repository),
 								'latests'      => $latest,
+								'tab'          => 'file',
 			));
 		} else {
 			$this->render("repository.htm",array(
@@ -454,6 +460,7 @@ class RepositoriesController extends GitHQ\Bundle\AbstractController
 					'parent_dir'   => $parent_dir,
 					'watcher'      => Repository::getWatchedCount($owner, $repository),
 					'latests'      => $latest,
+					'tab'          => 'file',
 			));
 		}
 	}
@@ -521,7 +528,8 @@ class RepositoriesController extends GitHQ\Bundle\AbstractController
 		$this->render("commits.htm",array(
 			'owner'      => $owner,
 			'repository' => $repository,
-			"commits"    => $commits
+			"commits"    => $commits,
+			'tab'        => 'file',
 		));
 	}
 	
@@ -560,7 +568,8 @@ class RepositoriesController extends GitHQ\Bundle\AbstractController
 			'repository'   => $repository,
 			'issue_count'  => IssueReferences::getOpenedIssueCount($owner->getKey(), $repository->getId()),
 			'tags'         => $tags,
-			'watcher'     => Repository::getWatchedCount($owner, $repository),
+			'watcher'      => Repository::getWatchedCount($owner, $repository),
+			'tab'          => 'tag',
 		));
 
 	}
@@ -590,6 +599,7 @@ class RepositoriesController extends GitHQ\Bundle\AbstractController
 				'issue_count'  => IssueReferences::getOpenedIssueCount($owner->getKey(), $repository->getId()),
 				'branches'         => $branches,
 				'watcher'     => Repository::getWatchedCount($owner, $repository),
+				'tab'          => 'branch',
 		));
 	
 	}

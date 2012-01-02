@@ -7,11 +7,11 @@
 	    <input type="hidden" name="repository_name" value="{{repository.getName()}}" />
 
     	<div class="issue_container">
-	    <div><input type="text" value="{{issue.getTitle()}}" name="title" /></div>
+	    <div><input type="text" value="{{issue.getTitle()}}" name="title" class="span10"/></div>
 	    <div>Milestone<input type="text" value="{{issue.getMilestone()}}" name="milestone" /></div>
 	    	    
 	    <div><textarea name="contents" style="width:800px;height:20em;">{{issue.getBody()}}</textarea></div>
-	    <input type="submit" value="update issue" name="update" />
+	    <input type="submit" value="update issue" name="update" class="btn primary"/>
 	    </form>
 	    </div>
   </div>

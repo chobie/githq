@@ -15,6 +15,18 @@
 <hr />
 {% endfor %}
 
+
+<legend>Milestones</legend>
+{% for milestone in repository.getMilestones() %}
+<div class="clearfix">
+	<label for="name">name</label>
+	<div class="input">
+		<input type="text" value="{{milestone.getName()}}" name="mname[{{milestone.getId()}}]" />
+	</div>
+</div>
+<hr />
+{% endfor %}
+
 <div class="actions">
 	<button type="submit" name="update" class="btn primary" />update repository</button>
 </div>

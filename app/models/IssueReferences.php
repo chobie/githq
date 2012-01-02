@@ -13,6 +13,12 @@ class IssueReferences
 		return $redis->lpush("issue_list.{$owner}.{$repository}",$id);		
 	}
 	
+	public static function getListWithAssigned($user,$owner,$repository,$status,$start="+inf",$end="-inf")
+	{
+		$redis = GitHQ\Bundle\AbstractController::getRedisClient();
+		return $redis->zRevRangeByScore("issue_assigned.{$owner}.{$repository}.{$user}.{$status}",$start,$end);
+	}
+	
 	public static function getListWithMilestone($milestone,$owner,$repository,$status,$start="+inf",$end="-inf")
 	{
 		$redis = GitHQ\Bundle\AbstractController::getRedisClient();
@@ -31,6 +37,12 @@ class IssueReferences
 		return $redis->zRevRangeByScore("issue_list.{$owner}.{$repository}.{$status}",$start,$end);
 	}
 	
+	public static function getAssignedToYouCount($owner,$repository,$status = Issue::OPENED, $user)
+	{
+		$redis = GitHQ\Bundle\AbstractController::getRedisClient();
+		return $redis->zCard("issue_assigned.{$owner}.{$repository}.{$user}.{$status}");
+	}
+	
 	public static function getOpenedIssueCount($owner,$repository,$status = Issue::OPENED)
 	{
 		$redis = GitHQ\Bundle\AbstractController::getRedisClient();
@@ -41,6 +53,17 @@ class IssueReferences
 	{
 		$redis = GitHQ\Bundle\AbstractController::getRedisClient();
 		return $redis->zAdd("issue_list.{$owner}.{$repository}.{$status}",$registered_at,$issue_id);
-		
+	}
+
+	public static function getVoteCount($owner,$repository,$issue)
+	{
+		$redis = GitHQ\Bundle\AbstractController::getRedisClient();
+		return $redis->sCard("issue_votes.{$owner}.{$repository}.{$issue}");
+	}
+
+	public static function getVotedMembers($owner,$repository,$issue)
+	{
+		$redis = GitHQ\Bundle\AbstractController::getRedisClient();
+		return $redis->smembers("issue_votes.{$owner}.{$repository}.{$issue}");
 	}
 }

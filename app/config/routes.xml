@@ -36,7 +36,18 @@
     <default key="action">onIssue</default>
   </route>
 
+  <route id="show_issue" pattern="/{user}/{repository}/issues/{id,digit}/vote">
+    <default key="controller">IssuesController</default>
+    <default key="action">onVote</default>
+  </route>
+
+  <route id="show_issue" pattern="/{user}/{repository}/issues/{id,digit}/unvote">
+    <default key="controller">IssuesController</default>
+    <default key="action">onUnvote</default>
+  </route>
+
 <!--  /issues -->
+
 <!--  pull requests -->
   <route id="" pattern="/{user}/{repository}/pull/new">
     <default key="controller">PullRequestController</default>

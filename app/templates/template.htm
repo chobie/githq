@@ -64,7 +64,7 @@
     
 	{% if user != owner %}
 
-	{% if user and user.getRepository(repository.getName()) == false %}
+	{% if user and tree and user.getRepository(repository.getName()) == false %}
 	<div class="span2">
 	<form method="POST" action="/{{user.getNickname()}}/{{repository.getName()}}">
 	  <input type="hidden" name="action" value="fork" />

@@ -3,12 +3,23 @@
 
   {% include "_tab.htm" %}
 
-
   <div class="row">
     <div class="span13">
 	  <div class="row">
-    	<div class="span1">
+    	<div class="span1 noselect">
       	<img src="{{issue.getAuthor().getImageUrl()}}" height="40"/>
+      	
+      	
+      	{% if user%}
+	      	<div><a href="/{{owner.getNickname()}}/{{repository.getName()}}/issues/{{issue.getId()}}/vote"><img src="/assets/up.png" /></a></div>
+	      	<div style="text-align:center;font-size:240%;font-weight:bold;padding:0.2em;">{{vote|default(0)}}</div>
+	      	<div><a href="/{{owner.getNickname()}}/{{repository.getName()}}/issues/{{issue.getId()}}/unvote"><img src="/assets/down.png" /></a></div>      	
+      	{% else %}
+	      	<div><img src="/assets/up.png" /></div>
+	      	<div style="text-align:center;font-size:240%;font-weight:bold;padding:0.2em;">{{vote|default(0)}}</div>
+	      	<div><img src="/assets/down.png" /></div>
+      	{% endif %}
+      	
     	</div>
     	<div class="span12">
 	    	<div class="issue_container">
@@ -24,7 +35,7 @@
 		    {% if issue.hasMilestone() %}
 		    Milestone: {{repository.getMilestones().getMilestoneById(issue.getMilestoneId())}}
 		    {% endif %}
-		    {% if user.getNickname() == owner.getNickname() %}
+		    {% if user %}
 		    <div style="text-align:right"><span class="btn secondary"><a href="/{{owner.getNickname()}}/{{repository.getName()}}/issues/edit/{{issue.getId()}}">EDIT</a></span></div>
 		    {% endif %}
 		    

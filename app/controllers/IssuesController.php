@@ -21,6 +21,9 @@ class IssuesController extends GitHQ\Bundle\AbstractController
 		} else if ($request->has('label')) {
 			$label = $repository->getLabels()->getLabelByName($request->get('label'));
 			$list  = IssueReferences::getListWithLabel($label->getId(), $owner->getKey(), $repository->getId(),Issue::OPENED);
+		} else if ($request->get('filter_by') == "assigned") {
+			$user = $this->getUser();
+			$list  = IssueReferences::getListWithAssigned($user->getKey(), $owner->getKey(), $repository->getId(),Issue::OPENED);
 		} else {
 			$list  = IssueReferences::getList($owner->getKey(),$repository->getId(),Issue::OPENED);
 		}
@@ -30,12 +33,21 @@ class IssuesController extends GitHQ\Bundle\AbstractController
 			$issues[] = Issue::get(join(':',array($owner->getKey(),$repository->getId(),$id)));
 		}
 		
+		$user = $this->getUser();
+		if ($user){
+			$to = IssueReferences::getAssignedToYouCount($owner->getKey(), $repository->getId(),Issue::OPENED, $user->getKey());
+		} else {
+			$to = 0;
+		}
+		
 		$this->render("index.htm",array(
 			'owner'       => $owner,
 			'issues'      => $issues,
 			'repository'  => $repository,
 			'issue_count' => IssueReferences::getOpenedIssueCount($owner->getKey(), $repository->getId()),
 			'watcher'     => Repository::getWatchedCount($owner, $repository),
+			'assigned_to_you' => $to,
+			'tab'         => 'issue'
 		));
 	}
 
@@ -84,6 +96,9 @@ class IssuesController extends GitHQ\Bundle\AbstractController
 			"repository"  => $repository,
 			'issue_count' => IssueReferences::getOpenedIssueCount($owner->getKey(), $repository->getId()),
 			'watcher'     => Repository::getWatchedCount($owner, $repository),
+			'vote'        => IssueReferences::getVoteCount($owner->getKey(), $repository->getId(), $id),
+			'tab'         => 'issue',
+			'members'       => IssueReferences::getVotedMembers($owner->getKey(), $repository->getId(), $id),
 		));
 	}
 	
@@ -113,7 +128,9 @@ class IssuesController extends GitHQ\Bundle\AbstractController
 		$request = $this->get('request');
 		$repository = $owner->getRepository($repository);
 		$issue = Issue::fetchLocked(join(':',array($owner->getKey(),$repository->getId(),$request->get('issue'))));
-		$issue->addComment($user->getKey(), $request->get('comment'));
+		if (strlen($request->get('comment'))){
+			$issue->addComment($user->getKey(), $request->get('comment'));
+		}
 		
 		if ($request->has('close')) {
 			$issue->closeIssue();
@@ -143,7 +160,7 @@ class IssuesController extends GitHQ\Bundle\AbstractController
 			$issue->setAssignee(User::getIdByNickname($request->get("assign")));
 		}
 
-		if($issue->save()) {
+		if($issue->save() && strlen($request->get('comment'))) {
 			$this->get('event')->emit(new UIKit\Framework\Event('issue.comment.add',array($issue,$user,$owner,$repository)));
 		}
 		
@@ -167,9 +184,9 @@ class IssuesController extends GitHQ\Bundle\AbstractController
 			$issue = Issue::fetchLocked(join(':',array($owner->getKey(),$repository->getId(),$id)));
 			$issue->setTitle($request->get('title'));
 			$issue->setBody($request->get('contents'));
-			if (!$request->get('milestone')) {
+			if (strlen($request->get('milestone'))) {
 				$milestones = $repository->getMilestones();
-				if (($milestone = $milestones->getMilestoneByName($request->get('milestone'))) == false) {
+				if (strlen($request->get('milestone')) && ($milestone = $milestones->getMilestoneByName($request->get('milestone'))) == false) {
 					
 					$owner = User::fetchLocked(User::getIdByNickname($user));
 					$repository = $owner->getRepository($repository_name);
@@ -210,6 +227,10 @@ class IssuesController extends GitHQ\Bundle\AbstractController
 	
 	public function onAdmin($user, $repository)
 	{
+		if (!$this->getUser()) {
+			new RedirectResponse($this->get('application.url'));
+		}
+		
 		$nickname = $user;
 		$repository_name = $repository;
 		$owner = User::get(User::getIdByNickname($user));
@@ -224,6 +245,11 @@ class IssuesController extends GitHQ\Bundle\AbstractController
 			foreach ($repository->getLabels() as $label) {
 				$label->setName($_REQUEST['name'][$label->getId()]);
 			}
+
+			foreach ($repository->getMilestones() as $milestone) {
+				$milestone->setName($_REQUEST['mname'][$milestone->getId()]);
+			}
+
 			$l_user->save();
 		}
 		
@@ -233,4 +259,37 @@ class IssuesController extends GitHQ\Bundle\AbstractController
 							"repository" => $repository,
 		));
 	}
+	
+	public function onVote($user, $repository,$id)
+	{
+		$nickname = $user;
+		$repository_name = $repository;
+		$owner = User::get(User::getIdByNickname($user));
+		$repository = $owner->getRepository($repository);
+		$request = $this->get('request');
+		$user = $this->getUser();
+		if ($user) {
+			$issue = Issue::get(join(':',array($owner->getKey(),$repository->getId(),$id)));
+			$issue->vote($user);
+		}
+
+		return new RedirectResponse($this->get('application.url'));
+	}
+
+	public function onUnvote($user, $repository,$id)
+	{
+		$nickname = $user;
+		$repository_name = $repository;
+		$owner = User::get(User::getIdByNickname($user));
+		$repository = $owner->getRepository($repository);
+		$request = $this->get('request');
+		$user = $this->getUser();
+		if ($user) {
+			$issue = Issue::get(join(':',array($owner->getKey(),$repository->getId(),$id)));
+			$issue->unvote($user);
+		}
+	
+		return new RedirectResponse($this->get('application.url'));
+	}
+	
 }

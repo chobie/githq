@@ -1,16 +1,17 @@
 {% extends "template.htm" %}
 {% block contents %}
 
-  {% include "_tab.htm" %}
-
-
   {% if user %}
   <div class="row">
-	  <p class="span3"><a href="/{{owner.getNickname()}}/{{repository.getName()}}/issues/new" class="btn primary">create new issue</a></p>
-	  <p class="span3"><a href="/{{owner.getNickname()}}/{{repository.getName()}}/issues/admin" class="btn secondary">admin</a></p>
+      <p class="span10"></p>
+	  <p class="span3" style="text-align:right"><a href="/{{owner.getNickname()}}/{{repository.getName()}}/issues/admin" class="btn secondary">admin</a></p>
+	  <p class="span3" style="text-align:right"><a href="/{{owner.getNickname()}}/{{repository.getName()}}/issues/new" class="btn primary">create new issue</a></p>
   </div>
 
   {% endif %}
+
+  {% include "_tab.htm" %}
+
  
   <div class="container-fluid">
   <div class="sidebar">
@@ -27,9 +28,11 @@
   	{% endfor %}
 
   	<h3>Stats</h3>
-  	<p>Everyone's issues</p>
-  	<p>Assigned to you</p>
+  	<p><a href="/{{owner.getNickname()}}/{{repository.getName()}}/issues">Everyone's issues ({{issue_count|default(0)}})</a></p>
+  	{% if user %}
+  	<p><a href="/{{owner.getNickname()}}/{{repository.getName()}}/issues?filter_by=assigned">Assigned to you ({{assigned_to_you|default(0)}})</a></p>
   	<p>Mentioning you</p>
+  	{% endif %}
   	</div>
   	
   	
