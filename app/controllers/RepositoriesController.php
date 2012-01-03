@@ -290,6 +290,10 @@ class RepositoriesController extends GitHQ\Bundle\AbstractController
 	
 		$owner = User::getByNickname($user);
 		$repository = $owner->getRepository($repository);
+		if (!$repository) {
+			header("HTTP1.0 404 Not found");
+			exit;
+		}
 		$repo = new \Git\Repository("/home/git/repositories/{$owner->getKey()}/{$repository->getId()}");
 		$refm = new \Git\Reference\Manager($repo);
 		$branches = $refm->getList();
@@ -433,7 +437,6 @@ class RepositoriesController extends GitHQ\Bundle\AbstractController
 			foreach($tree->getIterator() as $entry) {
 				$p = ltrim("{$path}/{$entry->name}","/");
 				$commit_id = trim(`GIT_DIR=/home/git/repositories/{$owner->getKey()}/{$repository->getId()} git log --format=%H -n1 -- {$p}`);
-				error_log($commit_id);
 				$latest[$entry->name] = new PusedoCommit($repo->getCommit($commit_id));
 			}
 			$redis->set("ccache.{$owner->getKey()}.{$repository->getId()}.{$tree->getId()}",serialize($latest));
@@ -629,6 +632,24 @@ class RepositoriesController extends GitHQ\Bundle\AbstractController
 		exit;
 	}
 	
+	function gzBody($gzData){ 
+	    if(substr($gzData,0,3)=="\x1f\x8b\x08"){ 
+	        $i=10; 
+	        $flg=ord(substr($gzData,3,1)); 
+	        if($flg>0){ 
+	            if($flg&4){ 
+	                list($xlen)=unpack('v',substr($gzData,$i,2)); 
+	                $i=$i+2+$xlen; 
+	            } 
+	            if($flg&8) $i=strpos($gzData,"\0",$i)+1; 
+	            if($flg&16) $i=strpos($gzData,"\0",$i)+1; 
+	            if($flg&2) $i=$i+2; 
+	        } 
+	        return gzinflate(substr($gzData,$i,-8)); 
+	    } 
+	    else return false; 
+	}
+	
 	public function onTransport($user,$repository,$path)
 	{
 		$owner = User::getByNickname($user);
@@ -638,13 +659,67 @@ class RepositoriesController extends GitHQ\Bundle\AbstractController
 		$tags = array();
 		$atags = array();
 		$branches = array();
-		error_log($path);
+		$request = $this->get('request');
 		
 		switch($path) {
+			case "HEAD":
+				if (is_file("/home/git/repositories/{$owner->getKey()}/{$repository->getId()}/HEAD")) {
+					echo file_get_contents("/home/git/repositories/{$owner->getKey()}/{$repository->getId()}/HEAD");
+				}
+				break;
+			case "git-upload-pack":
+				$input = file_get_contents("php://input");
+				header("Content-type: application/x-git-upload-pack-result");
+				$input = $this->gzBody($input);
+				
+				$descriptorspec = array(
+					0 => array("pipe", "r"),
+					1 => array("pipe", "w"),
+				);
+					
+				ob_end_flush();
+				$p = proc_open("git-upload-pack --stateless-rpc /home/git/repositories/{$owner->getKey()}/{$repository->getId()}",$descriptorspec,$pipes);
+				if (is_resource($p)){
+					fwrite($pipes[0],$input);
+					fclose($pipes[0]);
+					while (!feof($pipes[1])) {
+						$data = fread($pipes[1],8192);
+						echo $data;
+					}
+					fclose($pipes[1]);
+					proc_close($p);				
+				}
+				exit;
+				break;
 			case "info/refs":
-				foreach($repo->getReferences() as $ref) {
-					printf("%s\t%s\n",$ref->oid,$ref->name);
-					error_log(sprintf("%s\t%s\n",$ref->oid,$ref->name));
+				
+				if ($request->get("service") == "git-upload-pack") {
+					$input = file_get_contents("php://input");
+					header("Content-type: application/x-git-upload-pack-advertisement");
+
+					$descriptorspec = array(
+						0 => array("pipe", "r"),
+						1 => array("pipe", "w"),
+					);
+					
+					$p = proc_open("git-upload-pack --stateless-rpc --advertise-refs /home/git/repositories/{$owner->getKey()}/{$repository->getId()}",$descriptorspec,$pipes);
+					if (is_resource($p)){
+						fwrite($pipes[0],$input);
+						fclose($pipes[0]);
+						$data = stream_get_contents($pipes[1]);
+						fclose($pipes[1]);
+						proc_close($p);
+						
+						$str = "# service=git-upload-pack\n";
+						$data = str_pad(base_convert(strlen($str)+4, 10, 16),4,'0',STR_PAD_LEFT) . $str . '0000' . $data;
+						header("Content-length: " . strlen($data));
+						echo $data;
+						error_log($data);
+					}
+				} else {
+					foreach($repo->getReferences() as $ref) {
+						printf("%s\t%s\n",$ref->oid,$ref->name);
+					}
 				}
 				break;
 			case "objects/info/packs":
@@ -658,33 +733,34 @@ class RepositoriesController extends GitHQ\Bundle\AbstractController
 							}
 						}
 					}
+				} else {
+					header("HTTP/1.0 404 Not Found");
 				}
+				
 				break;
 			case "objects/info/alternates":
+				header("HTTP/1.0 404 Not Found");
 				break;
 			case "objects/info/http-alternates":
+				header("HTTP/1.0 404 Not Found");
 				break;
 			default:
-				
-				//application/x-git-packed-objects-toc
 				if (preg_match("!objects/pack/(?P<path>.+)!",$path,$match)) {
-				if (is_file("/home/git/repositories/{$owner->getKey()}/{$repository->getId()}/objects/pack/{$match['path']}")) {
-					$ext = pathinfo($match['path'],\PATHINFO_EXTENSION);
-					$data = file_get_contents("/home/git/repositories/{$owner->getKey()}/{$repository->getId()}/objects/pack/{$match['path']}");
-					if ($ext == "idx") {
-						header("Content-type: application/x-git-packed-objects-toc");
-						header("Content-length: " . strlen($data));
-						echo $data;
-					} else if ($ext == "pack") {
-						header("Content-type: application/x-git-packed-objects");
-						header("Content-length: " . strlen($data));
-						echo $data;
-					}
-				} else {
-					error_log("damepo");
-					header("404 Not found");
-				}
-				
+					if (is_file("/home/git/repositories/{$owner->getKey()}/{$repository->getId()}/objects/pack/{$match['path']}")) {
+							$ext = pathinfo($match['path'],\PATHINFO_EXTENSION);
+							$data = file_get_contents("/home/git/repositories/{$owner->getKey()}/{$repository->getId()}/objects/pack/{$match['path']}");
+							if ($ext == "idx") {
+								header("Content-type: application/x-git-packed-objects-toc");
+								header("Content-length: " . strlen($data));
+								echo $data;
+							} else if ($ext == "pack") {
+								header("Content-type: application/x-git-packed-objects");
+								header("Content-length: " . strlen($data));
+								echo $data;
+							}
+					} else {
+						header("HTTP/1.0 404 Not Found");
+					}				
 				} else if (preg_match("!objects/(?P<path>.+)!",$path,$match)) {
 					if (is_file("/home/git/repositories/{$owner->getKey()}/{$repository->getId()}/objects/{$match['path']}")) {
 						$data = file_get_contents("/home/git/repositories/{$owner->getKey()}/{$repository->getId()}/objects/{$match['path']}");
@@ -692,13 +768,12 @@ class RepositoriesController extends GitHQ\Bundle\AbstractController
 						header("Content-length: " . strlen($data));
 						echo $data;
 					} else {
-						error_log("damepo");
-						header("404 Not found");
+						error_log("path {$match['path']} not found");
+						header("HTTP/1.0 404 Not Found");
 					}
 				} else {
-					header("404 Not found");
+					header("HTTP/1.0 404 Not Found");
 				}
 		}
-		
 	}
 }
