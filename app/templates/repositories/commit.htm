@@ -23,16 +23,14 @@
 		</tr>
 		{% for hunk in file.getHunks() %}
 		<tr>
-		<td style="min-width:3em;">...</td>
-		<td style="min-width:3em;">...</td>
-		<td>
-		<div style="background:#CCC;text-align:left;">{{hunk.getSummary()}}</div>
-		</td>
+		<td style="min-width:3em;max-width:3em;width:3em;">...</td>
+		<td style="min-width:3em;max-width:3em;width:3em;">...</td>
+		<td><div style="background:#CCC;text-align:left;">{{hunk.getSummary()}}</div></td>
 		</tr>
 
 		{% set lines = hunk.getLines() %}
 		{% for line in lines %}
-		<tr style="height:16px;">
+		<tr>
 		<td>{{line.getOldNumber()}}</td>
 		<td>{{line.getNewNumber()}}</td>
 		<td class="code" style="{% if line.isRemoved()%}background-color:#FFDDDD{% elseif line.isAdded()%}background-color:#D7FFDF{% else %}background-color:#F8F8FF{% endif %}">
@@ -66,10 +64,10 @@
 			<span>{{line.getLine()}}</span>
 			{% endif %}
 			
-			{% endspaceless %}
-			{% endfor %}
-		</div>
-		</td></tr>
+			{% endspaceless %}</div>
+		</td>
+		</tr>
+		{% endfor %}
 		{% endfor %}
 		
 	</table>

@@ -1,0 +1,15 @@
+{% extends "template.htm" %}
+{% block contents %}
+  <div>
+    <div>{{issue.getAuthor().getNickname()}} opened this issue at {{issue.getRegisteredAt()}}</div>
+    <form action="/{{owner.getNickname()}}/{{repository.getName()}}/issues/edit/{{issue.getId()}}/{{offset}}" method="POST">
+	    <input type="hidden" name="repository_owner" value="{{owner.getKey()}}" />
+	    <input type="hidden" name="repository_name" value="{{repository.getName()}}" />
+
+    	<div class="issue_container">	    	    
+	    <div><textarea name="contents" style="width:800px;height:20em;">{{comment.getComment()}}</textarea></div>
+	    <input type="submit" value="update issue" name="update" class="btn primary"/>
+	    </form>
+	    </div>
+  </div>
+{% endblock %}

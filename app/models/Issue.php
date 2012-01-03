@@ -412,6 +412,18 @@ class Issue extends \UIKit\Framework\ObjectStore
 		return $this->comments;
 	}
 	
+	public function getComment($offset)
+	{
+		if (isset($this->comments[$offset])) {
+			return $this->comments[$offset];
+		}
+	}
+	
+	public function getCommentCount()
+	{
+		return count($this->comments);
+	}
+	
 	/**
 	 * add comment
 	 * 
@@ -421,6 +433,13 @@ class Issue extends \UIKit\Framework\ObjectStore
 	public function addComment($user_id, $comment)
 	{
 		$this->comments[] = new IssueComment($user_id,$comment);
+	}
+	
+	public function addReference($user_id, $commit_ids)
+	{
+		$c =  new IssueComment($user_id,null,$commit_ids);
+		$c->setTypeAsReferenceEvent();
+		$this->comments[] = $c;
 	}
 	
 	/**

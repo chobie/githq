@@ -291,5 +291,58 @@ class IssuesController extends GitHQ\Bundle\AbstractController
 	
 		return new RedirectResponse($this->get('application.url'));
 	}
+
+	
+	public function onVoteComment($user, $repository,$id,$offset)
+	{
+		$nickname = $user;
+		$repository_name = $repository;
+		$owner = User::get(User::getIdByNickname($user));
+		$repository = $owner->getRepository($repository);
+		$request = $this->get('request');
+		$user = $this->getUser();
+		if ($user) {
+			$issue = Issue::fetchLocked(join(':',array($owner->getKey(),$repository->getId(),$id)));
+			$comments = $issue->getComments();
+			foreach ($comments as $k => $i){
+				if ($k == $offset) {
+					$i->vote($user);
+				}
+			}
+			$issue->save();
+		}
+	
+		return new RedirectResponse($this->get('application.url') . "/{$owner->getNickname()}/{$repository->getName()}/issues/{$issue->getId()}");
+	}
+
+	
+	public function onEditComment($user, $repository, $id, $offset)
+	{
+		$nickname = $user;
+		$repository_name = $repository;
+		$owner = User::get(User::getIdByNickname($user));
+		$repository = $owner->getRepository($repository);
+		$request = $this->get('request');
+		$issue = Issue::get(join(':',array($owner->getKey(),$repository->getId(),$id)));
+		$comment = $issue->getComment($offset);		
+		
+		if ($request->has('update')) {
+			$issue = Issue::fetchLocked(join(':',array($owner->getKey(),$repository->getId(),$id)));
+			$comment = $issue->getComment($offset);
+			if ($comment) {
+				$comment->setComment($request->get('contents'));
+			}
+			$issue->save();
+			return new RedirectResponse($this->get('application.url') . "/{$owner->getNickname()}/{$repository->getName()}/issues/{$issue->getId()}");
+		}
+	
+		$this->render("edit_comment.htm",array(
+						"issue"      => $issue,
+						"comment"    => $comment,
+						"owner"      => $owner,
+						"offset"     => $offset,
+						"repository" => $repository,
+		));
+	}
 	
 }

@@ -40,12 +40,22 @@
   
 
 	<div class="content">
-	<div class="hero-unit">
+	<div class="row">
+		<span class="span2">n open issue</span>
+		<span class="span2">n close issue</span>
+		<span class="span5">&nbsp;</span>
+		<span class="span1">active</span>
+		<span class="span1">vote</span>
+	</div>
+		
  {% set labels = repository.getLabels() %}
   {% for issue in issues %}
-  <div style="border:1px solid #7f7f7f;border-radius:5px;margin-bottom:1em;padding:0.5em;background:#FFF;">
+    <div style="border:1px solid #7f7f7f;border-radius:5px;margin-bottom:1em;padding:0.5em;background:#FFF;">
   
-    <div>{% if issue.hasMilestone()%}<span class="label">{{repository.getMilestones().getMilestoneById(issue.getMilestoneId())}}</span>{% endif %}
+    <div>
+    <input type="checkbox" />
+    
+    {% if issue.hasMilestone()%}<span class="label">{{repository.getMilestones().getMilestoneById(issue.getMilestoneId())}}</span>{% endif %}
     <a href="{{ path('show_issue', {
     	'user': owner.getNickname(),
     	'repository': repository.getName(),
@@ -63,7 +73,6 @@
     <div>by <a href="/{{issue.getAuthor().getNickname()}}">{{issue.getAuthor().getNickname()}}</a> {{issue.getRegisteredAt()}}</div>
   </div>
   {% endfor %}
-  </div>
   </div>
   </div>
 {% endblock %}

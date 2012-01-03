@@ -273,7 +273,14 @@ class RepositoriesController extends GitHQ\Bundle\AbstractController
 			$blob = $this->resolve_filename($tree,$path);
 			$tree = $this->resolve_filename($tree,dirname($path));
 		}
+		$ext = pathinfo($path,\PATHINFO_EXTENSION);
 
+		switch($ext) {
+			case "md":
+				header("Content-type: text/plain");
+				break;
+		}
+		
 		$response = new UIKit\Framework\HTTPFoundation\Response\HTTPResponse($blob->data);
 		return $response;
 	}
@@ -620,5 +627,78 @@ class RepositoriesController extends GitHQ\Bundle\AbstractController
 		header("Content-Length: " . strlen($content));
 		echo $content;
 		exit;
+	}
+	
+	public function onTransport($user,$repository,$path)
+	{
+		$owner = User::getByNickname($user);
+		$repository = $owner->getRepository($repository);
+		
+		$repo = new \Git\Repository("/home/git/repositories/{$owner->getKey()}/{$repository->getId()}");
+		$tags = array();
+		$atags = array();
+		$branches = array();
+		error_log($path);
+		
+		switch($path) {
+			case "info/refs":
+				foreach($repo->getReferences() as $ref) {
+					printf("%s\t%s\n",$ref->oid,$ref->name);
+					error_log(sprintf("%s\t%s\n",$ref->oid,$ref->name));
+				}
+				break;
+			case "objects/info/packs":
+				if (is_dir("/home/git/repositories/{$owner->getKey()}/{$repository->getId()}/objects/pack")) {
+					$dir = opendir("/home/git/repositories/{$owner->getKey()}/{$repository->getId()}/objects/pack");
+					if ($dir) {
+						while (($file = readdir($dir)) !== false) {
+							$ext = pathinfo($file,\PATHINFO_EXTENSION);
+							if ($ext == "pack") {
+								printf("P %s\n",$file);
+							}
+						}
+					}
+				}
+				break;
+			case "objects/info/alternates":
+				break;
+			case "objects/info/http-alternates":
+				break;
+			default:
+				
+				//application/x-git-packed-objects-toc
+				if (preg_match("!objects/pack/(?P<path>.+)!",$path,$match)) {
+				if (is_file("/home/git/repositories/{$owner->getKey()}/{$repository->getId()}/objects/pack/{$match['path']}")) {
+					$ext = pathinfo($match['path'],\PATHINFO_EXTENSION);
+					$data = file_get_contents("/home/git/repositories/{$owner->getKey()}/{$repository->getId()}/objects/pack/{$match['path']}");
+					if ($ext == "idx") {
+						header("Content-type: application/x-git-packed-objects-toc");
+						header("Content-length: " . strlen($data));
+						echo $data;
+					} else if ($ext == "pack") {
+						header("Content-type: application/x-git-packed-objects");
+						header("Content-length: " . strlen($data));
+						echo $data;
+					}
+				} else {
+					error_log("damepo");
+					header("404 Not found");
+				}
+				
+				} else if (preg_match("!objects/(?P<path>.+)!",$path,$match)) {
+					if (is_file("/home/git/repositories/{$owner->getKey()}/{$repository->getId()}/objects/{$match['path']}")) {
+						$data = file_get_contents("/home/git/repositories/{$owner->getKey()}/{$repository->getId()}/objects/{$match['path']}");
+						header("Content-type: application/x-git-loose-object");
+						header("Content-length: " . strlen($data));
+						echo $data;
+					} else {
+						error_log("damepo");
+						header("404 Not found");
+					}
+				} else {
+					header("404 Not found");
+				}
+		}
+		
 	}
 }

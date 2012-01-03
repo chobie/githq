@@ -59,18 +59,81 @@
 		    </div>
     </div><!-- /span12 -->
     </div><!-- /row -->
-	  {% if issue.getComments() %}
-	  {% for item in issue.getComments() %}
-	  <div class="row" style="margin-top:1em;">
-	    <div class="span1">
-	      <img src="{{item.getCommenter().getImageUrl()}}" height="40"/>
+	  {% if issue.getComments() %}  
+	  <div class="row noselect" style="vertical-align:bottom;">
+	    <div class="span3">
+		    <h2>{{issue.getCommentCount()}} Comments</h2>
 	    </div>
+	    <span class="span10 right">
+		  	<span>active</span>
+		  	<span>old</span>
+		  	<span>vote</span>
+	  	</span>
+	  </div>
+	  {% for offset,item in issue.getComments() %}
+	  <div class="row" style="margin-top:1em;">
+	    {% if item.isReferenceEvent() %}
+	    <div class="span1">&nbsp;</div>
+	    {% else %}
+	    <div class="span1" style="text-align:center;">
+
+	      	{% if user%}
+		      	<div><a href="/{{owner.getNickname()}}/{{repository.getName()}}/issues/{{issue.getId()}}/{{offset}}/vote"><img src="/assets/up.png" width="20"/></a></div>
+		      	<div style="text-align:center;font-size:100%;font-weight:bold;padding:0.2em;">{{item.getVoteCount()|default(0)}}</div>
+		      	<div><a href="/{{owner.getNickname()}}/{{repository.getName()}}/issues/{{issue.getId()}}/{{offset}}/unvote"><img src="/assets/down.png" width="20"/></a></div>      	
+	      	{% else %}
+		      	<div><img src="/assets/up.png" width="20" /></div>
+		      	<div style="text-align:center;font-size:100%;font-weight:bold;padding:0.2em;">{{item.getVoteCount()|default(0)}}</div>
+		      	<div><img src="/assets/down.png" width="20" /></div>
+	      	{% endif %}
+
+
+	    </div>
+	    {% endif %}
+	    
+	    {% if item.isReferenceEvent() %}
+	    {% set op = item.getOpaque%}
 	    <div class="span12">
 	      <div class="issue_container">
-	      <div ><a href="{{ path('show_user', {'user': item.getCommenter().getNickname()}) }}">{{item.getCommenter().getNickname()}}</a> commented {{item.getRegisteredAt()}}</div>
-	      <div style="margin-left:2em;">{{item.getCommentAsMd()|raw}}</div>
+	      <div ><a href="{{ path('show_user', {'user': item.getCommenter().getNickname()}) }}">{{item.getCommenter().getNickname()}}</a> referenced {{item.getRegisteredAt()}}</div>
+	      <div style="margin-left:2em;">
+	      {% for i in op%}
+	        <img src="https://secure.gravatar.com/avatar/{{i.email|md5}}?s=20" /><a href="/{{owner.getNickname()}}/{{repository.getName()}}/commit/{{i.id}}">{{i.id|truncate(20)}}</a> : {{i.message}}
+	      {% endfor%}
+	      </div>
 	      </div> 
 	    </div>
+	    
+	    {% else %}
+	    <div class="span12">
+	      <div class="issue_container">
+	      <div style="margin-left:2em;">{{item.getCommentAsMd()|raw}}</div>
+
+		    {% if user %}
+		    <div style="text-align:right"><span class="btn secondary"><a href="/{{owner.getNickname()}}/{{repository.getName()}}/issues/edit/{{issue.getId()}}/{{offset}}">EDIT</a></span></div>
+		    {% endif %}
+
+		  <div class="row">
+		    <span class="span7 noselect">&nbsp;</span>
+		    <span class="span4 left">
+			  commented {{item.getRegisteredAt()}}
+			</span>
+		  </div>
+		  <div class="row">
+		    <span class="span6 noselect">&nbsp;</span>
+	      	<span class="span2" style="text-align:right;">
+	      	<img src="{{item.getCommenter().getImageUrl()}}" height="40"/>
+	      	</span>
+	      	<span class="span3" style="text-align:left;">
+		      	<a href="{{ path('show_user', {'user': item.getCommenter().getNickname()}) }}">{{item.getCommenter().getNickname()}}</a><br />
+		      	n public repos<br />
+		      	n friends<br />
+	      	</span>
+		  </div>
+
+	      </div> 
+	    </div>
+	    {% endif %}
 	  </div>
 	  {% endfor %}
 	  {% endif %}

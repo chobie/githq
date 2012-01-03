@@ -39,7 +39,6 @@ body {
 	border-spacing: 0px;
 	max-width: 800px;
 	font-size:12px;
-	line-height:1.4;
 }
 
 .numbers{
@@ -89,12 +88,17 @@ pre {
 }
 .code {
 	font-family:'Bitstream Vera Sans Mono','Courier',monospace;
-	white-space:pre;
+	/*	white-space:pre;*/
 }
 .center {
 	text-align:center;
 }
-
+.right {
+	text-align:right;
+}
+.left {
+	text-align:left;
+}
 .noselect {
 	-webkit-user-select: none;
 	-khtml-user-select: none;

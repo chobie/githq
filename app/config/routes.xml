@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <routes>
+<!--  upload-pack -->
+  <route id="" pattern="/{user}/{repository}\.git/{path,greed}">
+    <default key="controller">RepositoriesController</default>
+    <default key="action">onTransport</default>
+  </route>
+
+<!--  /upload-pack -->
+
 <!--  issues  -->
   <route id="" pattern="/{user}/{repository}/issue_comments">
     <default key="controller">IssuesController</default>
@@ -26,10 +34,17 @@
     <default key="action">onNew</default>
 
   </route>
+
   <route id="" pattern="/{user}/{repository}/issues/edit/{id,digit}">
     <default key="controller">IssuesController</default>
     <default key="action">onEdit</default>
   </route>
+
+  <route id="" pattern="/{user}/{repository}/issues/edit/{id,digit}/{offset,digit}">
+    <default key="controller">IssuesController</default>
+    <default key="action">onEditComment</default>
+  </route>
+
   
   <route id="show_issue" pattern="/{user}/{repository}/issues/{id,digit}">
     <default key="controller">IssuesController</default>
@@ -41,9 +56,19 @@
     <default key="action">onVote</default>
   </route>
 
-  <route id="show_issue" pattern="/{user}/{repository}/issues/{id,digit}/unvote">
+  <route id="" pattern="/{user}/{repository}/issues/{id,digit}/{offset,digit}/vote">
+    <default key="controller">IssuesController</default>
+    <default key="action">onVoteComment</default>
+  </route>
+
+  <route id="" pattern="/{user}/{repository}/issues/{id,digit}/unvote">
     <default key="controller">IssuesController</default>
     <default key="action">onUnvote</default>
+  </route>
+
+  <route id="" pattern="/{user}/{repository}/issues/{id,digit}/{offset,digit}/unvote">
+    <default key="controller">IssuesController</default>
+    <default key="action">onUnvoteComment</default>
   </route>
 
 <!--  /issues -->
@@ -207,14 +232,6 @@
     <default key="action">onTop</default>
   </route>  
 <!-- /repository -->
-
-<!--  upload-pack -->
-  <route id="" pattern="/{user}/{repository}.git/{path,greed}">
-    <default key="controller">RootController</default>
-
-    <default key="action">onDefault</default>
-  </route>
-<!--  /upload-pack -->
 
 <!--  misc  -->  
   <route id="top" pattern="/">
