@@ -235,7 +235,7 @@
     <default key="action">onTree</default>
   </route>
 
-  <route id="" pattern="/{user}/{repository}">
+  <route id="repositories.top" pattern="/{user}/{repository}">
     <default key="controller">RepositoriesController</default>
     <default key="action">onTop</default>
   </route>  

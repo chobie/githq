@@ -34,6 +34,8 @@ class PusedoCommit
 
 class RepositoriesController extends GitHQ\Bundle\AbstractController
 {
+	public $view = "RepositoriesView";
+	
 	public function onTop($user, $repository)
 	{
 		$owner = User::getByNickname($user);
@@ -110,8 +112,10 @@ class RepositoriesController extends GitHQ\Bundle\AbstractController
 				$latest = unserialize($cache);
 			}
 		}
-		
-		$this->render("repository.htm",array(
+
+		return $this->getDefaultView()
+					->setTemplate("repository.htm")
+					->prepareResponse(array(
 						'user'        => $user,
 						'owner'       => $owner,
 						'issue_count' => IssueReferences::getOpenedIssueCount($owner->getKey(),$repository->getId()),	
@@ -143,7 +147,10 @@ class RepositoriesController extends GitHQ\Bundle\AbstractController
 			$repository->watch($owner,$user);
 		}
 		
-		return new RedirectResponse($this->get('application.url') . "/{$owner->getNickname()}/{$repository->getName()}");
+		return new RedirectResponse($this->generateUrl('repositories.top',array(
+			"user"       => $owner->getNickname(),
+			"repository" => $repository->getName(),
+		)));
 	}
 
 	public function onCommit($user, $repository, $commit)
@@ -170,14 +177,16 @@ class RepositoriesController extends GitHQ\Bundle\AbstractController
 		$first = array_shift($lines);
 		$message = join("\n",$lines);
 	
-		$this->render("commit.htm",array(
+		return $this->getDefaultView()
+					->setTemplate("commit.htm")
+					->prepareResponse(array(
 						'owner'      => $owner,
 						'repository' => $repository,
 						"commit"     => $commit,
 						"diff"       => $struct,
 						"first"      => $first,
 						"message"    => $message,
-						'watcher'     => Repository::getWatchedCount($owner, $repository),
+						'watcher'    => Repository::getWatchedCount($owner, $repository),
 		));
 	}
 	
@@ -201,13 +210,17 @@ class RepositoriesController extends GitHQ\Bundle\AbstractController
 		} catch (\InvalidArgumentException $e) {
 			$commits = array();
 		}
-		$this->render("commits.htm",array(
-				'owner'       => $owner,
-				'repository'  => $repository,
-				"commits"     => $commits,
-				'issue_count' => IssueReferences::getOpenedIssueCount($owner->getKey(), $repository->getId()),
-				'watcher'     => Repository::getWatchedCount($owner, $repository),
-				'tab'         => 'commit',
+		
+		return $this->getDefaultView()
+					->setTemplate("commits.htm")
+					->prepareResponse(array(
+						'owner'       => $owner,
+						'repository'  => $repository,
+						"commits"     => $commits,
+						'issue_count' => IssueReferences::getOpenedIssueCount($owner->getKey(), $repository->getId()),
+						'watcher'     => Repository::getWatchedCount($owner, $repository),
+						'tab'         => 'commit',
+		
 		));
 	}
 	
@@ -247,13 +260,18 @@ class RepositoriesController extends GitHQ\Bundle\AbstractController
 			$user->save();
 			
 		}
-		
-		return new RedirectResponse($this->get('application.url'));
+
+		return new RedirectResponse($this->generateUrl('repositories.top',array(
+					"user"       => $user->getNickname(),
+					"repository" => $repo->getName(),
+		)));
 	}
 
 	public function onNew()
 	{
-		$this->render("new.htm",array());
+		return $this->getDefaultView()
+					->setTemplate("new.htm")
+					->prepareResponse();
 	}
 
 	public function onRaw($user, $repository, $refs, $path)
@@ -367,42 +385,22 @@ class RepositoriesController extends GitHQ\Bundle\AbstractController
 			$path_parts[$key] = $p;
 		}
 	
-		if (isset($_REQUEST['_pjax'])) {
-			$this->render("_blob.htm",array(
-							'owner'        => $owner,
-							'repository'   => $repository,
-							'commit'       => $commit,
-			//			'tree'         => $tree,
-							'blob'         => $blob,
-							'data'         => $data,
-							'issue_count'  => IssueReferences::getOpenedIssueCount($owner->getKey(), $repository->getId()),
-							'current_path' => dirname($path) . '/',
-							'path'         => $path,
-							'path_parts'   => $path_parts,
-							'refs'         => $refs,
-							'img'          => $img,
-							'lines'        => $lines,
-							'tab'          => 'file',
-			));
-	
-		} else {
-			$this->render("repository.htm",array(
-				'owner'        => $owner,
-				'repository'   => $repository,
-				'commit'       => $commit,
-			//			'tree'         => $tree,
-				'blob'         => $blob,
-				'data'         => $data,
-				'issue_count'  => IssueReferences::getOpenedIssueCount($owner->getKey(), $repository->getId()),
-				'current_path' => dirname($path) . '/',
-				'path'         => $path,
-				'path_parts'   => $path_parts,
-				'refs'         => $refs,
-				'img'          => $img,
-				'lines'        => $lines,
-				'tab'          => 'file',
-			));
-		}
+		$file = (isset($_REQUEST['_pjax'])) ? "_blob.htm" : "repository.htm";		 
+		$this->render($file,array(
+			'owner'        => $owner,
+			'repository'   => $repository,
+			'commit'       => $commit,
+			'blob'         => $blob,
+			'data'         => $data,
+			'issue_count'  => IssueReferences::getOpenedIssueCount($owner->getKey(), $repository->getId()),
+			'current_path' => dirname($path) . '/',
+			'path'         => $path,
+			'path_parts'   => $path_parts,
+			'refs'         => $refs,
+			'img'          => $img,
+			'lines'        => $lines,
+			'tab'          => 'file',
+		));
 	}
 
 	public function onTree($user, $repository, $refs, $path)
@@ -452,33 +450,20 @@ class RepositoriesController extends GitHQ\Bundle\AbstractController
 		}
 		
 		$parent_dir = dirname($current_path);
-		if (isset($_REQUEST['_pjax'])) {
-			$this->render("_tree.htm",array(
-								'owner'        => $owner,
-								'repository'   => $repository,
-								'commit'       => $commit,
-								'tree'         => $tree,
-								'issue_count'  => IssueReferences::getOpenedIssueCount($owner->getKey(), $repository->getId()),
-								'current_path' => $current_path,
-								'parent_dir'   => $parent_dir,
-								'watcher'      => Repository::getWatchedCount($owner, $repository),
-								'latests'      => $latest,
-								'tab'          => 'file',
-			));
-		} else {
-			$this->render("repository.htm",array(
-					'owner'        => $owner,
-					'repository'   => $repository,
-					'commit'       => $commit,
-					'tree'         => $tree,
-					'issue_count'  => IssueReferences::getOpenedIssueCount($owner->getKey(), $repository->getId()),
-					'current_path' => $current_path,
-					'parent_dir'   => $parent_dir,
-					'watcher'      => Repository::getWatchedCount($owner, $repository),
-					'latests'      => $latest,
-					'tab'          => 'file',
-			));
-		}
+		$file = (isset($_REQUEST['_pjax'])) ? "_tree.htm" : "repository.htm";
+		
+		$this->render($file,array(
+			'owner'        => $owner,
+			'repository'   => $repository,
+			'commit'       => $commit,
+			'tree'         => $tree,
+			'issue_count'  => IssueReferences::getOpenedIssueCount($owner->getKey(), $repository->getId()),
+			'current_path' => $current_path,
+			'parent_dir'   => $parent_dir,
+			'watcher'      => Repository::getWatchedCount($owner, $repository),
+			'latests'      => $latest,
+			'tab'          => 'file',
+		));
 	}
 
 	public function onBlame($user, $repository, $refs, $path)
@@ -505,8 +490,10 @@ class RepositoriesController extends GitHQ\Bundle\AbstractController
 		}
 	
 		$blame = Git_Util::Blame($owner,$repository, $path);
-	
-		$this->render("blame.htm",array(
+
+		return $this->getDefaultView()
+					->setTemplate("blame.htm")
+					->prepareResponse(array(
 						'owner'        => $owner,
 						'repository'   => $repository,
 						'commit'       => $commit,
@@ -515,6 +502,7 @@ class RepositoriesController extends GitHQ\Bundle\AbstractController
 						'issue_count'  => IssueReferences::getOpenedIssueCount($owner->getKey(), $repository->getId()),
 						'current_path' => dirname($path) . '/',
 						'path'         => $path
+		
 		));
 	}
 
@@ -540,12 +528,14 @@ class RepositoriesController extends GitHQ\Bundle\AbstractController
 				$i++;
 			}
 		}
-		
-		$this->render("commits.htm",array(
-			'owner'      => $owner,
-			'repository' => $repository,
-			"commits"    => $commits,
-			'tab'        => 'file',
+ 
+		return $this->getDefaultView()
+					->setTemplate("commits.htm")
+					->prepareResponse(array(
+						'owner'      => $owner,
+						'repository' => $repository,
+						"commits"    => $commits,
+						'tab'        => 'file',	
 		));
 	}
 	
@@ -578,16 +568,17 @@ class RepositoriesController extends GitHQ\Bundle\AbstractController
 			}
 		}
 
-		
-		$this->render("tags.htm",array(
-			'owner'        => $owner,
-			'repository'   => $repository,
-			'issue_count'  => IssueReferences::getOpenedIssueCount($owner->getKey(), $repository->getId()),
-			'tags'         => $tags,
-			'watcher'      => Repository::getWatchedCount($owner, $repository),
-			'tab'          => 'tag',
-		));
 
+		return $this->getDefaultView()
+					->setTemplate("tags.htm")
+					->prepareResponse(array(
+						'owner'        => $owner,
+						'repository'   => $repository,
+						'issue_count'  => IssueReferences::getOpenedIssueCount($owner->getKey(), $repository->getId()),
+						'tags'         => $tags,
+						'watcher'      => Repository::getWatchedCount($owner, $repository),
+						'tab'          => 'tag',
+		));
 	}
 
 	public function onBranches($user, $repository)
@@ -608,16 +599,17 @@ class RepositoriesController extends GitHQ\Bundle\AbstractController
 				$branches[] = $ref;
 			}
 		}
-	
-		$this->render("branches.htm",array(
-				'owner'        => $owner,
-				'repository'   => $repository,
-				'issue_count'  => IssueReferences::getOpenedIssueCount($owner->getKey(), $repository->getId()),
-				'branches'         => $branches,
-				'watcher'     => Repository::getWatchedCount($owner, $repository),
-				'tab'          => 'branch',
-		));
-	
+
+		return $this->getDefaultView()
+					->setTemplate("branches.htm")
+					->prepareResponse(array(
+						'owner'        => $owner,
+						'repository'   => $repository,
+						'issue_count'  => IssueReferences::getOpenedIssueCount($owner->getKey(), $repository->getId()),
+						'branches'     => $branches,
+						'watcher'      => Repository::getWatchedCount($owner, $repository),
+						'tab'          => 'branch',
+		));	
 	}
 	
 	
