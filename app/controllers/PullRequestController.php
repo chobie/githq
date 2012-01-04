@@ -35,7 +35,6 @@ class PullRequestController extends GitHQ\Bundle\AbstractController
 		));
 	}
 
-
 	public function onClose($user, $repository, $id)
 	{
 		$repository_name = $repository;
@@ -181,6 +180,8 @@ class PullRequestController extends GitHQ\Bundle\AbstractController
 			if ($issue->create()) {
 				$this->get('event')->emit(new UIKit\Framework\Event('pull.create',array($issue,$user,$owner,$repository)));
 			}
+			
+			/* @todo: create pull index page */
 			return new RedirectResponse($this->get('application.url') . "/{$origin->getNickname()}/{$repository->getName()}/pulls");
 		} else {
 			

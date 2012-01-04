@@ -3,18 +3,22 @@ use UIKit\Framework\HTTPFoundation\Response\RedirectResponse;
 
 class AdminController extends GitHQ\Bundle\AbstractController
 {
+	public $view = "AdminView";
+	
 	/**
 	 * show repsoitory admin page.
 	 * 
 	 * @param string $nickname
 	 * @param string $repository
+	 * @return HTTPResponse $response
 	 */
 	public function onDefault($nickname, $repository)
 	{
 		$owner = User::getByNickname($nickname);
-		$this->render("index.htm",array(
-					'owner'      => $owner,
-					'repository' => $owner->getRepository($repository),
+		return $this->getDefaultView()->prepareResponse(array(
+				'owner'      => $owner,
+				'repository' => $owner->getRepository($repository),
+		
 		));
 	}
 
@@ -30,7 +34,7 @@ class AdminController extends GitHQ\Bundle\AbstractController
 		if ($request->isPost()){
 			$owner = User::fetchLocked(User::getIdByNickname($nickname));
 			$repo = $owner->getRepository($repository);
-			
+
 			if ($request->has('features')) {
 				if ($request->get('issues') == 1) {
 					$repo->enableIssue();
@@ -38,6 +42,7 @@ class AdminController extends GitHQ\Bundle\AbstractController
 					$repo->disableIssue();
 				}
 			}
+			
 			if (strlen($request->get('default_branch'))) {
 				$repo->setDefaultBranch($request->get("default_branch"));
 			}
@@ -47,9 +52,12 @@ class AdminController extends GitHQ\Bundle\AbstractController
 				
 			$repo->setStatus($request->get('visibility'));			
 			$owner->save();
-			
-			return new RedirectResponse($this->get("application.url") . "/{$owner->getNickname()}/{$repo->getName()}/admin");
 		}
+		
+		return new RedirectResponse($this->generateUrl("repository.admin",array(
+			"nickname"   => $owner->getNickname(),
+			"repository" => $repo->getName(),
+		)));
 	}
 
 	/**
@@ -82,6 +90,6 @@ class AdminController extends GitHQ\Bundle\AbstractController
 		
 		//@todo: considering organization repo.
 		$_SESSION['user'] = $owner;
-		return new RedirectResponse($this->get("application.url"));
+		return new RedirectResponse($this->generateUrl("top"));
 	}
 }

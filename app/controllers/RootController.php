@@ -4,14 +4,7 @@ use UIKit\Framework\HTTPFoundation\Response\RedirectResponse;
 class RootController extends GitHQ\Bundle\AbstractController
 {	
 	public $view = "RootView";
-	
-	protected function getDefaultView()
-	{
-		$view = new $this->view($this->container);
-		$view->setUser($this->getUser());
-		return $view;
-	}
-	
+		
 	/**
 	 * show githq landing page.
 	 * 
@@ -29,10 +22,13 @@ class RootController extends GitHQ\Bundle\AbstractController
 			'organizations' => $organizations,
 		));
 	}
-		
-
+	
 	/**
 	 * for builtin authentication.
+	 * 
+	 * we are using Facebook as a authentication system.
+	 * so we don't use this method
+	 * 
 	 * @deprecated
 	 */
 	public function onSession()
@@ -45,7 +41,7 @@ class RootController extends GitHQ\Bundle\AbstractController
 			}
 		}
 		
-		return new RedirectResponse($this->get('application.url'));
+		return new RedirectResponse($this->generateUrl('top'));
 	}
 	
 	/**
@@ -56,9 +52,15 @@ class RootController extends GitHQ\Bundle\AbstractController
 	public function onLogout()
 	{
 		$_SESSION = array();
-		return new RedirectResponse($this->get('application.url'));
+		return new RedirectResponse($this->generateUrl('top'));
 	}
 	
+	/**
+	 * show account setting page
+	 * 
+	 * @return HTTPResponse $response
+	 * @throws Exception
+	 */
 	public function onAccount()
 	{
 		$user = $this->getUser();
@@ -106,9 +108,11 @@ class RootController extends GitHQ\Bundle\AbstractController
 			$user->save();
 			$_SESSION['user'] = $user;
 		}
-		
-		$this->render("account.htm",array(
-			"profile" => $profile
+
+		$view = $this->getDefaultView();
+		$view->setTemplate("account.htm");
+		return $view->prepareResponse(array(
+			"profile" => $profile,
 		));
 	}
 	
@@ -121,15 +125,15 @@ class RootController extends GitHQ\Bundle\AbstractController
 	{
 		$user_id  = $this->get('facebook')->getUser();
 		$response = new \UIKit\Framework\HTTPFoundation\Response\RedirectResponse();
+		$response->setLocation($this->generateUrl("top"));
 		
 		if ($user_id) {
 			if ($user = User::get($user_id)) {
 				/* login succeeded */
 				$_SESSION['user'] = $user;
-				$response->setLocation($this->get('application.url'));
 			} else {
 				/* first time. redirect registration page */
-				$response->setLocation($this->get('application.url') . '/signup/free');
+				$response->setLocation($this->generateUrl('registration'));
 			}
 		} else {
 			$response->setLocation($this->get('facebook')->getLoginUrl());
@@ -162,7 +166,9 @@ class RootController extends GitHQ\Bundle\AbstractController
 	 */
 	public function onAbout()
 	{
-		return $this->getDefaultView()->setTemplate("about.htm")->prepareResponse();
+		return $this->getDefaultView()
+					->setTemplate("about.htm")
+					->prepareResponse();
 	}
 
 }

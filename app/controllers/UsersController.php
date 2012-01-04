@@ -4,8 +4,9 @@ use UIKit\Framework\HTTPFoundation\Response\RedirectResponse;
 class UsersController extends GitHQ\Bundle\AbstractController
 {
 	/**
-	 * (non-PHPdoc)
-	 * @see UIKit\Framework\HTTPFoundation\Controller.ApplicationController::onDefault()
+	 * create new user blob
+	 * 
+	 * @return RedirectResponse $response
 	 */
 	public function onDefault()
 	{
@@ -16,7 +17,7 @@ class UsersController extends GitHQ\Bundle\AbstractController
 		if ($this->getRequest()->isPost()) {
 			if(!$user_id = $this->get('facebook')->getUser()) {
 				/* could not obtain the user id. redirect fb. */
-				$response->setLocation($this->get('application.url') . "/connect");
+				$response->setLocation($this->generateUrl('facebook.connect'));
 				return $response;
 			}
 
@@ -30,7 +31,7 @@ class UsersController extends GitHQ\Bundle\AbstractController
 					$user->setPassword($request->get('password'));
 
 					if ($user->create()) {
-						$response->setLocation($this->get('application.url'));
+						$response->setLocation($this->generateUrl('top'));
 						
 						return $response;
 					} else {

@@ -41,13 +41,13 @@ class IssuesController extends GitHQ\Bundle\AbstractController
 		}
 		
 		$this->render("index.htm",array(
-			'owner'       => $owner,
-			'issues'      => $issues,
-			'repository'  => $repository,
-			'issue_count' => IssueReferences::getOpenedIssueCount($owner->getKey(), $repository->getId()),
-			'watcher'     => Repository::getWatchedCount($owner, $repository),
+			'owner'           => $owner,
+			'issues'          => $issues,
+			'repository'      => $repository,
+			'issue_count'     => IssueReferences::getOpenedIssueCount($owner->getKey(), $repository->getId()),
+			'watcher'         => Repository::getWatchedCount($owner, $repository),
 			'assigned_to_you' => $to,
-			'tab'         => 'issue'
+			'tab'             => 'issue'
 		));
 	}
 
@@ -70,7 +70,10 @@ class IssuesController extends GitHQ\Bundle\AbstractController
 			if ($issue->create()) {
 				$this->get('event')->emit(new UIKit\Framework\Event('issue.create',array($issue,$user,$owner,$repository)));
 			}
-			return new RedirectResponse($this->get('appilcation.url') ."/{$owner->getNickname()}/{$repository->getName()}/issues");
+			return new RedirectResponse($this->generateUrl('issues',array(
+				"nickname"        => $owner->getNickname(),
+				"repository_name" => $repository->getName(),
+			)));
 		} else {
 			$this->render("new.htm",array(
 				'owner'      => $owner,
@@ -87,7 +90,11 @@ class IssuesController extends GitHQ\Bundle\AbstractController
 		$issue = Issue::get(join(':',array($owner->getKey(),$repository->getId(),$id)));
 
 		if ($issue->isPullrequest()) {
-			return new RedirectResponse($this->get('application.url') . "/{$owner->getNickname()}/{$repository->getName()}/pull/{$issue->getId()}");
+			return new RedirectResponse($this->generateUrl('pull.show',array(
+				"user"       => $owner->getNickname(),
+				"repository" => $repository->getName(),
+				"id"         => $issue->getId(),
+			)));
 		}
 
 		$this->render("issue.htm",array(
@@ -98,7 +105,7 @@ class IssuesController extends GitHQ\Bundle\AbstractController
 			'watcher'     => Repository::getWatchedCount($owner, $repository),
 			'vote'        => IssueReferences::getVoteCount($owner->getKey(), $repository->getId(), $id),
 			'tab'         => 'issue',
-			'members'       => IssueReferences::getVotedMembers($owner->getKey(), $repository->getId(), $id),
+			'members'     => IssueReferences::getVotedMembers($owner->getKey(), $repository->getId(), $id),
 		));
 	}
 	
@@ -115,7 +122,11 @@ class IssuesController extends GitHQ\Bundle\AbstractController
 
 		$issue->save();
 		
-		return new RedirectResponse($this->get('appilcation.url') ."/{$user->getNickname()}/{$repository->getName()}/issues/{$issue->getId()}");
+		return new RedirectResponse($this->generateUrl('show_issue',array(
+			"user"       => $owner->getNickname(),
+			"repository" => $repository->getName(),
+			"id"         => $issue->getId(),
+		)));
 	}
 
 	public function onIssueComments($user, $repository)
@@ -164,11 +175,11 @@ class IssuesController extends GitHQ\Bundle\AbstractController
 			$this->get('event')->emit(new UIKit\Framework\Event('issue.comment.add',array($issue,$user,$owner,$repository)));
 		}
 		
-		if ($issue->isPullrequest()) {
-			return new RedirectResponse($this->get('application.url') . "/{$owner->getNickname()}/{$repository->getName()}/pull/{$issue->getId()}");
-		} else {
-			return new RedirectResponse($this->get('application.url') . "/{$owner->getNickname()}/{$repository->getName()}/issue/{$issue->getId()}");
-		}
+		return new RedirectResponse($this->generateUrl(($issue->isPullrequest()) ? "pull.show" : "show_issue",array(
+						"user"       => $owner->getNickname(),
+						"repository" => $repository->getName(),
+						"id"         => $issue->getId(),
+		)));
 	}
 
 	public function onEdit($user, $repository, $id)
@@ -215,7 +226,11 @@ class IssuesController extends GitHQ\Bundle\AbstractController
 				$owner->save();
 			}
 			
-			return new RedirectResponse($this->get('application.url') . "/{$owner->getNickname()}/{$repository->getName()}/issues/{$issue->getId()}");
+			return new RedirectResponse($this->generateUrl('show_issue',array(
+						"user"       => $owner->getNickname(),
+						"repository" => $repository->getName(),
+						"id"         => $issue->getId(),
+			)));
 		}
 		
 		$this->render("edit.htm",array(
@@ -268,12 +283,17 @@ class IssuesController extends GitHQ\Bundle\AbstractController
 		$repository = $owner->getRepository($repository);
 		$request = $this->get('request');
 		$user = $this->getUser();
+		$issue = Issue::get(join(':',array($owner->getKey(),$repository->getId(),$id)));
+
 		if ($user) {
-			$issue = Issue::get(join(':',array($owner->getKey(),$repository->getId(),$id)));
 			$issue->vote($user);
 		}
 
-		return new RedirectResponse($this->get('application.url'));
+		return new RedirectResponse($this->generateUrl('show_issue',array(
+					"user"       => $owner->getNickname(),
+					"repository" => $repository->getName(),
+					"id"         => $issue->getId(),
+		)));
 	}
 
 	public function onUnvote($user, $repository,$id)
@@ -284,14 +304,17 @@ class IssuesController extends GitHQ\Bundle\AbstractController
 		$repository = $owner->getRepository($repository);
 		$request = $this->get('request');
 		$user = $this->getUser();
+		$issue = Issue::get(join(':',array($owner->getKey(),$repository->getId(),$id)));
 		if ($user) {
-			$issue = Issue::get(join(':',array($owner->getKey(),$repository->getId(),$id)));
 			$issue->unvote($user);
 		}
-	
-		return new RedirectResponse($this->get('application.url'));
-	}
 
+		return new RedirectResponse($this->generateUrl('show_issue',array(
+							"user"       => $owner->getNickname(),
+							"repository" => $repository->getName(),
+							"id"         => $issue->getId(),
+		)));
+	}
 	
 	public function onVoteComment($user, $repository,$id,$offset)
 	{
@@ -301,6 +324,7 @@ class IssuesController extends GitHQ\Bundle\AbstractController
 		$repository = $owner->getRepository($repository);
 		$request = $this->get('request');
 		$user = $this->getUser();
+		$issue = Issue::get(join(':',array($owner->getKey(),$repository->getId(),$id)));
 		if ($user) {
 			$issue = Issue::fetchLocked(join(':',array($owner->getKey(),$repository->getId(),$id)));
 			$comments = $issue->getComments();
@@ -311,8 +335,12 @@ class IssuesController extends GitHQ\Bundle\AbstractController
 			}
 			$issue->save();
 		}
-	
-		return new RedirectResponse($this->get('application.url') . "/{$owner->getNickname()}/{$repository->getName()}/issues/{$issue->getId()}");
+		
+		return new RedirectResponse($this->generateUrl('show_issue',array(
+							"user"       => $owner->getNickname(),
+							"repository" => $repository->getName(),
+							"id"         => $issue->getId(),
+		)));
 	}
 
 	
@@ -333,7 +361,12 @@ class IssuesController extends GitHQ\Bundle\AbstractController
 				$comment->setComment($request->get('contents'));
 			}
 			$issue->save();
-			return new RedirectResponse($this->get('application.url') . "/{$owner->getNickname()}/{$repository->getName()}/issues/{$issue->getId()}");
+
+			return new RedirectResponse($this->generateUrl('show_issue',array(
+										"user"       => $owner->getNickname(),
+										"repository" => $repository->getName(),
+										"id"         => $issue->getId(),
+			)));
 		}
 	
 		$this->render("edit_comment.htm",array(

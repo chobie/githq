@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <routes>
+
+  <route id="registration" pattern="/signup/free">
+    <default key="controller">SignupController</default>
+    <default key="action">onFree</default>
+  </route>
+
+
 <!--  upload-pack -->
   <route id="" pattern="/{user}/{repository}\.git/{path,greed}">
     <default key="controller">RepositoriesController</default>
@@ -14,7 +21,7 @@
     <default key="action">onIssueComments</default>
   </route>
 
-  <route id="" pattern="/{nickname}/{repository_name}/issues">
+  <route id="issues" pattern="/{nickname}/{repository_name}/issues">
     <default key="controller">IssuesController</default>
     <default key="action">onDefault</default>
   </route>
@@ -51,7 +58,7 @@
     <default key="action">onIssue</default>
   </route>
 
-  <route id="show_issue" pattern="/{user}/{repository}/issues/{id,digit}/vote">
+  <route id="" pattern="/{user}/{repository}/issues/{id,digit}/vote">
     <default key="controller">IssuesController</default>
     <default key="action">onVote</default>
   </route>
@@ -82,11 +89,12 @@
     <default key="controller">PullRequestController</default>
     <default key="action">onNew</default>
   </route>
-  <route id="" pattern="/{user}/{repository}/pull/{id,digit}">
 
+  <route id="pull.show" pattern="/{user}/{repository}/pull/{id,digit}">
     <default key="controller">PullRequestController</default>
     <default key="action">onPullRequest</default>
   </route>
+
   <route id="" pattern="/{user}/{repository}/pull/{id,digit}/files">
     <default key="controller">PullRequestController</default>
     <default key="action">onFiles</default>
@@ -118,7 +126,7 @@
     <default key="action">onSession</default>
   </route>
 
-  <route id="" pattern="/connect">
+  <route id="facebook.connect" pattern="/connect">
     <default key="controller">RootController</default>
     <default key="action">onConnect</default>
   </route>
@@ -154,12 +162,12 @@
     <default key="action">onDefault</default>
   </route>
   
-  <route id="" pattern="/{nickname}/{repository}/admin">
+<!--  repository admin -->
+  <route id="repository.admin" pattern="/{nickname}/{repository}/admin">
     <default key="controller">AdminController</default>
     <default key="action">onDefault</default>
   </route>
  
-<!--  repository admin -->
   <route id="delete_repository" pattern="/{nickname}/{repository_name}/admin/delete">
     <default key="controller">AdminController</default>
     <default key="action">onDelete</default>

@@ -3,6 +3,13 @@ use UIKit\Framework\HTTPFoundation\Response\RedirectResponse;
 
 class AccountController extends GitHQ\Bundle\AbstractController
 {
+	public $view = "AccountView";
+	
+	/**
+	 * registeration page for new organization
+	 * 
+	 * @return RedirectResponse $response
+	 */
 	public function onNew()
 	{
 		$user = $this->getUser();
@@ -20,13 +27,13 @@ class AccountController extends GitHQ\Bundle\AbstractController
 				$organization->addMember($user->getKey());
 				$organization->create();
 				
-				return new RedirectResponse($this->get('application.url'));
+				return new RedirectResponse($this->generateUrl('top'));
 			}
 		}
 	}
 	
 	public function onOrganizations()
 	{
-		return $this->render("organizations.htm");
+		return $this->getDefaultView()->setTemplate("organizations.htm")->prepareResponse();
 	}
 }

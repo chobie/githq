@@ -4,6 +4,39 @@ namespace GitHQ\Bundle;
 abstract class AbstractController extends \UIKit\Framework\HTTPFoundation\Controller\ApplicationController
 {
 	protected static $redis;
+
+	protected function getDefaultView()
+	{
+		$view = new $this->view($this->container);
+		$view->setUser($this->getUser());
+		return $view;
+	}
+	
+	public function generateUrl($id, $params = array())
+	{
+		static $xml;
+		if (!$xml) {
+			$xml = simplexml_load_string(file_get_contents("/home/chobie/githq.org/app/config/routes.xml"));
+		}
+		
+		if ($element = $xml->xpath("//route[@id='{$id}']")) {
+			///{user,vars}
+			$path = $element[0]->attributes()->pattern;
+			$offset = 0;
+			if(preg_match_all('/{[a-zA-Z0-9_,)(-]+?}/',$path,$matches,PREG_PATTERN_ORDER | PREG_OFFSET_CAPTURE)) {
+				foreach($matches[0] as $item) {
+					preg_match("/\{(?P<name>[a-zA-Z0-9_]+)/",$item[0],$m);
+					$p = $options[$m['name']];
+					$path = substr_replace($path,$p,$item[1]+$offset,strlen($item[0]));
+					$offset += ($item[1]+strlen($p)) - ($item[1]+strlen($item[0]));
+				}
+			}
+		} else {
+			throw new \Exception("specified routing does not find");
+		}
+		
+		return $path;
+	}
 	
 	public function render($template, $args = array())
 	{

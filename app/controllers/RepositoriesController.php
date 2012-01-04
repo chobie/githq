@@ -211,6 +211,11 @@ class RepositoriesController extends GitHQ\Bundle\AbstractController
 		));
 	}
 	
+	/**
+	 * create a repository 
+	 * 
+	 * @return RedirectResponse $response
+	 */
 	public function onDefault()
 	{
 		$request = $this->get('request');
@@ -241,8 +246,9 @@ class RepositoriesController extends GitHQ\Bundle\AbstractController
 			}
 			$user->save();
 			
-			return new RedirectResponse($this->get('application.url'));
 		}
+		
+		return new RedirectResponse($this->get('application.url'));
 	}
 
 	public function onNew()
@@ -673,6 +679,9 @@ class RepositoriesController extends GitHQ\Bundle\AbstractController
 				}
 				break;
 			case "git-receive-pack":
+				header("HTTP/1.0 405 Method Not Allowed");
+				exit;
+				
 				$input = file_get_contents("php://input");
 				header("Content-type: application/x-git-receive-pack-result");
 				$input = $this->gzBody($input);
@@ -743,7 +752,6 @@ class RepositoriesController extends GitHQ\Bundle\AbstractController
 						$data = str_pad(base_convert(strlen($str)+4, 10, 16),4,'0',STR_PAD_LEFT) . $str . '0000' . $data;
 						header("Content-length: " . strlen($data));
 						echo $data;
-						//error_log($data);
 						exit;
 					}
 				} else if ($request->get("service") == "git-receive-pack") {
@@ -767,7 +775,6 @@ class RepositoriesController extends GitHQ\Bundle\AbstractController
 						$data = str_pad(base_convert(strlen($str)+4, 10, 16),4,'0',STR_PAD_LEFT) . $str . '0000' . $data;
 						header("Content-length: " . strlen($data));
 						echo $data;
-						//error_log($data);
 						exit;
 					}
 				} else {
@@ -777,6 +784,7 @@ class RepositoriesController extends GitHQ\Bundle\AbstractController
 				}
 				break;
 			case "objects/info/packs":
+				/* @todo : looking specification. this implementation too about */
 				if (is_dir("/home/git/repositories/{$owner->getKey()}/{$repository->getId()}/objects/pack")) {
 					$dir = opendir("/home/git/repositories/{$owner->getKey()}/{$repository->getId()}/objects/pack");
 					if ($dir) {

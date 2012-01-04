@@ -75,8 +75,6 @@ function determine_array_type($array)
 }
 
 
-date_default_timezone_set('Asia/Tokyo');
-
 class Twig_Filter_Sundown extends \Twig_Extension
 {
 	public function getName()

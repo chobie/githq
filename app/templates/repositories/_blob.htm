@@ -1,18 +1,19 @@
-  <div>
-
+<div>
   {% if path %}  
   <div style="text-align:right">
-  <span class="span1 btn secondary"><a href="/{{owner.getNickname()}}/{{repository.getName()}}/blame/master/{{path}}">blame</a></span>
-  <span class="span1 btn secondary"><a href="/{{owner.getNickname()}}/{{repository.getName()}}/commits/master/{{path}}">history</a></span>
   </div>
   {% endif %}
 
   {% if path_parts %}
   <ul class="breadcrumb">
-  <li><img src="/assets/txt.png" /></li>
-  {% for key, parts in path_parts %}
-  <li>{% if loop.last %}{{key}}{% else %}<a href="/{{owner.getNickname()}}/{{repository.getName()}}/tree/{{refs}}/{{parts}}" data-pjax="#main">{{key}}</a>{% endif %}{% if not loop.last %}<span class="divider">/</span>{% endif %}
-  {% endfor %}
+	  <li><img src="/assets/txt.png" /></li>
+	  {% for key, parts in path_parts %}
+	  <li>{% if loop.last %}{{key}}{% else %}<a href="/{{owner.getNickname()}}/{{repository.getName()}}/tree/{{refs}}/{{parts}}" data-pjax="#main">{{key}}</a>{% endif %}{% if not loop.last %}<span class="divider">/</span>{% endif %}
+	  {% endfor %}
+	  <ul style="float:right;">
+	  	<li style="height:16px;"><span class="span1"><a href="/{{owner.getNickname()}}/{{repository.getName()}}/blame/master/{{path}}">blame</a></span></li>
+	  	<li style="height:16px;"><span class="span1"><a href="/{{owner.getNickname()}}/{{repository.getName()}}/commits/master/{{path}}">history</a></span></li>
+	  </ul>  
   </ul>
   {% endif %}
   
@@ -31,4 +32,4 @@
   {% elseif data %}
   <div>{{data|raw}}</div>
   {% endif %}
-  </div>
+</div>

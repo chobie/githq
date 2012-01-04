@@ -3,19 +3,22 @@ use UIKit\Framework\HTTPFoundation\Response\RedirectResponse;
 
 class OrganizationsController extends GitHQ\Bundle\AbstractController
 {
+	public $view = "OrganizationsView";
+	
 	/**
 	* (non-PHPdoc)
 	* @see UIKit\Framework\HTTPFoundation\Controller.ApplicationController::onDefault()
 	* @param string $organization organization name
+	* @return HTTPResponse $response
 	*/
 	public function onDefault($organization)
 	{
 		$organization = User::getByNickname($organization);
-		$timeline = Activity::getGlobalTimeline();
+		$timeline     = Activity::getGlobalTimeline();
 
-		$this->render("index.htm",array(
-						'organization'  => $organization,
-						'timeline'      => $timeline,
+		return $this->getDefaultView()->prepareResponse(array(
+			'organization'  => $organization,
+			'timeline'      => $timeline,
 		));
 	}
 
@@ -34,9 +37,8 @@ class OrganizationsController extends GitHQ\Bundle\AbstractController
 			$homepage_url = $request->get('homepage_url');
 			
 			$user = User::fetchLocked(User::getIdByNickname($organization));
-
 			$repo = new Repository($project_name);
-			$id = $user->getNextRepositoryId();
+			$id   = $user->getNextRepositoryId();
 
 			$repo->setId($id);
 			$repo->setDescription($description);
@@ -53,11 +55,14 @@ class OrganizationsController extends GitHQ\Bundle\AbstractController
 			}
 			$user->save();
 			
-			return new RedirectResponse($this->get('application.url'));
+			return new RedirectResponse($this->generateResponse('top'));
 		} else {
-			$this->render("new.htm",array(
-						'organization' => $organization
+			return $this->getDefaultView()
+						->setTemplate("new.htm")
+						->prepareResponse(array(
+							'organization' => $organization,
 			));
+				
 		}
 	}
 }
