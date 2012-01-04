@@ -8,5 +8,6 @@ Disallow: /*.git/
 Disallow: /login
 Disallow: /connect
 Disallow: /logout
+Disallow: /mirrors/*
 
 Allow: /

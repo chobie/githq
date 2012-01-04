@@ -115,4 +115,9 @@ class IssueComment
 	{
 		return date($format,$this->registered_at);
 	}
+	
+	public function getRegisteredTime()
+	{
+		return $this->registered_at;
+	}
 }

@@ -412,6 +412,22 @@ class Issue extends \UIKit\Framework\ObjectStore
 		return $this->comments;
 	}
 	
+	public function getCommentsByScore()
+	{
+		$tmp  = $this->comments;
+		usort($tmp,function($a,$b){
+			if ($a->getVoteCount() == $b->getVoteCount()) {
+				if ($a->getRegisteredTime() == $b->getRegisteredTime()) {
+					return 0;
+				}
+				return ($a->getRegisteredTime() > $b->getRegisteredTime()) ?  -1 : 1; 
+			}
+			return ($a->getVoteCount() > $b->getVoteCount()) ?  -1 : 1; 
+		});
+		
+		return $tmp;
+	}
+	
 	public function getComment($offset)
 	{
 		if (isset($this->comments[$offset])) {

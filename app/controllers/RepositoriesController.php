@@ -632,7 +632,12 @@ class RepositoriesController extends GitHQ\Bundle\AbstractController
 		exit;
 	}
 	
-	function gzBody($gzData){ 
+	/**
+	 * paste from php.net
+	 * 
+	 * @param string $gzData
+	 */
+	protected function gzBody($gzData){ 
 	    if(substr($gzData,0,3)=="\x1f\x8b\x08"){ 
 	        $i=10; 
 	        $flg=ord(substr($gzData,3,1)); 
@@ -647,7 +652,7 @@ class RepositoriesController extends GitHQ\Bundle\AbstractController
 	        } 
 	        return gzinflate(substr($gzData,$i,-8)); 
 	    } 
-	    else return false; 
+	    else return $gzData; 
 	}
 	
 	public function onTransport($user,$repository,$path)
@@ -666,6 +671,30 @@ class RepositoriesController extends GitHQ\Bundle\AbstractController
 				if (is_file("/home/git/repositories/{$owner->getKey()}/{$repository->getId()}/HEAD")) {
 					echo file_get_contents("/home/git/repositories/{$owner->getKey()}/{$repository->getId()}/HEAD");
 				}
+				break;
+			case "git-receive-pack":
+				$input = file_get_contents("php://input");
+				header("Content-type: application/x-git-receive-pack-result");
+				$input = $this->gzBody($input);
+				
+				$descriptorspec = array(
+				0 => array("pipe", "r"),
+				1 => array("pipe", "w"),
+				);
+					
+				ob_end_flush();
+				$p = proc_open("git-receive-pack --stateless-rpc /home/git/repositories/{$owner->getKey()}/{$repository->getId()}",$descriptorspec,$pipes);
+				if (is_resource($p)){
+					fwrite($pipes[0],$input);
+					fclose($pipes[0]);
+					while (!feof($pipes[1])) {
+						$data = fread($pipes[1],8192);
+						echo $data;
+					}
+					fclose($pipes[1]);
+					proc_close($p);
+				}
+				exit;
 				break;
 			case "git-upload-pack":
 				$input = file_get_contents("php://input");
@@ -714,7 +743,32 @@ class RepositoriesController extends GitHQ\Bundle\AbstractController
 						$data = str_pad(base_convert(strlen($str)+4, 10, 16),4,'0',STR_PAD_LEFT) . $str . '0000' . $data;
 						header("Content-length: " . strlen($data));
 						echo $data;
-						error_log($data);
+						//error_log($data);
+						exit;
+					}
+				} else if ($request->get("service") == "git-receive-pack") {
+					$input = file_get_contents("php://input");
+					header("Content-type: application/x-git-receive-pack-advertisement");
+
+					$descriptorspec = array(
+						0 => array("pipe", "r"),
+						1 => array("pipe", "w"),
+					);
+					
+					$p = proc_open("git-receive-pack --stateless-rpc --advertise-refs /home/git/repositories/{$owner->getKey()}/{$repository->getId()}",$descriptorspec,$pipes);
+					if (is_resource($p)){
+						fwrite($pipes[0],$input);
+						fclose($pipes[0]);
+						$data = stream_get_contents($pipes[1]);
+						fclose($pipes[1]);
+						proc_close($p);
+						
+						$str = "# service=git-receive-pack\n";
+						$data = str_pad(base_convert(strlen($str)+4, 10, 16),4,'0',STR_PAD_LEFT) . $str . '0000' . $data;
+						header("Content-length: " . strlen($data));
+						echo $data;
+						//error_log($data);
+						exit;
 					}
 				} else {
 					foreach($repo->getReferences() as $ref) {

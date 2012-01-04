@@ -4,10 +4,26 @@
   
   <div>{{repository.getDescription()}}</div>
 
-  {% if user %}
-  <div><span class="btn secondary
-  ">ssh</span><input type="text" value="git@githq.org:{{owner.getNickname()}}/{{repository.getName()}}.git" style="width:20em;"/></div>
-  {% endif %}
+  <script type="text/javascript">
+  	$(document).ready(function(){
+  		$('#clone_http').click(function(e){
+  			$('#clone_url').val("http://githq.org/{{owner.getNickname()}}/{{repository.getName()}}.git");
+  		});
+  		$('#clone_ssh').click(function(e){
+  			$('#clone_url').val("git@githq.org:{{owner.getNickname()}}/{{repository.getName()}}.git");
+  		});
+
+  	});
+  </script>
+
+  <div>
+  	{% if user%}
+  	<span class="btn secondary" id="clone_ssh">ssh</span>
+  	{% endif %}
+  	<span class="btn secondary" id="clone_http">HTTP</span>
+  	<input type="text" value="{% if user %}git@githq.org:{{owner.getNickname()}}/{{repository.getName()}}.git{% else %}http://githq.org/{{owner.getNickname()}}/{{repository.getName()}}.git{% endif%}" style="width:20em;" id="clone_url"/>
+  	<span>Readonly</span>
+  </div>
   
   {% if commit %}
   
